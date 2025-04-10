@@ -194,452 +194,62 @@
         <div class="row mb-4">
             <div class="col text-center">
                 <div class="btn-group" role="group" aria-label="Category Filter">
-                    <a href="index.php" class="btn btn-outline-primary category-button active">All</a>
-                    
-                        <a href="index.php?category_id=1" class="btn btn-outline-primary ">Điện thoại</a>
-                                                <a href="index.php?category_id=2" class="btn btn-outline-primary ">Laptop</a>
-                                                <a href="index.php?category_id=3" class="btn btn-outline-primary ">Phụ kiện</a>
-                                        </div>
+                    <a href="index.php" class="btn btn-outline-primary category-button <?= !isset($_GET['category_id']) ? 'active' : '' ?>">All</a>
+                    <?php
+                    require_once "public/includes/Category_Database.php";
+                    $category_db = new Category_Database();
+                    $category = $category_db->getAllCategory();
+                    foreach ($category as $value) {
+                        $activeClass = (isset($_GET['category_id']) && $_GET['category_id'] == $value['category_id']) ? 'active' : '';
+                        ?>
+                        <a href="index.php?category_id=<?= $value['category_id'] ?>" class="btn btn-outline-primary <?= $activeClass ?>"><?= $value['category_name'] ?></a>
+                        <?php
+                    }
+                    ?>
+                </div>
             </div>
         </div>
 
         <!-- Danh sách sản phẩm -->
         <div class="row g-4">
-                         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <?php
+            require_once "public/includes/Product_Database.php";
+            $productdb = new Product_Database();
+            $category_id = $_GET['category_id'] ?? null;
+
+            if ($category_id) {
+                $products = $productdb->getProductsByCategoryId($category_id);
+            } else {
+                $products = $productdb->getAllProduct();
+            }
+
+            foreach ($products as $item) {
+                ?>
+             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
     <div class="card h-100 shadow-sm product-card position-relative">
         <div class="position-relative">
-            <img src="public/assets/images/iphone15.jpg" class="card-img-top" alt="iPhone 15">
+            <img src="public/assets/images/<?= $item['image_url'] ?>" class="card-img-top" alt="<?= $item['product_name'] ?>">
             <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
         </div>
         <div class="card-body d-flex flex-column text-center">
             <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">iPhone 15</a>
+                <a href="single.html" class="text-decoration-none text-dark"><?= $item['product_name'] ?></a>
             </h6>
             <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">25,000,000 VNĐ</p>
+            <p class="card-text text-danger fw-bold mb-3"><?= number_format($item['price'], 0, 0) ?> VNĐ</p>
             <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
             <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
         </div>
     </div>
 </div>
 
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/s23.jpg" class="card-img-top" alt="Galaxy S23">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Galaxy S23</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">20,000,000 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
+                <?php
+            }
+            ?>
         </div>
     </div>
 </div>
 
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/xps13.jpg" class="card-img-top" alt="Dell XPS 13">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Dell XPS 13</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">30,000,000 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/airpods.jpg" class="card-img-top" alt="Tai nghe Airpods">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Tai nghe Airpods</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">5,000,000 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/AK_600.jpg" class="card-img-top" alt="AK-600 Gaming Keyboard">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">AK-600 Gaming Keyboard</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">90 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/bluetoothheadset_1.png" class="card-img-top" alt="Bluetooth Headset Blue">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Bluetooth Headset Blue</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">50 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/bluetoothheadset_2.png" class="card-img-top" alt="Bluetooth Headset Red">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Bluetooth Headset Red</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">60 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/camera.png" class="card-img-top" alt="Professional Camera">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Professional Camera</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">800 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/camera_1.png" class="card-img-top" alt="Camera with Zoom Lens">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Camera with Zoom Lens</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">900 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/chair.png" class="card-img-top" alt="Ergonomic Office Chair">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Ergonomic Office Chair</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">130 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/chair_1.png" class="card-img-top" alt="Blue Office Chair">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Blue Office Chair</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">150 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/drone.png" class="card-img-top" alt="Aerial Drone">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Aerial Drone</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">500 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/drone_1.png" class="card-img-top" alt="White Drone">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">White Drone</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">400 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/jacket.png" class="card-img-top" alt="White Jacket">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">White Jacket</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">80 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/jacket_1.png" class="card-img-top" alt="Brown Leather Jacket">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Brown Leather Jacket</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">200 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/keyboard.png" class="card-img-top" alt="RGB Gaming Keyboard">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">RGB Gaming Keyboard</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">100 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/keyboard_1.png" class="card-img-top" alt="RGB Keyboard with Mouse">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">RGB Keyboard with Mouse</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">120 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/laptop.png" class="card-img-top" alt="Gaming Laptop">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Gaming Laptop</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">1,500 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/laptop_1.png" class="card-img-top" alt="Sleek Blue Laptop">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Sleek Blue Laptop</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">1,000 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/mobile.png" class="card-img-top" alt="Smartphone Blue">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Smartphone Blue</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">700 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/mobile_1.png" class="card-img-top" alt="Smartphone Purple">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Smartphone Purple</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">800 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/shoes.png" class="card-img-top" alt="Running Shoes Blue">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Running Shoes Blue</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">90 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/shoes_1.png" class="card-img-top" alt="Yellow Sneakers">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Yellow Sneakers</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">100 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/stand.png" class="card-img-top" alt="Phone Stand">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark">Phone Stand</a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3">20 VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
-                        </div>
-    </div>
-</div>
 
 
 	<!-- Deal of the Week -->
