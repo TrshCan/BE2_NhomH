@@ -50,7 +50,7 @@
 								  <button id="searchButton"><i class="fa fa-search" aria-hidden="true"></i></button>
 								</div>
 								<div class="checkout">
-								  <a href="#">
+								  <a href="public/pages/cart.php">
 									<i class="fa fa-shopping-cart" aria-hidden="true"></i>
 									<span id="checkout_items" class="checkout_items">2</span>
 								  </a>
@@ -237,7 +237,7 @@
             </h6>
             <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
             <p class="card-text text-danger fw-bold mb-3"><?= number_format($item['price'], 0, 0) ?> VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
+            <a href="public/includes/cart_crud.php?action=add&id=<?= $item['product_id'] ?>&quantity=1" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
             <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
         </div>
     </div>
