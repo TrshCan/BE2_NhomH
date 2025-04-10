@@ -1,3 +1,12 @@
+<?php 
+session_start();
+$ammount = 0;
+if(isset($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $id=>$items) {
+        $ammount += $items['quantity'];
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -52,7 +61,7 @@
 								<div class="checkout">
 								  <a href="public/pages/cart.php">
 									<i class="fa fa-shopping-cart" aria-hidden="true"></i>
-									<span id="checkout_items" class="checkout_items">2</span>
+									<span id="checkout_items" class="checkout_items"><?= $ammount ?></span>
 								  </a>
 								</div>
 								<div class="user-dropdown">
