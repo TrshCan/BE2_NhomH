@@ -180,8 +180,7 @@
 	</div>
 
 	<!-- New Arrivals -->
-
-	<div class="new_arrivals py-5 bg-light">
+<div class="new_arrivals py-5 bg-light">
     <div class="container">
         <!-- Tiêu đề -->
         <div class="row mb-4">
@@ -211,42 +210,65 @@
         </div>
 
         <!-- Danh sách sản phẩm -->
-        <div class="row g-4">
+        <div class="row g-4" id="product-grid">
             <?php
             require_once "public/includes/Product_Database.php";
             $productdb = new Product_Database();
             $category_id = $_GET['category_id'] ?? null;
-
+            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $per_page = 8; // Số sản phẩm mỗi trang
+            $offset = ($page - 1) * $per_page;
+            $total_products = (new Product_Database())->getTotalProducts($category_id);
+            $total_pages = ceil($total_products / $per_page);
             if ($category_id) {
-                $products = $productdb->getProductsByCategoryId($category_id);
+                $products = $productdb->getProductsByCategoryPaged($category_id, $per_page, $offset);
             } else {
-                $products = $productdb->getAllProduct();
+                $products = $productdb->getAllProductPaged($per_page, $offset);
             }
+            
 
             foreach ($products as $item) {
                 ?>
-             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="card h-100 shadow-sm product-card position-relative">
-        <div class="position-relative">
-            <img src="public/assets/images/<?= $item['image_url'] ?>" class="card-img-top" alt="<?= $item['product_name'] ?>">
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-        </div>
-        <div class="card-body d-flex flex-column text-center">
-            <h6 class="card-title mb-2">
-                <a href="single.html" class="text-decoration-none text-dark"><?= $item['product_name'] ?></a>
-            </h6>
-            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
-            <p class="card-text text-danger fw-bold mb-3"><?= number_format($item['price'], 0, 0) ?> VNĐ</p>
-            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-            <div class="favorite favorite_right"></div> <!-- Thêm nút yêu thích -->
-        </div>
-    </div>
-</div>
-
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card h-100 shadow-sm product-card position-relative">
+                        <div class="position-relative">
+                            <img src="public/assets/images/<?= $item['image_url'] ?>" class="card-img-top" alt="<?= $item['product_name'] ?>">
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
+                        </div>
+                        <div class="card-body d-flex flex-column text-center">
+                            <h6 class="card-title mb-2">
+                                <a href="single.html" class="text-decoration-none text-dark"><?= $item['product_name'] ?></a>
+                            </h6>
+                            <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">$89.99</span></p>
+                            <p class="card-text text-danger fw-bold mb-3"><?= number_format($item['price'], 0, 0) ?> VNĐ</p>
+                            <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
                 <?php
             }
             ?>
         </div>
+                <br>
+        <div class="pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?page=<?= $page - 1 ?>&category_id=<?= $category_id ?>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <?php for ($i = 1; $i <= $total_pages; $i++) { ?>
+                        <li class="page-item <?= $i == $page ? 'active' : '' ?>">
+                            <a class="page-link" href="?page=<?= $i ?>&category_id=<?= $category_id ?>"><?= $i ?></a>
+                        </li>
+                    <?php } ?>
+                    <li class="page-item <?= $page >= $total_pages ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?page=<?= $page + 1 ?>&category_id=<?= $category_id ?>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
     </div>
 </div>
 
