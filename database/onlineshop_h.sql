@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 10, 2025 at 08:31 AM
+-- Generation Time: Apr 14, 2025 at 07:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -31,25 +31,26 @@ USE `onlineshop_h`;
 
 CREATE TABLE `brand` (
   `brand_id` int(11) NOT NULL,
-  `brand_name` varchar(255) NOT NULL
+  `brand_name` varchar(255) NOT NULL,
+  `images_brand` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `brand`
 --
 
-INSERT INTO `brand` (`brand_id`, `brand_name`) VALUES
-(1, 'Apple'),
-(2, 'Samsung'),
-(3, 'Dell'),
-(4, 'Asus'),
-(5, 'AKG'),
-(6, 'JBL'),
-(7, 'Boat'),
-(8, 'Canon'),
-(9, 'Herman Miller'),
-(10, 'DJI'),
-(11, 'Nike');
+INSERT INTO `brand` (`brand_id`, `brand_name`, `images_brand`) VALUES
+(1, 'Apple', 'OIP.jpg'),
+(2, 'Samsung', 'samsung.jpg'),
+(3, 'Dell', 'dell.jpg'),
+(4, 'Asus', 'Asus.jpg'),
+(5, 'AKG', 'akg.jpg'),
+(6, 'JBL', 'JBL.jpg'),
+(7, 'Boat', 'Boat.jpg'),
+(8, 'Canon', 'Canon.jpg'),
+(9, 'Herman Miller', 'Herman Miller.png'),
+(10, 'DJI', 'DJI2.jpg'),
+(11, 'Nike', 'Nike.jpg');
 
 -- --------------------------------------------------------
 
@@ -156,38 +157,61 @@ CREATE TABLE `products` (
   `stock_quantity` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
   `brand_id` int(11) NOT NULL,
-  `image_url` varchar(255) DEFAULT NULL
+  `image_url` varchar(255) DEFAULT NULL,
+  `sales_count` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `product_name`, `description`, `price`, `stock_quantity`, `category_id`, `brand_id`, `image_url`) VALUES
-(1, 'iPhone 15', 'Điện thoại Apple mới nhất', 25000000.00, 10, 1, 1, 'iphone15.jpg'),
-(2, 'Galaxy S23', 'Điện thoại Samsung cao cấp', 20000000.00, 15, 1, 2, 's23.jpg'),
-(3, 'Dell XPS 13', 'Laptop Dell cao cấp', 30000000.00, 8, 2, 3, 'xps13.jpg'),
-(4, 'Tai nghe Airpods', 'Tai nghe không dây Apple', 5000000.00, 20, 3, 1, 'airpods.jpg'),
-(25, 'AK-600 Gaming Keyboard', 'RGB mechanical keyboard with anti-ghosting', 89.99, 50, 3, 5, 'AK_600.jpg'),
-(26, 'Bluetooth Headset Blue', 'Wireless headset with noise cancellation', 49.99, 100, 3, 6, 'bluetoothheadset_1.png'),
-(27, 'Bluetooth Headset Red', 'Wireless headset with long battery life', 59.99, 80, 3, 7, 'bluetoothheadset_2.png'),
-(28, 'Professional Camera', 'High-resolution DSLR camera with 24MP', 799.99, 20, 3, 8, 'camera.png'),
-(29, 'Camera with Zoom Lens', 'DSLR camera with 18-55mm zoom lens', 899.99, 15, 3, 8, 'camera_1.png'),
-(30, 'Ergonomic Office Chair', 'Adjustable office chair with lumbar support', 129.99, 40, 3, 9, 'chair.png'),
-(31, 'Blue Office Chair', 'Comfortable chair with mesh back', 149.99, 30, 3, 9, 'chair_1.png'),
-(32, 'Aerial Drone', '4K camera drone with 30-minute flight time', 499.99, 25, 3, 10, 'drone.png'),
-(33, 'White Drone', 'Compact drone with 1080p camera', 399.99, 30, 3, 10, 'drone_1.png'),
-(34, 'White Jacket', 'Stylish white jacket for casual wear', 79.99, 60, 3, 4, 'jacket.png'),
-(35, 'Brown Leather Jacket', 'Premium leather jacket for men', 199.99, 20, 3, 4, 'jacket_1.png'),
-(36, 'RGB Gaming Keyboard', 'Mechanical keyboard with customizable lighting', 99.99, 45, 3, 5, 'keyboard.png'),
-(37, 'RGB Keyboard with Mouse', 'Gaming keyboard and mouse combo', 119.99, 35, 3, 5, 'keyboard_1.png'),
-(38, 'Gaming Laptop', 'High-performance laptop with RTX graphics', 1499.99, 10, 2, 3, 'laptop.png'),
-(39, 'Sleek Blue Laptop', 'Lightweight laptop with 16GB RAM', 999.99, 15, 2, 4, 'laptop_1.png'),
-(40, 'Smartphone Blue', '5G smartphone with 128GB storage', 699.99, 50, 1, 1, 'mobile.png'),
-(41, 'Smartphone Purple', 'Flagship smartphone with 256GB storage', 799.99, 40, 1, 2, 'mobile_1.png'),
-(42, 'Running Shoes Blue', 'Comfortable running shoes with cushioning', 89.99, 70, 3, 11, 'shoes.png'),
-(43, 'Yellow Sneakers', 'Stylish sneakers for everyday use', 99.99, 60, 3, 11, 'shoes_1.png'),
-(44, 'Phone Stand', 'Adjustable phone stand for desk use', 19.99, 200, 3, 4, 'stand.png');
+INSERT INTO `products` (`product_id`, `product_name`, `description`, `price`, `stock_quantity`, `category_id`, `brand_id`, `image_url`, `sales_count`) VALUES
+(1, 'iPhone 15', 'Điện thoại Apple mới nhất', 25000000.00, 10, 1, 1, 'iphone15.jpg', 12),
+(2, 'Galaxy S23', 'Điện thoại Samsung cao cấp', 20000000.00, 15, 1, 2, 's23.jpg', 453),
+(3, 'Dell XPS 13', 'Laptop Dell cao cấp', 30000000.00, 8, 2, 3, 'xps13.jpg', 90),
+(4, 'Tai nghe Airpods', 'Tai nghe không dây Apple', 5000000.00, 20, 3, 1, 'airpods.jpg', 100),
+(25, 'AK-600 Gaming Keyboard', 'RGB mechanical keyboard with anti-ghosting', 89.99, 50, 3, 5, 'AK_600.jpg', 5),
+(26, 'Bluetooth Headset Blue', 'Wireless headset with noise cancellation', 49.99, 100, 3, 6, 'bluetoothheadset_1.png', 43),
+(27, 'Bluetooth Headset Red', 'Wireless headset with long battery life', 59.99, 80, 3, 7, 'bluetoothheadset_2.png', 11),
+(28, 'Professional Camera', 'High-resolution DSLR camera with 24MP', 799.99, 20, 3, 8, 'camera.png', 999),
+(29, 'Camera with Zoom Lens', 'DSLR camera with 18-55mm zoom lens', 899.99, 15, 3, 8, 'camera_1.png', 789),
+(30, 'Ergonomic Office Chair', 'Adjustable office chair with lumbar support', 129.99, 40, 3, 9, 'chair.png', 4322),
+(31, 'Blue Office Chair', 'Comfortable chair with mesh back', 149.99, 30, 3, 9, 'chair_1.png', 312),
+(32, 'Aerial Drone', '4K camera drone with 30-minute flight time', 499.99, 25, 3, 10, 'drone.png', 876),
+(33, 'White Drone', 'Compact drone with 1080p camera', 399.99, 30, 3, 10, 'drone_1.png', 765),
+(34, 'White Jacket', 'Stylish white jacket for casual wear', 79.99, 60, 3, 4, 'jacket.png', 756),
+(35, 'Brown Leather Jacket', 'Premium leather jacket for men', 199.99, 20, 3, 4, 'jacket_1.png', 6575),
+(36, 'RGB Gaming Keyboard', 'Mechanical keyboard with customizable lighting', 99.99, 45, 3, 5, 'keyboard.png', 1),
+(37, 'RGB Keyboard with Mouse', 'Gaming keyboard and mouse combo', 119.99, 35, 3, 5, 'keyboard_1.png', 863),
+(38, 'Gaming Laptop', 'High-performance laptop with RTX graphics', 1499.99, 10, 2, 3, 'laptop.png', 23),
+(39, 'Sleek Blue Laptop', 'Lightweight laptop with 16GB RAM', 999.99, 15, 2, 4, 'laptop_1.png', 232),
+(40, 'Smartphone Blue', '', 699.99, 50, 1, 1, 'mobile.png', 0),
+(41, 'Smartphone Purple', 'Flagship smartphone with 256GB storage', 799.99, 40, 1, 2, 'mobile_1.png', 45),
+(42, 'Running Shoes Blue', 'Comfortable running shoes with cushioning', 89.99, 70, 3, 11, 'shoes.png', 464),
+(43, 'Yellow Sneakers', 'Stylish sneakers for everyday use', 99.99, 60, 3, 11, 'shoes_1.png', 7657),
+(44, 'Phone Stand', 'Adjustable phone stand for desk use', 19.99, 200, 3, 4, 'stand.png', 42);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `promotions`
+--
+
+CREATE TABLE `promotions` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `image_url` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `promotions`
+--
+
+INSERT INTO `promotions` (`id`, `title`, `description`, `image_url`) VALUES
+(1, 'Tech Accessories 2025', 'Up to 25% Off on Keyboards & Headsets', 'oneplus-keyboard.jpg'),
+(2, 'New Arrivals 2025', 'Explore Top Headsets', 'labubu.png'),
+(3, 'Gaming Laptops', 'Save Big This Season', 'AK_600.jpg');
 
 -- --------------------------------------------------------
 
@@ -306,6 +330,12 @@ ALTER TABLE `products`
   ADD KEY `brand_id` (`brand_id`);
 
 --
+-- Indexes for table `promotions`
+--
+ALTER TABLE `promotions`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `reports`
 --
 ALTER TABLE `reports`
@@ -378,6 +408,12 @@ ALTER TABLE `order_details`
 --
 ALTER TABLE `products`
   MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+
+--
+-- AUTO_INCREMENT for table `promotions`
+--
+ALTER TABLE `promotions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `reports`

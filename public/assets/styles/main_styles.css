@@ -13,14 +13,14 @@ Text: #1e1e27, #51545f
 2. General Styles
 3. Header
    3.1 Top Navigation
-   3.2 Currency, Language, Account
-   3.3 Main Navigation
-   3.4 Hamburger Menu
-   3.5 Logo
+   3.2 Main Navigation
+   3.3 Hamburger Menu
+   3.4 Logo
+   3.5 Search Bar, User Dropdown, Checkout
 4. Main Slider
 5. Banner
 6. New Arrivals
-   6.1 Sorting
+   6.1 Category Buttons
    6.2 Products Grid
 7. Deal of the Week
 8. Best Sellers
@@ -28,10 +28,11 @@ Text: #1e1e27, #51545f
 10. Blogs
 11. Newsletter
 12. Footer
+13. Media Queries
 ******************************/
 
 /* 1. Fonts */
-@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700,900');
+@import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700,900");
 
 /* 2. General Styles */
 * {
@@ -41,11 +42,11 @@ Text: #1e1e27, #51545f
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 14px;
   line-height: 23px;
   font-weight: 400;
-  background: #FFFFFF;
+  background: #ffffff;
   color: #1e1e27;
 }
 
@@ -65,25 +66,29 @@ p {
   font-weight: 500;
   color: #989898;
   -webkit-font-smoothing: antialiased;
-  text-shadow: rgba(0,0,0,.01) 0 0 1px;
+  text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
 }
 
 p a {
   display: inline;
   color: inherit;
-  border-bottom: solid 2px #fde0db;
+  border-bottom: 2px solid #fde0db;
   transition: all 200ms ease;
 }
 
 p a:hover {
-  color: #FF6347;
+  color: #ff6347;
   background: #fde0db;
 }
 
-a, a:hover, a:visited, a:active, a:link {
+a,
+a:hover,
+a:visited,
+a:active,
+a:link {
   text-decoration: none;
   -webkit-font-smoothing: antialiased;
-  text-shadow: rgba(0,0,0,.01) 0 0 1px;
+  text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
 }
 
 h1 { font-size: 72px; }
@@ -100,7 +105,7 @@ h1, h2, h3, h4, h5, h6 {
 
 ::selection {
   background: #fde0db;
-  color: #FF6347;
+  color: #ff6347;
 }
 
 ::-webkit-input-placeholder,
@@ -117,7 +122,8 @@ h1, h2, h3, h4, h5, h6 {
   color: #db5246;
 }
 
-.clearfix::before, .clearfix::after {
+.clearfix::before,
+.clearfix::after {
   content: "";
   display: table;
 }
@@ -144,7 +150,7 @@ h1, h2, h3, h4, h5, h6 {
   top: 0;
   left: 0;
   width: 100%;
-  background: #FFFFFF;
+  background: #ffffff;
   z-index: 10;
   box-shadow: 0 0 16px rgba(0, 0, 0, 0.15);
 }
@@ -164,19 +170,22 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
 }
 
-/* 3.2 Currency, Language, Account */
-.currency, .language, .account {
+.currency,
+.language,
+.account {
   display: inline-block;
   position: relative;
   min-width: 50px;
-  border-right: solid 1px #33333b;
+  border-right: 1px solid #33333b;
   padding: 0 20px;
   text-align: center;
   vertical-align: middle;
   background: #1e1e27;
 }
 
-.currency > a, .language > a, .account > a {
+.currency > a,
+.language > a,
+.account > a {
   display: block;
   color: #b5aec4;
   font-weight: 400;
@@ -194,12 +203,14 @@ h1, h2, h3, h4, h5, h6 {
   top: 100%;
 }
 
-.currency_selection, .language_selection, .account_selection {
+.currency_selection,
+.language_selection,
+.account_selection {
   position: absolute;
   right: 0;
   top: 120%;
   width: 100%;
-  background: #FFFFFF;
+  background: #ffffff;
   visibility: hidden;
   opacity: 0;
   z-index: 1;
@@ -207,31 +218,39 @@ h1, h2, h3, h4, h5, h6 {
   transition: opacity 0.3s ease;
 }
 
-.currency_selection li, .language_selection li, .account_selection li {
+.currency_selection li,
+.language_selection li,
+.account_selection li {
   padding: 0 10px;
   line-height: 50px;
 }
 
-.currency_selection li a, .language_selection li a, .account_selection li a {
+.currency_selection li a,
+.language_selection li a,
+.account_selection li a {
   display: block;
   color: #232530;
-  border-bottom: solid 1px #dddddd;
+  border-bottom: 1px solid #dddddd;
   font-size: 13px;
   transition: all 0.3s ease;
 }
 
-.currency_selection li a:hover, .language_selection li a:hover, .account_selection li a:hover {
+.currency_selection li a:hover,
+.language_selection li a:hover,
+.account_selection li a:hover {
   color: #b5aec4;
 }
 
-.currency_selection li:last-child a, .language_selection li:last-child a, .account_selection li:last-child a {
+.currency_selection li:last-child a,
+.language_selection li:last-child a,
+.account_selection li:last-child a {
   border-bottom: none;
 }
 
-/* 3.3 Main Navigation */
+/* 3.2 Main Navigation */
 .main_nav_container {
   width: 100%;
-  background: #FFFFFF;
+  background: #ffffff;
 }
 
 .navbar {
@@ -258,6 +277,111 @@ h1, h2, h3, h4, h5, h6 {
   color: #b5aec4;
 }
 
+/* 3.3 Hamburger Menu */
+.hamburger_container {
+  display: none;
+  margin-left: 40px;
+}
+
+.hamburger_container i {
+  font-size: 24px;
+  color: #1e1e27;
+  transition: color 0.3s ease;
+}
+
+.hamburger_container:hover i {
+  color: #b5aec4;
+}
+
+.hamburger_menu {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 400px;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.95);
+  z-index: 10;
+  transition: right 0.3s ease;
+}
+
+.hamburger_menu.active {
+  right: 0;
+}
+
+.fs_menu_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9;
+  background: rgba(255, 255, 255, 0);
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.hamburger_close {
+  position: absolute;
+  top: 26px;
+  right: 10px;
+  padding: 10px;
+}
+
+.hamburger_close i {
+  font-size: 24px;
+  color: #1e1e27;
+  transition: color 0.3s ease;
+}
+
+.hamburger_close:hover i {
+  color: #b5aec4;
+}
+
+.hamburger_menu_content {
+  padding-top: 100px;
+  width: 100%;
+  height: 100%;
+  padding-right: 20px;
+}
+
+.menu_item {
+  border-bottom: 1px solid #b5aec4;
+}
+
+.menu_item > a {
+  display: block;
+  color: #1e1e27;
+  font-weight: 500;
+  height: 50px;
+  line-height: 50px;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.menu_item > a:hover {
+  color: #b5aec4;
+}
+
+/* 3.4 Logo */
+.logo_container {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 15px;
+}
+
+.logo_container a {
+  font-size: 24px;
+  color: #1e1e27;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.logo_container a span {
+  color: #fe4c50;
+}
+
+/* 3.5 Search Bar, User Dropdown, Checkout */
 .navbar_user {
   margin-left: 37px;
   display: flex;
@@ -292,7 +416,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 8px 12px;
   cursor: pointer;
   color: white;
-  transition: background 0.3s;
+  transition: background 0.3s ease;
 }
 
 .search-bar button:hover {
@@ -353,110 +477,6 @@ h1, h2, h3, h4, h5, h6 {
   display: block;
 }
 
-/* 3.4 Hamburger Menu */
-.hamburger_container {
-  display: none;
-  margin-left: 40px;
-}
-
-.hamburger_container i {
-  font-size: 24px;
-  color: #1e1e27;
-  transition: all 300ms ease;
-}
-
-.hamburger_container:hover i {
-  color: #b5aec4;
-}
-
-.hamburger_menu {
-  position: fixed;
-  top: 0;
-  right: -400px;
-  width: 400px;
-  height: 100vh;
-  background: rgba(255,255,255,0.95);
-  z-index: 10;
-  transition: all 300ms ease;
-}
-
-.hamburger_menu.active {
-  right: 0;
-}
-
-.fs_menu_overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 9;
-  background: rgba(255,255,255,0);
-  pointer-events: none;
-  transition: all 200ms ease;
-}
-
-.hamburger_close {
-  position: absolute;
-  top: 26px;
-  right: 10px;
-  padding: 10px;
-}
-
-.hamburger_close i {
-  font-size: 24px;
-  color: #1e1e27;
-  transition: all 300ms ease;
-}
-
-.hamburger_close:hover i {
-  color: #b5aec4;
-}
-
-.hamburger_menu_content {
-  padding-top: 100px;
-  width: 100%;
-  height: 100%;
-  padding-right: 20px;
-}
-
-.menu_item {
-  border-bottom: solid 1px #b5aec4;
-}
-
-.menu_item > a {
-  display: block;
-  color: #1e1e27;
-  font-weight: 500;
-  height: 50px;
-  line-height: 50px;
-  font-size: 14px;
-  text-transform: uppercase;
-}
-
-.menu_item > a:hover {
-  color: #b5aec4;
-}
-
-/* 3.5 Logo */
-.logo_container {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 15px;
-}
-
-.logo_container a {
-  font-size: 24px;
-  color: #1e1e27;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.logo_container a span {
-  color: #fe4c50;
-}
-
 /* 4. Main Slider */
 .main_slider {
   width: 100%;
@@ -473,6 +493,10 @@ h1, h2, h3, h4, h5, h6 {
   background-position: center;
 }
 
+.carousel-image-wrapper {
+  height: 100vh;
+}
+
 .main_slider_content {
   width: 60%;
   padding: 20px;
@@ -483,7 +507,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
   text-transform: uppercase;
   margin-bottom: 10px;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .main_slider_content h1 {
@@ -500,7 +524,7 @@ h1, h2, h3, h4, h5, h6 {
   height: 40px;
   background: #fe4c50;
   border-radius: 3px;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease;
 }
 
 .red_button:hover {
@@ -509,7 +533,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .red_button a {
   display: block;
-  color: #FFFFFF;
+  color: #ffffff;
   text-transform: uppercase;
   font-size: 14px;
   font-weight: 500;
@@ -542,7 +566,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .banner_category {
   height: 50px;
-  background: #FFFFFF;
+  background: #ffffff;
   min-width: 180px;
   padding: 0 25px;
 }
@@ -562,6 +586,28 @@ h1, h2, h3, h4, h5, h6 {
   color: #b5aec4;
 }
 
+.brand-card {
+  transition: all 0.3s ease;
+}
+
+.image-circle {
+  transition: all 0.3s ease;
+}
+
+.brand-name {
+  transition: all 0.3s ease;
+}
+
+.brand-card:hover .image-circle {
+  box-shadow: 0 0 10px 3px rgba(255, 204, 0, 0.8);
+  border: 2px solid #ffcc00;
+}
+
+.brand-card:hover .brand-name {
+  color: #ffcc00;
+  text-shadow: 0 0 8px rgba(255, 204, 0, 0.8);
+}
+
 /* 6. New Arrivals */
 .new_arrivals {
   width: 100%;
@@ -573,31 +619,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 74px;
 }
 
-/* 6.1 Sorting */
-.new_arrivals_sorting {
-  display: inline-block;
-  margin-top: 59px;
-}
-
-.grid_sorting_button {
-  height: 40px;
-  min-width: 102px;
-  padding: 0 25px;
-  cursor: pointer;
-  border: solid 1px #ebebeb;
-  font-size: 14px;
-  font-weight: 500;
-  text-transform: uppercase;
-  background: #FFFFFF;
-  border-radius: 3px;
-  transition: all 0.3s ease;
-}
-
-.grid_sorting_button.active, .grid_sorting_button:hover {
-  color: #FFFFFF;
-  background: #fe4c50;
-}
-
+/* 6.1 Category Buttons */
 .new_arrivals .btn-group .btn {
   padding: 6px 18px;
   transition: all 0.3s ease;
@@ -698,14 +720,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .new_arrivals .favorite.active::after {
-  font-family: 'FontAwesome';
-  content: '\f004';
+  font-family: "FontAwesome";
+  content: "\f004";
   color: #fe4c50;
 }
 
 .new_arrivals .favorite::after {
-  font-family: 'FontAwesome';
-  content: '\f08a';
+  font-family: "FontAwesome";
+  content: "\f08a";
 }
 
 .new_arrivals .favorite:hover::after {
@@ -749,7 +771,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 60px;
   height: 5px;
   background: #fe4c50;
-  content: '';
+  content: "";
 }
 
 .timer {
@@ -761,7 +783,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: #FFFFFF;
+  background: #ffffff;
   margin-right: 10px;
 }
 
@@ -795,7 +817,6 @@ h1, h2, h3, h4, h5, h6 {
 
 /* 8. Best Sellers */
 .best_sellers {
-  background: #ffff;
   background: #f9f9f9;
   padding: 60px 0;
 }
@@ -814,15 +835,15 @@ h1, h2, h3, h4, h5, h6 {
   width: calc(100% + 1px);
   height: 100%;
   pointer-events: none;
-  content: '';
-  border: solid 2px rgba(235, 235, 235, 0);
+  content: "";
+  border: 2px solid rgba(235, 235, 235, 0);
   border-radius: 3px;
   transition: all 0.3s ease;
 }
 
 .best_sellers .product-item:hover::after {
   box-shadow: 0 25px 29px rgba(63, 78, 100, 0.15);
-  border: solid 2px rgba(235, 235, 235, 1);
+  border: 2px solid rgba(235, 235, 235, 1);
 }
 
 .best_sellers .product {
@@ -896,7 +917,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .best_sellers .add_to_cart_button:hover {
-  background: #FE7C7F;
+  background: #fe7c7f;
 }
 
 .best_sellers .product-item:hover .add_to_cart_button {
@@ -931,14 +952,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .best_sellers .favorite.active::after {
-  font-family: 'FontAwesome';
-  content: '\f004';
+  font-family: "FontAwesome";
+  content: "\f004";
   color: #fe4c50;
 }
 
 .best_sellers .favorite::after {
-  font-family: 'FontAwesome';
-  content: '\f08a';
+  font-family: "FontAwesome";
+  content: "\f08a";
 }
 
 .best_sellers .favorite:hover::after {
@@ -956,7 +977,7 @@ h1, h2, h3, h4, h5, h6 {
   background: #d3d3d6;
   transform: translateY(-50%);
   opacity: 0;
-  transition: all 300ms ease;
+  transition: all 0.3s ease;
 }
 
 .best_sellers .carousel:hover .carousel-control-prev,
@@ -989,6 +1010,23 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #fe4c50;
 }
 
+.product_bubble_right {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #ff4444;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.sale_fire::before {
+  content: "🔥";
+  margin-left: 5px;
+}
+
 /* 9. Benefit */
 .benefit {
   margin-top: 74px;
@@ -1005,7 +1043,7 @@ h1, h2, h3, h4, h5, h6 {
 .benefit_item {
   height: 100px;
   background: #f3f3f3;
-  border-right: solid 1px #FFFFFF;
+  border-right: 1px solid #ffffff;
   padding-left: 25px;
 }
 
@@ -1067,12 +1105,12 @@ h1, h2, h3, h4, h5, h6 {
   left: 30px;
   width: calc(100% - 60px);
   height: calc(100% - 60px);
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   padding: 10px;
   visibility: hidden;
   opacity: 0;
   transform: scale(0.7);
-  transition: all 300ms ease;
+  transition: all 0.3s ease;
 }
 
 .blog_item:hover .blog_content {
@@ -1102,12 +1140,12 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 16px;
   font-weight: 500;
   color: #fe4c50;
-  border-bottom: solid 1px #fe4c50;
+  border-bottom: 1px solid #fe4c50;
   margin-top: 12px;
 }
 
 .blog_more:hover {
-  color: #FE7C7F;
+  color: #fe7c7f;
 }
 
 /* 11. Newsletter */
@@ -1139,13 +1177,13 @@ h1, h2, h3, h4, h5, h6 {
 #newsletter_email {
   width: 300px;
   height: 46px;
-  background: #FFFFFF;
+  background: #ffffff;
   border: none;
   padding-left: 20px;
 }
 
 #newsletter_email:focus {
-  border: solid 1px #7f7f7f !important;
+  border: 1px solid #7f7f7f !important;
   box-shadow: none !important;
 }
 
@@ -1164,7 +1202,7 @@ h1, h2, h3, h4, h5, h6 {
   height: 46px;
   border: none;
   background: #fe4c50;
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 14px;
   font-weight: 500;
   text-transform: uppercase;
@@ -1172,7 +1210,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .newsletter_submit_btn:hover {
-  background: #FE7C7F;
+  background: #fe7c7f;
 }
 
 /* 12. Footer */
@@ -1189,14 +1227,17 @@ h1, h2, h3, h4, h5, h6 {
   margin-right: 0;
 }
 
-.footer_nav li a, .cr {
+.footer_nav li a,
+.cr {
   font-size: 14px;
   color: #51545f;
   line-height: 30px;
-  transition: all 300ms ease;
+  transition: all 0.3s ease;
 }
 
-.footer_nav li a:hover, .cr a, .cr i {
+.footer_nav li a:hover,
+.cr a,
+.cr i {
   color: #fe4c50;
 }
 
@@ -1212,9 +1253,16 @@ h1, h2, h3, h4, h5, h6 {
 .footer_social ul li a {
   color: #51545f;
   padding: 10px;
-  transition: all 300ms ease;
+  transition: all 0.3s ease;
 }
 
 .footer_social ul li a:hover {
   color: #fe4c50;
+}
+
+/* 13. Media Queries */
+@media (max-width: 768px) {
+  .carousel-image-wrapper {
+    height: 600px;
+  }
 }
