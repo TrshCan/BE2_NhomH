@@ -1,4 +1,4 @@
-<?php include '../includes/header.php'
+
 ?>
 <?php
 require_once '../includes/User_Database.php';
@@ -6,19 +6,28 @@ $userDb = new User_Database();
 $success = '';
 
 if (isset($_POST['login'])) {
-    $email = $_POST['email'];
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
-    $user = $userDb->getUser($email);
-    if ($user) {
-        if (password_verify($password, $user['password'])) {
-            $_SESSION['email'] = $email;
-            header('Location: ../../index.php');
-            exit;
-        } else {
-            $error = 'Sai Mật Khẩu';
-        }
+
+    if (empty($email) || preg_match('/\s/', $email)) {
+        $error = 'Email không được để trống và không được chứa khoảng trắng';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Email không hợp lệ';
+    } elseif (empty($password) || preg_match('/\s/', $password)) {
+        $error = 'Mật khẩu không được để trống và không được chứa khoảng trắng';
     } else {
-        $error = 'Email không tồn tại';
+        $user = $userDb->getUser($email);
+        if ($user) {
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['email'] = $email;
+                header('Location: ../../index.php');
+                exit;
+            } else {
+                $error = 'Sai Mật Khẩu';
+            }
+        } else {
+            $error = 'Email không tồn tại';
+        }
     }
 }
 
@@ -47,7 +56,7 @@ if (isset($_POST['login'])) {
                 <form method="POST">
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Nhập email" required>
+                        <input type="email" class="form-control" id="email" name="email" value="<?php echo isset($_POST['email']) ? $_POST['email'] : ''; ?>" placeholder="Nhập email" required>
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Mật khẩu</label>
@@ -77,7 +86,7 @@ if (isset($_POST['login'])) {
             </div>
         </div>
     </div>
-    <?php include '../includes/footer.php' ?>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
