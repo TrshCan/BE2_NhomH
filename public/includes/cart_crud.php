@@ -51,7 +51,23 @@ if (isset($_GET['id']) || isset($_GET['action'])) {
         // Clear the entire cart
         unset($_SESSION['cart']);
         header("Location: ../pages/cart.php");
-        exit;
+        exit; 
+    } elseif ($_GET['action'] == 'update_quantity' && isset($_GET['id']) && isset($_GET['quantity'])) {
+        $id = $_GET['id'];
+        $quantity = (int)$_GET['quantity'];
+
+        if ($quantity < 1) {
+            header("Location: ../pages/cart.php?error=quantity_invalid");
+            exit();
+        } elseif (isset($_SESSION['cart'][$id])) {
+            $_SESSION['cart'][$id]['quantity'] = $quantity;
+        } else {
+            header("Location: ../pages/cart.php?error=product_not_found");
+            exit();
+        }
+
+        header("Location: ../pages/cart.php");
+        exit();
     }
 } else {
     // If no valid action or ID is provided, redirect to index

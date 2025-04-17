@@ -1,86 +1,208 @@
-/* Reset CSS (optional, included if you want cart.css to be standalone) */
+/* Reset CSS */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Giỏ hàng */
-.cart-page {
-    width: 80%;
-    margin: 150px auto !important;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+/* Font stack for modern typography */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
+/* Cart page container */
+.cart-page {
+    width: 85%;
+    margin: 120px auto !important;
+    background: linear-gradient(145deg, #f9fafb, #ffffff);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Cart page title */
 .cart-page h1 {
     text-align: center;
-    margin-bottom: 20px;
-    color: #1a1a1a;
+    margin-bottom: 40px;
+    color: #1f2937;
+    font-size: 2.75rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
 }
 
-/* Bảng giỏ hàng */
+/* Cart table */
 table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 thead {
-    background: #FFD700; /* Màu vàng gold */
-    color: black;
+    background: linear-gradient(to right, #7c3aed, #a855f7); /* Vibrant purple gradient */
+    color: #ffffff;
 }
 
 th, td {
-    padding: 12px;
+    padding: 18px;
     text-align: center;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+}
+
+tbody tr {
+    transition: background 0.2s;
 }
 
 tbody tr:hover {
-    background: #f1f1f1;
+    background: #f1f5f9;
 }
 
-/* Input số lượng */
+/* Product image */
+.img-thumbnail {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    transition: transform 0.2s;
+}
+
+.img-thumbnail:hover {
+    transform: scale(1.05);
+}
+
+/* Quantity input */
 input[type="number"] {
-    width: 50px;
-    padding: 5px;
+    width: 70px;
+    padding: 10px;
     text-align: center;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* Nút Xóa */
-button {
-    background: #ff4d4d;
-    color: white;
-    padding: 8px 12px;
+input[type="number"]:focus {
+    outline: none;
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+/* Delete button */
+button, .btn-danger {
+    background: linear-gradient(to right, #ef4444, #f87171);
+    color: #ffffff;
+    padding: 10px 20px;
     border: none;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.3s, transform 0.2s;
 }
 
-button:hover {
-    background: #e60000;
+button:hover, .btn-danger:hover {
+    background: linear-gradient(to right, #dc2626, #ef4444);
+    transform: translateY(-2px);
 }
 
-/* Nút Thanh Toán */
+/* Clear all button */
+.btn-warning {
+    background: linear-gradient(to right, #f97316, #fb923c);
+    color: #ffffff;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(to right, #ea580c, #f97316);
+    transform: translateY(-2px);
+}
+
+/* Checkout button */
 .checkout-btn {
     display: inline-block;
-    padding: 12px 24px;
-    width: 200px;
-    margin: 20px auto;
-    margin-left: 350px;
-    background-color: #FFD700; /* Màu vàng gold */
-    color: black;
+    padding: 14px 28px;
+    width: auto;
+    background: linear-gradient(to right, #7c3aed, #a855f7); /* Matches thead gradient */
+    color: #ffffff;
     text-decoration: none;
-    font-weight: bold;
-    border-radius: 5px;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 8px;
     text-align: center;
-    transition: 0.3s;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
 }
 
 .checkout-btn:hover {
-    background: #e6c200;
+    background: linear-gradient(to right, #6d28d9, #9333ea);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+/* Button container */
+.d-flex {
+    gap: 1.5rem;
+    margin-top: 30px;
+    justify-content: flex-end;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .cart-page {
+        width: 95%;
+        padding: 24px;
+    }
+
+    .cart-page h1 {
+        font-size: 2.25rem;
+    }
+
+    th, td {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+
+    input[type="number"] {
+        width: 60px;
+        padding: 8px;
+    }
+
+    .checkout-btn, .btn-warning {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    th, td {
+        font-size: 0.85rem;
+        padding: 10px;
+    }
+
+    .img-thumbnail {
+        width: 60px !important;
+        height: 60px !important;
+    }
+
+    .d-flex {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .checkout-btn, .btn-warning {
+        width: 100%;
+        max-width: 200px;
+    }
 }
