@@ -1,3 +1,13 @@
+<?php 
+session_start();
+$ammount = 0;
+if(isset($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $id=>$items) {
+        $ammount += $items['quantity'];
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
