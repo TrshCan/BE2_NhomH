@@ -1,7 +1,9 @@
 <?php
 require_once "Database.php";
-class Product_Database extends Database{
-    public function getAllProduct(){
+class Product_Database extends Database
+{
+    public function getAllProduct()
+    {
         $sql = self::$connection->prepare("SELECT * from products");
         $sql->execute();
         $item = $sql->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -20,27 +22,38 @@ class Product_Database extends Database{
         $result = $sql->get_result();
         return $result->fetch_assoc()['total'];
     }
-    public function getAllProductPaged($limit, $offset) {
+    public function getAllProductPaged($limit, $offset)
+    {
         $sql = self::$connection->prepare("SELECT * FROM products LIMIT ?, ?");
         $sql->bind_param("ii", $offset, $limit);
         $sql->execute();
         return $sql->get_result()->fetch_all(MYSQLI_ASSOC);
     }
-    public function getProductsByCategoryPaged($category_id, $limit, $offset) {
+    public function getProductsByCategoryPaged($category_id, $limit, $offset)
+    {
         $sql = self::$connection->prepare("SELECT * FROM products WHERE category_id = ? LIMIT ?, ?");
         $sql->bind_param("iii", $category_id, $offset, $limit);
         $sql->execute();
         return $sql->get_result()->fetch_all(MYSQLI_ASSOC);
     }
-    
-    
-    
 
-    public function getProductById($id){
+    public function getBestSellingProducts($limit = 10)
+    {
+        $sql = self::$connection->prepare("SELECT * FROM products ORDER BY sales_count DESC LIMIT ?");
+        $sql->bind_param("i", $limit);
+        $sql->execute();
+        $items = $sql->get_result()->fetch_all(MYSQLI_ASSOC);
+        return $items;
+    }
+
+
+
+    public function getProductById($id)
+    {
         $sql = self::$connection->prepare("SELECT * FROM products WHERE  product_id  = ?");
         $sql->bind_param("i", $id);
         $sql->execute();
-        $result = $sql->get_result()->fetch_assoc();
+        $result = $sql->get_result()->fetch_all(MYSQLI_ASSOC);
         return $result;
     }
     public function getProductsByCategoryId($category_id)
@@ -95,5 +108,4 @@ class Product_Database extends Database{
         $items = $sql->get_result()->fetch_assoc()['total']; // Lấy tất cả kết quả dưới dạng mảng kết hợp
         return $items; // Trả về mảng kết quả
     }
-
 }
