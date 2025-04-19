@@ -1,13 +1,15 @@
-<?php 
+<?php
 session_start();
 $ammount = 0;
-if(isset($_SESSION['cart'])) {
-    foreach ($_SESSION['cart'] as $id=>$items) {
+if (isset($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $id => $items) {
         $ammount += $items['quantity'];
     }
 }
 ?>
-
+<?php
+include_once "public/includes/hotline.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,7 +31,17 @@ if(isset($_SESSION['cart'])) {
 </head>
 
 <body>
+    <div class="contact-icons">
 
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=thangmai0107@gmail.com" class="contact-icon email">
+            <i class="fas fa-envelope"></i>
+        </a>
+
+        <div class="contact-icon zalo" id="toggleChat">
+            <i class="fas fa-comment-dots"></i>
+        </div>
+
+    </div> v
     <div class="super_container">
 
         <!-- Header -->
@@ -59,16 +71,17 @@ if(isset($_SESSION['cart'])) {
                                                 aria-hidden="true"></i></button>
                                     </div>
                                     <div class="checkout">
-                                        <a href="#">
+                                        <a href="public/pages/cart.php">
                                             <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-                                            <span id="checkout_items" class="checkout_items">2</span>
+                                            <span id="checkout_items" class="checkout_items"><?= $ammount ?></span>
                                         </a>
                                     </div>
                                     <div class="user-dropdown">
                                         <a href="#" class="user-icon"><i class="fa fa-user" aria-hidden="true"></i></a>
                                         <div class="dropdown-menu">
-                                            <a href="#" class="dropdown-item">Đăng nhập</a>
-                                            <a href="#" class="dropdown-item">Đăng xuất</a>
+                                            <a href="public//pages/login.php" class="dropdown-item">Đăng nhập</a>
+                                            <a href="../Be2_NhomH2/public/pages/logout.php" class="dropdown-item">Đăng
+                                                xuất</a>
                                         </div>
                                     </div>
                                 </div>
@@ -113,36 +126,36 @@ if(isset($_SESSION['cart'])) {
                 $isFirst = true; // Flag to mark the first item
                 foreach ($promotions as $value2) {
                 ?>
-                    <div class="carousel-item <?= $isFirst ? 'active' : '' ?>" style="position: relative;">
-                        <!-- Ảnh nền -->
-                        <div class="carousel-image-wrapper"
-                            style="position: relative; width: 100%; height: 800px; overflow: hidden;">
-                            <img src="public/assets/images/<?= $value2['image_url'] ?>"
-                                class="img-fluid d-block w-100 h-100 object-fit-cover"
-                                style="position: absolute; top: 0; left: 0;" alt="<?= $value2['title'] ?>">
+                <div class="carousel-item <?= $isFirst ? 'active' : '' ?>" style="position: relative;">
+                    <!-- Ảnh nền -->
+                    <div class="carousel-image-wrapper"
+                        style="position: relative; width: 100%; height: 800px; overflow: hidden;">
+                        <img src="public/assets/images/<?= $value2['image_url'] ?>"
+                            class="img-fluid d-block w-100 h-100 object-fit-cover"
+                            style="position: absolute; top: 0; left: 0;" alt="<?= $value2['title'] ?>">
 
-                            <!-- Lớp phủ tối -->
-                            <div class="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                        <!-- Lớp phủ tối -->
+                        <div class="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
              background-color: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
-                        </div>
+                    </div>
 
-                        <!-- Nội dung chồng lên ảnh -->
-                        <div class="container"
-                            style="position: absolute; top: 0; left: 0; height: 100%; width: 100%; z-index: 2;">
-                            <div class="row align-items-center h-100">
-                                <div class="col text-white">
-                                    <div class="main_slider_content text-center"
-                                        style="text-shadow: 0 0 8px rgba(0,0,0,0.6);">
-                                        <h6><?= $value2['title'] ?></h6>
-                                        <h1><?= $value2['description'] ?></h1>
-                                        <div class="red_button shop_now_button mt-3">
-                                            <a href="index.php" class="btn btn-danger text-uppercase">Shop now</a>
-                                        </div>
+                    <!-- Nội dung chồng lên ảnh -->
+                    <div class="container"
+                        style="position: absolute; top: 0; left: 0; height: 100%; width: 100%; z-index: 2;">
+                        <div class="row align-items-center h-100">
+                            <div class="col text-white">
+                                <div class="main_slider_content text-center"
+                                    style="text-shadow: 0 0 8px rgba(0,0,0,0.6);">
+                                    <h6><?= $value2['title'] ?></h6>
+                                    <h1><?= $value2['description'] ?></h1>
+                                    <div class="red_button shop_now_button mt-3">
+                                        <a href="index.php" class="btn btn-danger text-uppercase">Shop now</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
 
                 <?php
@@ -180,10 +193,10 @@ if(isset($_SESSION['cart'])) {
                     foreach ($brands as $value1) {
                         $productCount = $branddb->getProductCountByBrand($value1['brand_id']);
                     ?>
-                        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                            <a href="brand.php?brand_id=<?= $value1['brand_id'] ?>" class="text-decoration-none">
-                                <div class="brand-card">
-                                    <div class="image-circle mx-auto mb-2" style="
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <a href="brand.php?brand_id=<?= $value1['brand_id'] ?>" class="text-decoration-none">
+                            <div class="brand-card">
+                                <div class="image-circle mx-auto mb-2" style="
                             width: 120px;
                             height: 120px;
                             background-image: url('public/assets/images/<?= $value1['images_brand'] ?>');
@@ -191,12 +204,12 @@ if(isset($_SESSION['cart'])) {
                             background-position: center;
                             border-radius: 50%;
                         "></div>
-                                    <div class="brand-name text-white fw-bold">
-                                        <?= htmlspecialchars($value1['brand_name']) ?></div>
-                                    <div class="text-muted small"><?= $productCount ?> sản phẩm</div>
-                                </div>
-                            </a>
-                        </div>
+                                <div class="brand-name text-white fw-bold">
+                                    <?= htmlspecialchars($value1['brand_name']) ?></div>
+                                <div class="text-muted small"><?= $productCount ?> sản phẩm</div>
+                            </div>
+                        </a>
+                    </div>
                     <?php } ?>
                 </div>
             </div>
@@ -227,8 +240,8 @@ if(isset($_SESSION['cart'])) {
                             foreach ($category as $value) {
                                 $activeClass = (isset($_GET['category_id']) && $_GET['category_id'] == $value['category_id']) ? 'active' : '';
                             ?>
-                                <a href="index.php?category_id=<?= $value['category_id'] ?>"
-                                    class="btn btn-outline-primary <?= $activeClass ?>"><?= $value['category_name'] ?></a>
+                            <a href="index.php?category_id=<?= $value['category_id'] ?>"
+                                class="btn btn-outline-primary <?= $activeClass ?>"><?= $value['category_name'] ?></a>
                             <?php
                             }
                             ?>
@@ -255,26 +268,27 @@ if(isset($_SESSION['cart'])) {
 
                     foreach ($products as $item) {
                     ?>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                            <div class="card h-100 shadow-sm product-card position-relative">
-                                <div class="position-relative">
-                                    <img src="public/assets/images/<?= $item['image_url'] ?>" class="card-img-top"
-                                        alt="<?= $item['product_name'] ?>">
-                                    <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
-                                </div>
-                                <div class="card-body d-flex flex-column text-center">
-                                    <h6 class="card-title mb-2">
-                                        <a href="public//page/single.php"
-                                            class="text-decoration-none text-dark"><?= $item['product_name'] ?></a>
-                                    </h6>
-                                    <p class="card-text text-muted mb-1">Giá gốc: <span
-                                            class="text-decoration-line-through">$89.99</span></p>
-                                    <p class="card-text text-danger fw-bold mb-3"><?= number_format($item['price'], 0, 0) ?>
-                                        VNĐ</p>
-                                    <a href="#" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
-                                </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="card h-100 shadow-sm product-card position-relative">
+                            <div class="position-relative">
+                                <img src="public/assets/images/<?= $item['image_url'] ?>" class="card-img-top"
+                                    alt="<?= $item['product_name'] ?>">
+                                <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
+                            </div>
+                            <div class="card-body d-flex flex-column text-center">
+                                <h6 class="card-title mb-2">
+                                    <a href="public/pages/single.php?product_id=<?= $item['product_id'] ?>"
+                                        class="text-decoration-none text-dark"><?= $item['product_name'] ?></a>
+                                </h6>
+                                <p class="card-text text-muted mb-1">Giá gốc: <span
+                                        class="text-decoration-line-through">$89.99</span></p>
+                                <p class="card-text text-danger fw-bold mb-3"><?= number_format($item['price'], 0, 0) ?>
+                                    VNĐ</p>
+                                <a href="public/includes/cart_crud.php?action=add&id=<?= $item['product_id'] ?>"
+                                    class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
                             </div>
                         </div>
+                    </div>
                     <?php
                     }
                     ?>
@@ -289,9 +303,9 @@ if(isset($_SESSION['cart'])) {
                             </a>
                         </li>
                         <?php for ($i = 1; $i <= $total_pages; $i++) { ?>
-                            <li class="page-item <?= $i == $page ? 'active' : '' ?>">
-                                <a class="page-link" href="?page=<?= $i ?>&category_id=<?= $category_id ?>"><?= $i ?></a>
-                            </li>
+                        <li class="page-item <?= $i == $page ? 'active' : '' ?>">
+                            <a class="page-link" href="?page=<?= $i ?>&category_id=<?= $category_id ?>"><?= $i ?></a>
+                        </li>
                         <?php } ?>
                         <li class="page-item <?= $page >= $total_pages ? 'disabled' : '' ?>">
                             <a class="page-link" href="?page=<?= $page + 1 ?>&category_id=<?= $category_id ?>"
@@ -377,38 +391,39 @@ if(isset($_SESSION['cart'])) {
 
                             foreach ($chunkedProducts as $productGroup) {
                             ?>
-                                <div class="carousel-item <?php echo $isFirst ? 'active' : ''; ?>">
-                                    <div class="row justify-content-center">
-                                        <?php foreach ($productGroup as $value3) { ?>
-                                            <div class="col-md-4 col-sm-6 mb-4">
-                                                <div class="product-item keyboards">
-                                                    <div class="product">
-                                                        <div class="product_image">
-                                                            <img src="public/assets/images/<?= $value3['image_url']; ?>"
-                                                                class="img-fluid" alt="">
-                                                        </div>
-                                                        <div class="product_bubble product_bubble_left"><span>sale</span></div>
-                                                        <div class="product_bubble product_bubble_right sale_fire">
-                                                            <span>sale</span>
-                                                        </div>
-                                                        <div class="product_info text-center">
-                                                            <h6 class="product_name mt-3"><a
-                                                                    href="single.html"><?= $value3['product_name']; ?></a>
-                                                            </h6>
-                                                            <p class="card-text text-muted mb-1">Giá gốc: <span
-                                                                    class="text-decoration-line-through">$89.99</span></p>
-                                                            <div class="product_price">
-                                                                <?= number_format($value3['price'], 0, 0) ?> VND</div>
-                                                        </div>
-                                                        <div class="add_to_cart_button text-center"><a href="#">Add to Cart</a>
-                                                        </div>
-                                                        <div class="favorite favorite_right"></div>
-                                                    </div>
+                            <div class="carousel-item <?php echo $isFirst ? 'active' : ''; ?>">
+                                <div class="row justify-content-center">
+                                    <?php foreach ($productGroup as $value3) { ?>
+                                    <div class="col-md-4 col-sm-6 mb-4">
+                                        <div class="product-item keyboards">
+                                            <div class="product">
+                                                <div class="product_image">
+                                                    <img src="public/assets/images/<?= $value3['image_url']; ?>"
+                                                        class="img-fluid" alt="">
                                                 </div>
+                                                <div class="product_bubble product_bubble_left"><span>sale</span></div>
+                                                <div class="product_bubble product_bubble_right sale_fire">
+                                                    <span>sale</span>
+                                                </div>
+                                                <div class="product_info text-center">
+                                                    <h6 class="product_name mt-3"><a
+                                                            href="public/pages/single.php?product_id=<?= $value3["product_id"] ?>"><?= $value3['product_name']; ?></a>
+                                                    </h6>
+                                                    <p class="card-text text-muted mb-1">Giá gốc: <span
+                                                            class="text-decoration-line-through">$89.99</span></p>
+                                                    <div class="product_price">
+                                                        <?= number_format($value3['price'], 0, 0) ?> VND</div>
+                                                </div>
+                                                <div class="add_to_cart_button text-center"><a href="#">Add tox
+                                                        Cartnunununnu</a>
+                                                </div>
+                                                <div class="favorite favorite_right"></div>
                                             </div>
-                                        <?php } ?>
+                                        </div>
                                     </div>
+                                    <?php } ?>
                                 </div>
+                            </div>
                             <?php
                                 $isFirst = false;
                             }
@@ -627,6 +642,18 @@ if(isset($_SESSION['cart'])) {
     <script src="public/assets/plugins/easing/easing.js"></script>
     <script src="public/assets/js/custom.js"></script>
 
+    <iframe id="chatWidget" src="public/includes/livechat_user.php"
+        style="display: none; position: fixed; bottom: 90px; right: 20px; width: 320px; height: 500px; border: none; z-index: 9999; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+    </iframe>
+
+    <script>
+    const toggleBtn = document.getElementById('toggleChat');
+    const chatWidget = document.getElementById('chatWidget');
+
+    toggleBtn.addEventListener('click', () => {
+        chatWidget.style.display = chatWidget.style.display === 'none' ? 'block' : 'none';
+    });
+    </script>
 
 
 </body>

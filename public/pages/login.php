@@ -1,6 +1,6 @@
-
-?>
 <?php
+session_start();
+include_once '../includes/header.php';
 require_once '../includes/User_Database.php';
 $userDb = new User_Database();
 $success = '';
@@ -19,8 +19,11 @@ if (isset($_POST['login'])) {
         $user = $userDb->getUser($email);
         if ($user) {
             if (password_verify($password, $user['password'])) {
+                $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['full_name'] = $user['full_name'];
+                $_SESSION['role'] = $user['role'];
                 $_SESSION['email'] = $email;
-                header('Location: ../../index.php');
+                header('Location: ../../../index.php');
                 exit;
             } else {
                 $error = 'Sai Mật Khẩu';
@@ -50,22 +53,25 @@ if (isset($_POST['login'])) {
         <div class="card" style="width: 100%; max-width: 400px;">
             <div class="card-body">
                 <h5 class="card-title text-center mb-4">Đăng Nhập</h5>
-                <?php if($success): ?>
-                        <div class="alert alert-success"><?php echo $success; ?></div>
-                    <?php endif; ?>
+                <?php if ($success): ?>
+                <div class="alert alert-success"><?php echo $success; ?></div>
+                <?php endif; ?>
                 <form method="POST">
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" value="<?php echo isset($_POST['email']) ? $_POST['email'] : ''; ?>" placeholder="Nhập email" required>
+                        <input type="email" class="form-control" id="email" name="email"
+                            value="<?php echo isset($_POST['email']) ? $_POST['email'] : ''; ?>"
+                            placeholder="Nhập email" required>
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Mật khẩu</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Nhập mật khẩu" required>
+                        <input type="password" class="form-control" id="password" name="password"
+                            placeholder="Nhập mật khẩu" required>
                     </div>
                     <?php if (isset($error)) : ?>
-                        <div class="alert alert-danger">
-                            <?= $error ?>
-                        </div>
+                    <div class="alert alert-danger">
+                        <?= $error ?>
+                    </div>
                     <?php endif; ?>
                     <button type="submit" name="login" class="btn btn-primary w-100">Đăng Nhập</button>
                 </form>

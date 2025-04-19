@@ -203,15 +203,7 @@ body {
   inset: 0;
 }
 
-/* .active::before {
-  content: '';
-  width: 10px;
-  height: 10px;
-  left: 13px;
-  position: absolute;
-  background-color: rgb(36, 234, 36);
-  border-radius: 50%;
-} */
+
 
 .window {
   width: 100%;

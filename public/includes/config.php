@@ -1,5 +1,5 @@
 <?php
-$base_url = '/BE2_NHOMH/public/';
+$base_url = '/nhomh/public/';
 ?>
 
 <?php
@@ -15,4 +15,17 @@ define('DB_HOST', 'localhost');
 define('PORT', 3306);
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8mb4');
+?>
+
+<?php
+$dsn = 'mysql:host=localhost;dbname=onlineshop_h';
+$username = 'root';
+$password = '';
+
+try {
+    $conn = new PDO($dsn, $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die('Database connection failed: ' . $e->getMessage());
+}
 ?>

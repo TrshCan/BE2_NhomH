@@ -2,21 +2,28 @@
 
 /* General */
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Roboto', sans-serif; /* Updated to Roboto, a modern sans-serif font */
+    color: #666; /* Default text color for better readability */
 }
 
 /* Header */
 .header {
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 1000;
+    left: 0;
+    width: 100%;
+   
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    
+    
+   
 }
 
 .logo_container a {
     font-size: 24px;
-    font-weight: bold;
+    font-weight: 700; /* Bold for logo */
     color: #000;
     text-decoration: none;
 }
@@ -113,11 +120,32 @@ body {
 }
 
 /* Breadcrumbs */
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
 .breadcrumbs ul {
     list-style: none;
     padding: 0;
+    margin: 0;
     display: flex;
     gap: 10px;
+}
+
+.breadcrumbs li {
+    display: inline-block;
+}
+
+.breadcrumbs a {
+    text-decoration: none;
+    color: #333;
+    font-size: 14px; /* Smaller font for breadcrumbs */
+}
+
+.breadcrumbs .active a {
+    color: #007bff;
 }
 
 .breadcrumbs ul li a {
@@ -130,52 +158,106 @@ body {
 }
 
 /* Product Images */
+.single_product_container {
+    margin-top: 100px; /* Tăng giá trị để tránh đè lên header */
+    position: relative;
+  
+}
+
 .single_product_image {
     width: 100%;
-    height: 400px;
+    height: 500px;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
+    background-color: #fff;
+}
+
+.single_product_thumbnails {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.single_product_thumbnails li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 50px 0; /* thêm khoảng cách trên và dưới */
 }
 
 .single_product_thumbnails img {
-    width: 100%;
+    width: 80px;
     height: 80px;
-    object-fit: cover;
+    object-fit: contain;
     cursor: pointer;
-    border: 2px solid transparent;
+    border: none;
 }
 
 .single_product_thumbnails img.active {
-    border-color: #ff0000;
+    border: 2px solid #ff0000;
 }
 
 /* Product Details */
+.product_details {
+    padding: 20px 0; /* Added padding for better spacing */
+}
+
 .product_details_title h2 {
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 28px; /* Adjusted font size for title */
+    font-weight: 700; /* Bold for title */
+    color: #000; /* Black for title */
+    margin-bottom: 10px;
+}
+
+.product_details_title p {
+    font-size: 14px; /* Smaller font for description */
+    font-weight: 400; /* Normal weight for description */
+    color: #666; /* Gray for description */
+    line-height: 1.5; /* Better readability */
 }
 
 .free_delivery {
     background-color: #f8f9fa;
     padding: 5px 10px;
     border-radius: 5px;
+    font-size: 14px; /* Smaller font for free delivery */
+    font-weight: 400;
+    color: #666;
+    margin-bottom: 10px;
 }
 
 .original_price {
     text-decoration: line-through;
-    color: #6c757d;
-    font-size: 18px;
+    color: #999; /* Lighter gray for original price */
+    font-size: 16px; /* Smaller font for original price */
+    font-weight: 400;
+    margin-bottom: 5px;
 }
 
 .product_price {
     color: #ff0000;
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 24px; /* Larger font for current price */
+    font-weight: 700; /* Bold for current price */
+    margin-bottom: 10px;
 }
 
 .star_rating {
     color: #ffc107;
+    font-size: 14px; /* Smaller font for star rating */
+    margin-bottom: 10px;
+}
+
+.product_color {
+    margin-bottom: 10px;
+}
+
+.product_color span {
+    font-size: 14px; /* Smaller font for label */
+    font-weight: 400;
+    color: #666;
 }
 
 .product_color ul {
@@ -197,6 +279,19 @@ body {
     border-color: #000;
 }
 
+.quantity {
+    display: flex;
+    flex-column: flex-column flex-sm-row;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity span {
+    font-size: 14px; /* Smaller font for quantity label */
+    font-weight: 400;
+    color: #666;
+}
+
 .quantity_selector {
     display: flex;
     align-items: center;
@@ -207,6 +302,8 @@ body {
 
 .quantity_selector span {
     padding: 5px 10px;
+    font-size: 14px; /* Smaller font for quantity value */
+    font-weight: 400;
 }
 
 .quantity_selector .minus, .quantity_selector .plus {
@@ -221,6 +318,8 @@ body {
     padding: 10px 20px;
     border-radius: 5px;
     text-decoration: none;
+    font-size: 14px; /* Smaller font for button */
+    font-weight: 500;
 }
 
 .add_to_cart_button:hover {
@@ -240,6 +339,8 @@ body {
 .tabs_container .tab {
     cursor: pointer;
     padding-bottom: 10px;
+    font-size: 16px;
+    font-weight: 500;
 }
 
 .tabs_container .tab.active {
@@ -275,7 +376,8 @@ body {
 }
 
 .user_name {
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 16px;
 }
 
 .form_input {
@@ -284,6 +386,7 @@ body {
     margin-bottom: 10px;
     border: 1px solid #dee2e6;
     border-radius: 5px;
+    font-size: 14px;
 }
 
 .input_review {
@@ -291,6 +394,7 @@ body {
     padding: 10px;
     border: 1px solid #dee2e6;
     border-radius: 5px;
+    font-size: 14px;
 }
 
 .review_submit_btn {
@@ -299,6 +403,8 @@ body {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 /* Benefit */
@@ -325,6 +431,8 @@ body {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 /* Footer */
@@ -336,6 +444,7 @@ body {
 .footer_nav li a {
     color: #6c757d;
     text-decoration: none;
+    font-size: 14px;
 }
 
 .footer_social li a {
@@ -347,4 +456,37 @@ body {
     text-align: center;
     color: #6c757d;
     font-size: 14px;
+}
+.description-text {
+    max-height: 6em; /* Initial height for 3 lines */
+    overflow: hidden;
+    position: relative;
+    -webkit-transition: max-height 0.3s ease;
+    -moz-transition: max-height 0.3s ease;
+    transition: max-height 0.3s ease;
+}
+
+.description-text::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 1.5em;
+    width: 100%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), white);
+    pointer-events: none;
+    -webkit-transition: opacity 0.2s ease;
+    -moz-transition: opacity 0.2s ease;
+    transition: opacity 0.2s ease;
+    opacity: 1; /* Ensure initial visibility */
+}
+
+.description-text.expanded {
+    max-height: none; /* Use 'none' to ensure full height */
+    overflow: visible; /* Ensure content isn’t clipped */
+}
+
+.description-text.expanded::after {
+    opacity: 0; /* Completely hide the fade effect */
+    display: none; /* Additional safeguard to remove the pseudo-element */
 }

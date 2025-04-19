@@ -56,6 +56,14 @@ class Product_Database extends Database
         $result = $sql->get_result()->fetch_all(MYSQLI_ASSOC);
         return $result;
     }
+    public function getProductById_1item($id)
+    {
+        $sql = self::$connection->prepare("SELECT * FROM products WHERE  product_id  = ?");
+        $sql->bind_param("i", $id);
+        $sql->execute();
+        $result = $sql->get_result()->fetch_assoc();
+        return $result;
+    }
     public function getProductsByCategoryId($category_id)
     {
         $sql = self::$connection->prepare("SELECT * from products where category_id=?");
