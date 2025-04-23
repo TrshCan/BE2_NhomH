@@ -1,3 +1,58 @@
+<?php
+include_once '../includes/config.php'; // Kết nối cơ sở dữ liệu
+
+try {
+    // Chuẩn bị và thực thi câu lệnh SQL
+    $stmt = $conn->prepare("
+        SELECT 
+            r.review_id,
+            r.rating,
+            r.comment,
+            r.image,
+            r.review_date,
+            u.full_name AS user_name,
+            p.product_name
+        FROM 
+            reviews r
+        INNER JOIN 
+            users u ON r.user_id = u.user_id
+        INNER JOIN 
+            products p ON r.product_id = p.product_id
+        ORDER BY 
+            r.review_date DESC
+        LIMIT 3
+    ");
+    $stmt->execute();
+    $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "Lỗi kết nối cơ sở dữ liệu: " . $e->getMessage();
+    exit;
+}
+try {
+   // Chuẩn bị câu lệnh SQL với tham số placeholder
+   $sql = $conn->prepare("
+   SELECT 
+       COUNT(*) AS review_count,
+       COALESCE(AVG(rating), 0) AS average_rating
+   FROM 
+       reviews
+   WHERE 
+       product_id = :product_id
+");
+$product_id = isset($_GET['product_id']) ? intval($_GET['product_id']) : 0; 
+$sql->bindParam(':product_id', $product_id, PDO::PARAM_INT);
+
+// Thực thi câu lệnh
+$sql->execute();
+
+// Lấy kết quả
+$rev_avg = $sql->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "Lỗi kết nối cơ sở dữ liệu: " . $e->getMessage();
+    exit;
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -264,84 +319,63 @@
                                 <!-- User Reviews -->
                                 <div class="col-lg-6 reviews_col">
                                     <div class="tab_title reviews_title">
-                                        <h4>Reviews (2)</h4>
+                                        <h4>Reviews (<?=$rev_avg['review_count']?>)</h4>
                                     </div>
-                                    <!-- User Review -->
-                                    <div class="user_review_container d-flex flex-column flex-sm-row gap-3 mb-4">
-                                        <div class="user">
-                                            <div class="user_pic"></div>
-                                            <div class="user_rating">
-                                                <ul class="star_rating list-unstyled d-flex gap-1">
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="review">
-                                            <div class="review_date">15 Mar 2025</div>
-                                            <div class="user_name">Alex Gamer</div>
-                                            <p>The sound quality is amazing for the price! The surround sound really
-                                                enhances my gaming experience, though the microphone could be a bit
-                                                clearer.</p>
-                                        </div>
-                                    </div>
-                                    <!-- User Review -->
-                                    <div class="user_review_container d-flex flex-column flex-sm-row gap-3">
-                                        <div class="user">
-                                            <div class="user_pic"></div>
-                                            <div class="user_rating">
-                                                <ul class="star_rating list-unstyled d-flex gap-1">
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="review">
-                                            <div class="review_date">10 Mar 2025</div>
-                                            <div class="user_name">Sarah Tech</div>
-                                            <p>Very comfortable for long gaming sessions. The RGB lighting is a nice
-                                                touch, and the sound quality is top-notch for this price range.</p>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <!-- Add Review -->
-                                <div class="col-lg-6 add_review_col">
-                                    <div class="add_review">
-                                        <form id="review_form" action="post">
-                                            <div>
-                                                <h1>Add Review</h1>
-                                                <input id="review_name" class="form_input input_name" type="text"
-                                                    name="name" placeholder="Name*" required="required"
-                                                    data-error="Name is required.">
-                                                <input id="review_email" class="form_input input_email" type="email"
-                                                    name="email" placeholder="Email*" required="required"
-                                                    data-error="Valid email is required.">
-                                            </div>
-                                            <div>
-                                                <h1>Your Rating:</h1>
-                                                <ul class="user_star_rating list-unstyled d-flex gap-1">
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
-                                                </ul>
-                                                <textarea id="review_message" class="input_review" name="message"
-                                                    placeholder="Your Review" rows="4" required
-                                                    data-error="Please, leave us a review."></textarea>
-                                            </div>
-                                            <div class="text-left text-sm-right">
-                                                <button id="review_submit" type="submit"
-                                                    class="red_button review_submit_btn" value="Submit">Submit</button>
-                                            </div>
-                                        </form>
+                                    <!-- User Review -->
+                                    <div class="reviews_section">
+                                        <?php if (count($reviews) > 0): ?>
+                                            <?php foreach ($reviews as $review): ?>
+                                                <div class="user_review_container d-flex flex-column flex-sm-row gap-3 mb-4">
+                                                    <div class="user">
+                                                        <div class="user_pic"></div>
+                                                        <div class="user_rating">
+                                                            <ul class="star_rating list-unstyled d-flex gap-1">
+                                                                <?php
+                                                                // Hiển thị số sao tương ứng với rating
+                                                                for ($i = 1; $i <= 5; $i++) {
+                                                                    if ($i <= $review['rating']) {
+                                                                        echo '<li><i class="fa fa-star" aria-hidden="true"></i></li>';
+                                                                    } else {
+                                                                        echo '<li><i class="fa fa-star-o" aria-hidden="true"></i></li>';
+                                                                    }
+                                                                }
+                                                                ?>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="review">
+                                                        <div class="review_date">
+                                                            <?php echo date('d M Y', strtotime($review['review_date'])); ?>
+                                                        </div>
+                                                        <div class="user_name">
+                                                            <?php echo htmlspecialchars($review['user_name']); ?>
+                                                        </div>
+                                                        <p>
+                                                            <?php echo htmlspecialchars($review['comment']); ?>
+                                                        </p>
+                                                        <?php if (!empty($review['image'])): ?>
+                                                            <img src="../assets/images/<?php echo htmlspecialchars($review['image']); ?>" alt="Review Image" style="max-width: 100px; margin-top: 10px;">
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <p>Chưa có đánh giá nào.</p>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <!-- Add Review -->
+                                    <div class="col-lg-6 add_review_col">
+                                        <div class="add_review">
+                                            <form id="review_form" action="../includes/review.php" method="POST">
+                                                <input type="text" hidden name="product_id" value="<?= $items['product_id'] ?>">
+                                                <div class="text-left text-sm-right">
+                                                    <button id="review_submit" type="submit"
+                                                        class="red_button review_submit_btn" value="Submit">Review</button>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -349,210 +383,210 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Benefit -->
-        <div class="benefit py-5">
-            <div class="container">
-                <div class="row benefit_row g-4">
-                    <div class="col-lg-3 benefit_col">
-                        <div class="benefit_item d-flex flex-row align-items-center gap-3">
-                            <div class="benefit_icon"><i class="fa fa-truck" aria-hidden="true"></i></div>
-                            <div class="benefit_content">
-                                <h6>Free Shipping</h6>
-                                <p>Free Shipping on Orders Over $50</p>
+            <!-- Benefit -->
+            <div class="benefit py-5">
+                <div class="container">
+                    <div class="row benefit_row g-4">
+                        <div class="col-lg-3 benefit_col">
+                            <div class="benefit_item d-flex flex-row align-items-center gap-3">
+                                <div class="benefit_icon"><i class="fa fa-truck" aria-hidden="true"></i></div>
+                                <div class="benefit_content">
+                                    <h6>Free Shipping</h6>
+                                    <p>Free Shipping on Orders Over $50</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 benefit_col">
-                        <div class="benefit_item d-flex flex-row align-items-center gap-3">
-                            <div class="benefit_icon"><i class="fa fa-money-bill" aria-hidden="true"></i></div>
-                            <div class="benefit_content">
-                                <h6>Cash on Delivery</h6>
-                                <p>Pay After Receiving Your Order</p>
+                        <div class="col-lg-3 benefit_col">
+                            <div class="benefit_item d-flex flex-row align-items-center gap-3">
+                                <div class="benefit_icon"><i class="fa fa-money-bill" aria-hidden="true"></i></div>
+                                <div class="benefit_content">
+                                    <h6>Cash on Delivery</h6>
+                                    <p>Pay After Receiving Your Order</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 benefit_col">
-                        <div class="benefit_item d-flex flex-row align-items-center gap-3">
-                            <div class="benefit_icon"><i class="fa fa-undo" aria-hidden="true"></i></div>
-                            <div class="benefit_content">
-                                <h6>30 Days Return</h6>
-                                <p>Easy Returns Within 30 Days</p>
+                        <div class="col-lg-3 benefit_col">
+                            <div class="benefit_item d-flex flex-row align-items-center gap-3">
+                                <div class="benefit_icon"><i class="fa fa-undo" aria-hidden="true"></i></div>
+                                <div class="benefit_content">
+                                    <h6>30 Days Return</h6>
+                                    <p>Easy Returns Within 30 Days</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 benefit_col">
-                        <div class="benefit_item d-flex flex-row align-items-center gap-3">
-                            <div class="benefit_icon"><i class="fa fa-clock" aria-hidden="true"></i></div>
-                            <div class="benefit_content">
-                                <h6>Support 24/7</h6>
-                                <p>Customer Support Anytime</p>
+                        <div class="col-lg-3 benefit_col">
+                            <div class="benefit_item d-flex flex-row align-items-center gap-3">
+                                <div class="benefit_icon"><i class="fa fa-clock" aria-hidden="true"></i></div>
+                                <div class="benefit_content">
+                                    <h6>Support 24/7</h6>
+                                    <p>Customer Support Anytime</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Newsletter -->
-        <div class="newsletter">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-6 text-lg-start text-center mb-4 mb-lg-0">
-                        <div class="newsletter_text">
-                            <h4>Newsletter</h4>
-                            <p>Subscribe to our newsletter and get 15% off your first tech purchase</p>
+            <!-- Newsletter -->
+            <div class="newsletter">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 text-lg-start text-center mb-4 mb-lg-0">
+                            <div class="newsletter_text">
+                                <h4>Newsletter</h4>
+                                <p>Subscribe to our newsletter and get 15% off your first tech purchase</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <form action="post">
+                                <div
+                                    class="newsletter_form d-flex flex-md-row flex-column align-items-center justify-content-lg-end justify-content-center gap-2">
+                                    <input id="newsletter_email" type="email" class="form-control" placeholder="Your email"
+                                        required="required" data-error="Valid email is required.">
+                                    <button id="newsletter_submit" type="submit" class="newsletter_submit_btn"
+                                        value="Submit">Subscribe</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <form action="post">
-                            <div
-                                class="newsletter_form d-flex flex-md-row flex-column align-items-center justify-content-lg-end justify-content-center gap-2">
-                                <input id="newsletter_email" type="email" class="form-control" placeholder="Your email"
-                                    required="required" data-error="Valid email is required.">
-                                <button id="newsletter_submit" type="submit" class="newsletter_submit_btn"
-                                    value="Submit">Subscribe</button>
-                            </div>
-                        </form>
-                    </div>
                 </div>
             </div>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 text-center text-lg-start">
+                            <ul
+                                class="footer_nav list-unstyled d-flex gap-3 justify-content-center justify-content-lg-start">
+                                <li><a href="#">Blog</a></li>
+                                <li><a href="#">FAQs</a></li>
+                                <li><a href="contact.html">Contact us</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-6 text-center text-lg-end">
+                            <ul
+                                class="footer_social list-unstyled d-flex gap-3 justify-content-center justify-content-lg-end">
+                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                                <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                                <li><a href="#"><i class="fab fa-skype"></i></a></li>
+                                <li><a href="#"><i class="fab fa-pinterest"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="cr mt-4">©2025 All Rights Reserved. Made with <i class="fa fa-heart text-danger"
+                                    aria-hidden="true"></i> by <a href="#"><?php echo var_dump($rev_avg); ?></a></div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-6 text-center text-lg-start">
-                        <ul
-                            class="footer_nav list-unstyled d-flex gap-3 justify-content-center justify-content-lg-start">
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">FAQs</a></li>
-                            <li><a href="contact.html">Contact us</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-6 text-center text-lg-end">
-                        <ul
-                            class="footer_social list-unstyled d-flex gap-3 justify-content-center justify-content-lg-end">
-                            <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-                            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
-                            <li><a href="#"><i class="fab fa-instagram"></i></a></li>
-                            <li><a href="#"><i class="fab fa-skype"></i></a></li>
-                            <li><a href="#"><i class="fab fa-pinterest"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="cr mt-4">©2025 All Rights Reserved. Made with <i class="fa fa-heart text-danger"
-                                aria-hidden="true"></i> by <a href="#">TechGear Team</a></div>
-                    </div>
-                </div>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Bootstrap 5.3.3 JS (includes Popper.js) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
-    <!-- Custom JavaScript -->
-    <script>
-        // Hamburger Menu Toggle
-        document.querySelector('.hamburger_container').addEventListener('click', function() {
-            document.querySelector('.hamburger_menu').classList.add('active');
-            document.querySelector('.fs_menu_overlay').classList.add('active');
-        });
-
-        document.querySelector('.hamburger_close').addEventListener('click', function() {
-            document.querySelector('.hamburger_menu').classList.remove('active');
-            document.querySelector('.fs_menu_overlay').classList.remove('active');
-        });
-
-        document.querySelector('.fs_menu_overlay').addEventListener('click', function() {
-            document.querySelector('.hamburger_menu').classList.remove('active');
-            document.querySelector('.fs_menu_overlay').classList.remove('active');
-        });
-
-        // Thumbnail Image Switch
-        const thumbnails = document.querySelectorAll('.single_product_thumbnails img');
-        const mainImage = document.querySelector('.single_product_image');
-
-        thumbnails.forEach(thumbnail => {
-            thumbnail.addEventListener('click', function() {
-                thumbnails.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                const newImage = this.getAttribute('data-image');
-                mainImage.style.backgroundImage = `url('${newImage}')`;
+        <!-- Bootstrap 5.3.3 JS (includes Popper.js) -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+        </script>
+        <!-- Custom JavaScript -->
+        <script>
+           
+            // Hamburger Menu Toggle
+            document.querySelector('.hamburger_container').addEventListener('click', function() {
+                document.querySelector('.hamburger_menu').classList.add('active');
+                document.querySelector('.fs_menu_overlay').classList.add('active');
             });
-        });
 
-        // Color Selection
-        const colorOptions = document.querySelectorAll('.product_color li');
-        colorOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                colorOptions.forEach(o => o.classList.remove('active'));
-                this.classList.add('active');
+            document.querySelector('.hamburger_close').addEventListener('click', function() {
+                document.querySelector('.hamburger_menu').classList.remove('active');
+                document.querySelector('.fs_menu_overlay').classList.remove('active');
             });
-        });
 
-        // Quantity Selector
-        const quantityValue = document.getElementById('quantity_value');
-        const minusBtn = document.querySelector('.quantity_selector .minus');
-        const plusBtn = document.querySelector('.quantity_selector .plus');
-
-        minusBtn.addEventListener('click', function() {
-            let value = parseInt(quantityValue.textContent);
-            if (value > 1) {
-                quantityValue.textContent = value - 1;
-            }
-        });
-
-        plusBtn.addEventListener('click', function() {
-            let value = parseInt(quantityValue.textContent);
-            quantityValue.textContent = value + 1;
-        });
-
-        // Tabs Functionality
-        const tabs = document.querySelectorAll('.tabs .tab');
-        const tabContents = document.querySelectorAll('.tab_container');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                const targetTab = this.getAttribute('data-active-tab');
-
-                // Remove active class from all tabs and contents
-                tabs.forEach(t => t.classList.remove('active'));
-                tabContents.forEach(content => content.classList.remove('active'));
-
-                // Add active class to clicked tab and corresponding content
-                this.classList.add('active');
-                document.getElementById(targetTab).classList.add('active');
+            document.querySelector('.fs_menu_overlay').addEventListener('click', function() {
+                document.querySelector('.hamburger_menu').classList.remove('active');
+                document.querySelector('.fs_menu_overlay').classList.remove('active');
             });
-        });
-    </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggles = document.querySelectorAll('.description-toggle');
+            // Thumbnail Image Switch
+            const thumbnails = document.querySelectorAll('.single_product_thumbnails img');
+            const mainImage = document.querySelector('.single_product_image');
 
-            toggles.forEach(button => {
-                const desc = button.previousElementSibling;
-
-                // Hide button if content is short
-                if (desc.scrollHeight <= desc.clientHeight) {
-                    button.style.display = 'none';
-                }
-
-                button.addEventListener('click', function() {
-                    const isExpanded = desc.classList.contains('expanded');
-                    desc.classList.toggle('expanded');
-                    this.textContent = isExpanded ? 'Xem thêm' : 'Thu gọn';
+            thumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', function() {
+                    thumbnails.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    const newImage = this.getAttribute('data-image');
+                    mainImage.style.backgroundImage = `url('${newImage}')`;
                 });
             });
-        });
-    </script>
+
+            // Color Selection
+            const colorOptions = document.querySelectorAll('.product_color li');
+            colorOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    colorOptions.forEach(o => o.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Quantity Selector
+            const quantityValue = document.getElementById('quantity_value');
+            const minusBtn = document.querySelector('.quantity_selector .minus');
+            const plusBtn = document.querySelector('.quantity_selector .plus');
+
+            minusBtn.addEventListener('click', function() {
+                let value = parseInt(quantityValue.textContent);
+                if (value > 1) {
+                    quantityValue.textContent = value - 1;
+                }
+            });
+
+            plusBtn.addEventListener('click', function() {
+                let value = parseInt(quantityValue.textContent);
+                quantityValue.textContent = value + 1;
+            });
+
+            // Tabs Functionality
+            const tabs = document.querySelectorAll('.tabs .tab');
+            const tabContents = document.querySelectorAll('.tab_container');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-active-tab');
+
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add active class to clicked tab and corresponding content
+                    this.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+        </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const toggles = document.querySelectorAll('.description-toggle');
+
+                toggles.forEach(button => {
+                    const desc = button.previousElementSibling;
+
+                    // Hide button if content is short
+                    if (desc.scrollHeight <= desc.clientHeight) {
+                        button.style.display = 'none';
+                    }
+
+                    button.addEventListener('click', function() {
+                        const isExpanded = desc.classList.contains('expanded');
+                        desc.classList.toggle('expanded');
+                        this.textContent = isExpanded ? 'Xem thêm' : 'Thu gọn';
+                    });
+                });
+            });
+        </script>
 
 
 
