@@ -1,0 +1,30 @@
+[
+    {
+      "name": "Hà Nội",
+      "code": "hanoi",
+      "districts": [
+        {
+          "name": "Ba Đình",
+          "code": "ba_dinh",
+          "wards": ["Phúc Xá", "Trúc Bạch", "Vĩnh Phúc"]
+        },
+        {
+          "name": "Hoàn Kiếm",
+          "code": "hoan_kiem",
+          "wards": ["Chương Dương", "Cửa Đông", "Đồng Xuân"]
+        }
+      ]
+    },
+    {
+      "name": "Hồ Chí Minh",
+      "code": "hcm",
+      "districts": [
+        {
+          "name": "Quận 1",
+          "code": "quan_1",
+          "wards": ["Bến Nghé", "Bến Thành", "Nguyễn Thái Bình"]
+        }
+      ]
+    }
+  ]
+  

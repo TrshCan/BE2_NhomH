@@ -11,21 +11,18 @@ $user = $userDB->getUser($email);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Thanh Toán</title>
-    <!-- Custom CSS -->
     <link href="../assets/styles/checkout.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
     <div class="container checkout-container my-5">
         <a href="cart.php" class="btn btn-link mb-3">← Quay lại giỏ hàng</a>
         <h2 class="text-center mb-4 text-primary">Thanh Toán</h2>
         <?php
-        // Calculate totals from cart
         $subtotal = 0;
         if (!empty($_SESSION['cart'])) {
             foreach ($_SESSION['cart'] as $id => $items) {
@@ -33,7 +30,7 @@ $user = $userDB->getUser($email);
                 $subtotal += $item['price'] * $items['quantity'];
             }
         }
-        $total = $subtotal; // Adjusted by coupon in JS
+        $total = $subtotal;
         ?>
         <?php if (empty($_SESSION['cart'])): ?>
         <div class="alert alert-warning text-center" role="alert">
@@ -41,35 +38,32 @@ $user = $userDB->getUser($email);
         </div>
         <?php else: ?>
         <div class="row">
-            <!-- Thông Tin Giao Hàng (Left Column) -->
             <div class="col-lg-8">
                 <div class="card card-custom p-4 mb-4">
                     <h4 class="mb-4">Thông Tin Giao Hàng</h4>
                     <form method="POST" action="../includes/process_checkout.php" id="checkout-form">
                         <div class="row g-3">
-                            <input type="text" class="form-control" id="id" name="id" value="<?= $user['user_id'] ?>"
-                                hidden>
+                            <input type="text" class="form-control" id="id" name="id" value="<?= $user['user_id'] ?>" hidden>
                             <div class="col-md-6">
                                 <label for="firstName" class="form-label">Họ</label>
-                                <input type="text" class="form-control" id="firstName" name="first_name" required>
+                                <input type="text" class="form-control" id="firstName" name="first_name" value="<?= $user['full_name'] ?>" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="lastName" class="form-label">Tên</label>
-                                <input type="text" class="form-control" id="lastName" name="last_name" required>
+                                <input type="text" class="form-control" id="lastName" name="last_name" value="<?= $user['full_name'] ?>" required>
                             </div>
                             <div class="col-12">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <input type="email" class="form-control" id="email" name="email" value="<?= $user['email'] ?>" required>
                             </div>
                             <div class="col-12">
                                 <label for="address" class="form-label">Địa Chỉ</label>
-                                <input type="text" class="form-control" id="address" name="address" required>
+                                <input type="text" class="form-control" id="address" name="address" value="<?= $user['address'] ?>" required>
                             </div>
                             <div class="col-12">
                                 <label for="phone" class="form-label">Số Điện Thoại</label>
-                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="<?= $user['phone'] ?>" required>
                             </div>
-                            <!-- Split into three dropdowns -->
                             <div class="col-md-4">
                                 <label for="province" class="form-label">Tỉnh/Thành phố</label>
                                 <select class="form-select" id="province" name="province" required>
@@ -89,23 +83,19 @@ $user = $userDB->getUser($email);
                                 </select>
                             </div>
                         </div>
-
                         <h4 class="mt-4 mb-3">Phương Thức Thanh Toán</h4>
                         <div class="row g-3">
                             <div class="col-12">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="payment" id="cod" value="cod"
-                                        checked>
+                                    <input class="form-check-input" type="radio" name="payment" id="cod" value="cod" checked>
                                     <label class="form-check-label" for="cod">Thanh Toán Khi Nhận Hàng (COD)</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="payment" id="bank" value="bank">
-                                    <label class="form-check-label" for="bank">Thẻ Ngân Hàng/ATM/Visa/Master/JCB/QR
-                                        Code</label>
+                                    <label class="form-check-label" for="bank">Thẻ Ngân Hàng/ATM/Visa/Master/JCB/QR Code</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="payment" id="e-wallet"
-                                        value="e-wallet">
+                                    <input class="form-check-input" type="radio" name="payment" id="e-wallet" value="e-wallet">
                                     <label class="form-check-label" for="e-wallet">Ví Điện Tử (PayPal, etc.)</label>
                                 </div>
                             </div>
@@ -115,54 +105,67 @@ $user = $userDB->getUser($email);
                                 </div>
                             </div>
                         </div>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Tóm Tắt Đơn Hàng (Right Column) -->
-            <div class="col-lg-4">
-                <div class="card card-custom p-4">
-                    <h4 class="mb-4">Tóm Tắt Đơn Hàng</h4>
-                    <?php foreach ($_SESSION['cart'] as $id => $items):
+                <div class="col-lg-4">
+                    <div class="card card-custom p-4">
+                        <h4 class="mb-4">Tóm Tắt Đơn Hàng</h4>
+                        <?php foreach ($_SESSION['cart'] as $id => $items):
                             $item = $products->getProductById_1item($id) ?>
-                    <div class="summary-item d-flex justify-content-between align-items-center">
-                        <div class="summary-item-content">
-                            <img src="../assets/images/<?php echo $item['image_url']; ?>"
-                                alt="<?php echo $item['product_name']; ?>" class="product-img">
-                            <span><?php echo $item['product_name']; ?></span>
+                        <div class="summary-item d-flex justify-content-between align-items-center">
+                            <div class="summary-item-content">
+                                <img src="../assets/images/<?php echo $item['image_url']; ?>" alt="<?php echo $item['product_name']; ?>" class="product-img">
+                                <span><?php echo $item['product_name']; ?></span>
+                            </div>
+                            <span class="summary-item-price"><?php echo $item['price'] * $items['quantity'] . 'đ'; ?></span>
                         </div>
-                        <span class="summary-item-price"><?php echo $item['price'] * $items['quantity'] . 'đ'; ?></span>
-                    </div>
-                    <?php endforeach; ?>
-                    <div class="coupon-section">
-                        <input type="text" class="form-control" id="coupon-code" name="coupon_code"
-                            placeholder="Nhập mã giảm giá">
-                        <button type="button" class="btn btn-coupon btn-sm text-white" onclick="applyCoupon()">Áp
-                            Dụng</button>
-                    </div>
-                    <hr>
-                    <div class="summary-item d-flex justify-content-between">
-                        <span>Tạm Tính</span>
-                        <span id="subtotal"><?php echo $subtotal . 'đ'; ?></span>
-                    </div>
-                    <div class="summary-item d-flex justify-content-between">
-                        <span>Giảm Giá Mã Coupon</span>
-                        <span id="coupon-discount">0đ</span>
-                        <input type="hidden" id="discount-amount" name="discount" value="0">
-                    </div>
-                    <div class="summary-item d-flex justify-content-between fw-bold">
-                        <span>Tổng Cộng</span>
-                        <span id="total"><?php echo $total . 'đ'; ?></span>
-                        <input type="hidden" id="total-amount" name="total" value="<?php echo $total; ?>">
-                    </div>
-                    <button type="submit" class="btn btn-custom btn-lg w-100 mt-4">Đặt Hàng</button>
-                    </form> <!-- Closing form tag here -->
+                        <?php endforeach; ?>
+                        <div class="coupon-section">
+                            <input type="text" class="form-control" id="coupon-code" name="coupon_code" placeholder="Nhập mã giảm giá">
+                            <button type="button" class="btn btn-coupon btn-sm text-white" onclick="applyCoupon()">Áp Dụng</button>
+                        </div>
+                        <hr>
+                        <div class="summary-item d-flex justify-content-between">
+                            <span>Tạm Tính</span>
+                            <span id="subtotal"><?php echo $subtotal . 'đ'; ?></span>
+                        </div>
+                        <div class="summary-item d-flex justify-content-between">
+                            <span>Giảm Giá Mã Coupon</span>
+                            <span id="coupon-discount">0đ</span>
+                            <input type="hidden" id="discount-amount" name="discount" value="0">
+                        </div>
+                        <div class="summary-item d-flex justify-content-between fw-bold">
+                            <span>Tổng Cộng</span>
+                            <span id="total"><?php echo $total . 'đ'; ?></span>
+                            <input type="hidden" id="total-amount" name="total" value="<?php echo $total; ?>">
+                        </div>
+                        <button type="submit" class="btn btn-custom btn-lg w-100 mt-4">Đặt Hàng</button>
+                    </form>
                 </div>
             </div>
         </div>
         <?php endif; ?>
+
+        <!-- Success Modal -->
+        <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="successModalLabel">Đặt Hàng Thành Công!</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cảm ơn bạn đã mua sắm! Đơn hàng của bạn đã được ghi nhận.</p>
+                        <p><a href="../includes/generate_bill.php?order_id=<?php echo isset($_SESSION['order_id']) ? htmlspecialchars($_SESSION['order_id']) : ''; ?>" class="btn btn-primary" target="_blank">Xem Hóa Đơn</a></p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="../../index.php" class="btn btn-secondary">Về Trang Chủ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     function applyCoupon() {
@@ -170,32 +173,35 @@ $user = $userDB->getUser($email);
         const subtotalElement = document.getElementById('subtotal');
         const couponDiscountElement = document.getElementById('coupon-discount');
         const totalElement = document.getElementById('total');
-        let subtotal = 14499000; // Base subtotal in VND (14,499,000₫)
+        let subtotal = <?php echo $subtotal; ?>;
 
         let discount = 0;
-        // Example coupon logic (you can expand this)
         if (couponCode.toUpperCase() === 'SAVE10') {
-            discount = subtotal * 0.1; // 10% discount
+            discount = subtotal * 0.1;
             alert('Mã giảm giá áp dụng thành công! Bạn được giảm 10%.');
         } else if (couponCode !== '') {
             alert('Mã giảm giá không hợp lệ.');
         }
 
-        // Update totals
-        couponDiscountElement.innerText = discount.toLocaleString() + '₫';
+        couponDiscountElement.innerText = discount.toLocaleString() + 'đ';
         const total = subtotal - discount;
-        totalElement.innerText = total.toLocaleString() + '₫';
+        totalElement.innerText = total.toLocaleString() + 'đ';
+        document.getElementById('discount-amount').value = discount;
+        document.getElementById('total-amount').value = total;
     }
-    </script>
-    <script>
-    document.addEventListener("DOMContentLoaded", async function() {
+
+    document.addEventListener("DOMContentLoaded", function() {
+        <?php if (isset($_SESSION['checkout_success']) && $_SESSION['checkout_success']): ?>
+        var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        successModal.show();
+        <?php unset($_SESSION['checkout_success']); ?>
+        <?php endif; ?>
+
         const provinceSelect = document.getElementById("province");
         const districtSelect = document.getElementById("district");
         const wardSelect = document.getElementById("ward");
 
         let locationData = [];
-
-        // Load JSON data
         async function loadLocationData() {
             try {
                 const response = await fetch("../assets/nested-divisions.json");
@@ -206,7 +212,6 @@ $user = $userDB->getUser($email);
             }
         }
 
-        // Populate Province Dropdown
         function populateProvinces() {
             provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
             locationData.forEach(province => {
@@ -217,7 +222,6 @@ $user = $userDB->getUser($email);
             });
         }
 
-        // Populate Districts based on selected Province
         function populateDistricts(provinceCode) {
             districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
             wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
@@ -238,7 +242,6 @@ $user = $userDB->getUser($email);
             }
         }
 
-        // Populate Wards based on selected District
         function populateWards(districtCode, provinceCode) {
             wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
             wardSelect.disabled = true;
@@ -259,7 +262,6 @@ $user = $userDB->getUser($email);
             }
         }
 
-        // Event Listeners
         provinceSelect.addEventListener("change", function() {
             populateDistricts(this.value);
         });
@@ -268,11 +270,8 @@ $user = $userDB->getUser($email);
             populateWards(this.value, provinceSelect.value);
         });
 
-        // Initialize data
         loadLocationData();
     });
     </script>
-
 </body>
-
 </html>

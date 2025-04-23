@@ -21,7 +21,7 @@ if (isset($_GET['id']) || isset($_GET['action'])) {
             $_SESSION['cart'][$product_id]['quantity'] += $quantity;
         } else {
             // Fetch product details and add new item to cart
-            $product = $productModel->getProductById($product_id);
+            $product = $productModel->getProductById_1item($product_id);
             if ($product) {
                 $_SESSION['cart'][$product_id] = [
                     'name' => $product['name'],

@@ -21,6 +21,8 @@ if (!empty($_SESSION['cart'])) {
         $ammount += $items['quantity'];
     }
 }
+// Check login status
+$isLoggedIn = isset($_SESSION['isLoggedIn']) && $_SESSION['isLoggedIn'] === true;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -37,7 +39,6 @@ if (!empty($_SESSION['cart'])) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"
         type="text/css">
     <link rel="stylesheet" type="text/css" href="public/assets/plugins/OwlCarousel2-2.2.1/owl.carousel.css">
-
     <link rel="stylesheet" type="text/css" href="../assets/styles/main_styles.css">
     <link rel="stylesheet" type="text/css" href="../assets/styles/cart.css">
 </head>
@@ -150,61 +151,63 @@ if (!empty($_SESSION['cart'])) {
         </div>
         <div class="d-flex justify-content-end gap-3">
             <a href="#" onclick="confirmDeleteAll()" class="btn btn-warning">Xóa Tất Cả</a>
-            <a href="checkout.php" class="btn btn-primary checkout-btn">Thanh Toán</a>
+            <button onclick="checkLoginStatus()" class="btn btn-primary checkout-btn">Thanh Toán</button>
         </div>
         <?php endif; ?>
     </main>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Yêu Cầu Đăng Nhập</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn cần đăng nhập để tiếp tục thanh toán. Vui lòng đăng nhập vào tài khoản của bạn.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <a href="login.php" class="btn btn-primary">Đăng Nhập</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-dark text-white text-center py-3 mt-4">
         <p>© 2025 Website Bán Hàng. All rights reserved.</p>
     </footer>
 
-    <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
     <script>
-    function confirmDelete(id) {
-        if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng không?")) {
-            window.location.href = "../includes/cart_crud.php?action=delete&id=" + id;
-        }
-    }
+        // Pass PHP login status to JavaScript
+        const isLoggedIn = <?php echo json_encode($isLoggedIn); ?>;
 
-    function confirmDeleteAll() {
-        if (confirm("Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng không?")) {
-            window.location.href = "../includes/cart_crud.php?action=deleteall";
-        }
-    }
-
-    function updateQuantity(input) {
-        const newQuantity = parseInt(input.value);
-        const productId = input.getAttribute('data-id');
-
-        if (isNaN(newQuantity) || newQuantity < 1) {
-            alert("Số lượng phải lớn hơn hoặc bằng 1.");
-            input.value = 1;
-            return;
+        function checkLoginStatus() {
+            if (isLoggedIn) {
+                window.location.href = 'checkout.php';
+            } else {
+                const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                loginModal.show();
+            }
         }
 
-        // Send the update to the server
-        fetch('../includes/cart_crud.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `action=update&id=${productId}&quantity=${newQuantity}`
-            })
-            .then(response => response.text())
-            .then(data => {
-                // Optionally log the response
-                // console.log(data);
-                location.reload(); // reload page to update total
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
+        function confirmDelete(id) {
+            if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng không?")) {
+                window.location.href = "../includes/cart_crud.php?action=delete&id=" + id;
+            }
+        }
+
+        function confirmDeleteAll() {
+            if (confirm("Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng không?")) {
+                window.location.href = "../includes/cart_crud.php?action=deleteall";
+            }
+        }
     </script>
-
 </body>
 
 </html>

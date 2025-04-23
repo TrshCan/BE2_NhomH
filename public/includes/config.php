@@ -1,5 +1,5 @@
 <?php
-$base_url = '/nhomh/public/';
+$base_url = '/Repositories/BE2_NhomH/public/';
 ?>
 
 <?php

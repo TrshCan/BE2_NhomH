@@ -4,7 +4,7 @@ include_once '../includes/header.php';
 require_once '../includes/User_Database.php';
 $userDb = new User_Database();
 $success = '';
-
+$_SESSION['isLoggedIn'] = false;
 if (isset($_POST['login'])) {
     $email = trim($_POST['email']);
     $password = $_POST['password'];
@@ -23,7 +23,8 @@ if (isset($_POST['login'])) {
                 $_SESSION['full_name'] = $user['full_name'];
                 $_SESSION['role'] = $user['role'];
                 $_SESSION['email'] = $email;
-                header('Location: ../../../index.php');
+                $_SESSION['isLoggedIn'] =  true;
+                header('Location: ../../index.php');
                 exit;
             } else {
                 $error = 'Sai Mật Khẩu';
