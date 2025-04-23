@@ -41,7 +41,7 @@ include_once "public/includes/hotline.php";
             <i class="fas fa-comment-dots"></i>
         </div>
 
-    </div> v
+    </div> 
     <div class="super_container">
 
         <!-- Header -->
@@ -643,17 +643,34 @@ include_once "public/includes/hotline.php";
     <script src="public/assets/js/custom.js"></script>
 
     <iframe id="chatWidget" src="public/includes/livechat_user.php"
-        style="display: none; position: fixed; bottom: 90px; right: 20px; width: 320px; height: 500px; border: none; z-index: 9999; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
-    </iframe>
+    style="display: none; position: fixed; bottom: 90px; right: 20px; width: 320px; height: 500px; border: none; z-index: 9999; border-radius: 12px">
+</iframe>
 
-    <script>
+<script>
+    // Pass the PHP session variable to JavaScript
+    <?php
+    if(!isset($_SESSION['role'])) {
+        $_SESSION['role'] = ''; // Default to 'user' if not set
+    }
+    ?>
+    const role = "<?= $_SESSION['role'] ?>";
+
     const toggleBtn = document.getElementById('toggleChat');
     const chatWidget = document.getElementById('chatWidget');
 
-    toggleBtn.addEventListener('click', () => {
-        chatWidget.style.display = chatWidget.style.display === 'none' ? 'block' : 'none';
-    });
-    </script>
+    toggleBtn.onclick = function() {
+        if (role === 'admin') {
+            // Redirect to the admin chat page
+            window.location.href = 'public/includes/livechat.php';
+        } else if (role === 'user') {
+            // Toggle the chat widget visibility
+            chatWidget.style.display = (chatWidget.style.display === 'none') ? 'block' : 'none';
+        }else {
+            alert('Chỉ người dùng mới có thể sử dụng tính năng này!');
+        }
+    };
+</script>
+
 
 
 </body>

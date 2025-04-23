@@ -23,7 +23,8 @@ $role = $_SESSION['role'];
         position: fixed;
         bottom: 20px;
         right: 20px;
-        width: 300px;
+        width: 80%;
+        height: 80%;
         max-height: 450px;
         background-color: #fff;
         border: 1px solid #ccc;
@@ -112,13 +113,11 @@ $role = $_SESSION['role'];
     <div class="chat-widget" id="chat-widget">
         <div class="chat-header">
             <span class="chat-title" id="chat-title">Live Chat</span>
-            <span class="close-chat" onclick="document.getElementById('chat-widget').style.display='none'">✕</span>
+            <!-- <span class="close-chat" onclick="document.getElementById('chatWidget').style.display='none'">✕</span> -->
         </div>
         <div class="chat-body" id="chat-body">
+           
             <div class="message customer">
-                <div class="message-bubble">Hi there!</div>
-            </div>
-            <div class="message agent">
                 <div class="message-bubble">Hello! How can I help you?</div>
             </div>
         </div>
@@ -133,7 +132,7 @@ $role = $_SESSION['role'];
     let selectedUserId = <?= $role !== 'admin' ? '5' : 'null' ?>;
     const title = document.getElementById('chat-title');
 
-    if (selectedUserId === 4) {
+    if (selectedUserId == 4) {
         title.textContent = 'Chat with Admin';
     }
 

@@ -7,8 +7,13 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
+
+
 $role = $_SESSION['role'];
+if ($role == 'admin') {
+    $user_id = 5;
+    $_SESSION['user_id'] = $user_id;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,8 +56,8 @@ $role = $_SESSION['role'];
                 <div class="chat-title" id="title chat-title">
                     Chọn người dùng để chat
                 </div>
-                <div id="chat-body"></div>
             </div>
+            <div id="chat-body"></div>
             <div class="chat-input">
                 <input id="messageInput" type="text" placeholder="Type a message...">
                 <button onclick="sendMessage()">Send</button>
@@ -64,15 +69,6 @@ $role = $_SESSION['role'];
         const userId = <?= json_encode($user_id) ?>;
         let selectedUserId = null;
         const title = document.querySelector('.chat-title');
-
-
-        <?php
-            if ($role != 'admin') {
-            ?>
-        selectedUserId = 4;
-        title.textContent = 'Chat with Admin';
-        <?php } ?>
-
         function loadUserList() {
             fetch('get_user_list.php')
                 .then(response => response.json())
@@ -172,9 +168,9 @@ $role = $_SESSION['role'];
 
         document.addEventListener('DOMContentLoaded', () => {
             loadUserList();
-            setInterval(loadMessages, 500);
+            setInterval(loadMessages, 2500);
         });
-        setInterval(loadUserList, 500);
+        setInterval(loadUserList, 2000);
         </script>
 </body>
 
