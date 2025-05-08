@@ -1,0 +1,273 @@
+@extends('layouts.nav')
+
+@section('content')
+<div class="container checkout-container my-5">
+    <a href="{{ route('cart.index') }}" class="btn btn-link mb-3">← Quay lại giỏ hàng</a>
+    <h2 class="text-center mb-4 text-primary">Thanh Toán</h2>
+
+    @if (empty(session('cart')))
+        @php
+            return redirect()->route('cart.index');
+        @endphp
+    @else
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card card-custom p-4 mb-4">
+                    <h4 class="mb-4">Thông Tin Giao Hàng</h4>
+                    <form method="POST" action="{{ url('process_checkout') }}" id="checkout-form">
+                        @csrf
+                        <div class="row g-3">
+                            <input type="text" class="form-control" id="id" name="id" value="{{ auth()->user()->id }}" hidden>
+                            <div class="col-md-6">
+                                <label for="firstName" class="form-label">Họ</label>
+                                <input type="text" class="form-control" id="firstName" name="first_name" value="{{ auth()->user()->full_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="lastName" class="form-label">Tên</label>
+                                <input type="text" class="form-control" id="lastName" name="last_name" value="{{ auth()->user()->full_name }}" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ auth()->user()->email }}" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="address" class="form-label">Địa Chỉ</label>
+                                <input type="text" class="form-control" id="address" name="address" value="{{ auth()->user()->address }}" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="phone" class="form-label">Số Điện Thoại</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ auth()->user()->phone }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="province" class="form-label">Tỉnh/Thành phố</label>
+                                <select class="form-select" id="province" name="province" required>
+                                    <option value="">Chọn tỉnh/thành phố</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="district" class="form-label">Quận/Huyện</label>
+                                <select class="form-select" id="district" name="district" required disabled>
+                                    <option value="">Chọn quận/huyện</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="ward" class="form-label">Phường/Xã</label>
+                                <select class="form-select" id="ward" name="ward" required disabled>
+                                    <option value="">Chọn phường/xã</option>
+                                </select>
+                            </div>
+                        </div>
+                        <h4 class="mt-4 mb-3">Phương Thức Thanh Toán</h4>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="payment" id="cod" value="cod" checked>
+                                    <label class="form-check-label" for="cod">Thanh Toán Khi Nhận Hàng (COD)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="payment" id="bank" value="bank">
+                                    <label class="form-check-label" for="bank">Thẻ Ngân Hàng/ATM/Visa/Master/JCB/QR Code</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="payment" id="e-wallet" value="e-wallet">
+                                    <label class="form-check-label" for="e-wallet">Ví Điện Tử (PayPal, etc.)</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="alert alert-warning alert-custom mt-3" role="alert">
+                                    Lưu ý: Vui lòng kiểm tra kỹ địa chỉ giao hàng trước khi đặt hàng.
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card card-custom p-4">
+                    <h4 class="mb-4">Tóm Tắt Đơn Hàng</h4>
+                    @php
+                        $subtotal = 0;
+                        foreach (session('cart') as $id => $items) {
+                            $item = \App\Models\Product::find($id);
+                            $subtotal += $item->price * $items['quantity'];
+                        }
+                        $total = $subtotal;
+                    @endphp
+                    @foreach (session('cart') as $id => $items)
+                        @php
+                            $item = \App\Models\Product::find($id);
+                        @endphp
+                        <div class="summary-item d-flex justify-content-between align-items-center">
+                            <div class="summary-item-content">
+                                <img src="{{ asset('assets/images/' . $item->image_url) }}" alt="{{ $item->product_name }}" class="product-img">
+                                <span>{{ $item->product_name }}</span>
+                            </div>
+                            <span class="summary-item-price">{{ number_format($item->price * $items['quantity']) . 'đ' }}</span>
+                        </div>
+                    @endforeach
+                    <div class="coupon-section">
+                        <input type="text" class="form-control" id="coupon-code" name="coupon_code" placeholder="Nhập mã giảm giá">
+                        <button type="button" class="btn btn-coupon btn-sm text-white" onclick="applyCoupon()">Áp Dụng</button>
+                    </div>
+                    <hr>
+                    <div class="summary-item d-flex justify-content-between">
+                        <span>Tạm Tính</span>
+                        <span id="subtotal">{{ number_format($subtotal) . 'đ' }}</span>
+                    </div>
+                    <div class="summary-item d-flex justify-content-between">
+                        <span>Giảm Giá Mã Coupon</span>
+                        <span id="coupon-discount">0đ</span>
+                        <input type="hidden" id="discount-amount" name="discount" value="0">
+                    </div>
+                    <div class="summary-item d-flex justify-content-between fw-bold">
+                        <span>Tổng Cộng</span>
+                        <span id="total">{{ number_format($total) . 'đ' }}</span>
+                        <input type="hidden" id="total-amount" name="total" value="{{ $total }}">
+                    </div>
+                    <button type="submit" form="checkout-form" class="btn btn-custom btn-lg w-100 mt-4">Đặt Hàng</button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Đặt Hàng Thành Công!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Cảm ơn bạn đã mua sắm! Đơn hàng của bạn đã được ghi nhận.</p>
+                    <p><a href="{{ url('generate_bill') }}?order_id={{ session('order_id', '') }}" class="btn btn-primary" target="_blank">Xem Hóa Đơn</a></p>
+                </div>
+                <div class="modal-footer">
+                    <a href="{{ url('/') }}" class="btn btn-secondary">Về Trang Chủ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Pass server-side session data to JavaScript
+    const checkoutSuccess = {{ session('checkout_success') ? 'true' : 'false' }};
+
+    function applyCoupon() {
+        const couponCode = document.getElementById('coupon-code').value.trim();
+        const subtotalElement = document.getElementById('subtotal');
+        const couponDiscountElement = document.getElementById('coupon-discount');
+        const totalElement = document.getElementById('total');
+        let subtotal = {{ $subtotal }};
+
+        let discount = 0;
+        if (couponCode.toUpperCase() === 'SAVE10') {
+            discount = subtotal * 0.1;
+            alert('Mã giảm giá áp dụng thành công! Bạn được giảm 10%.');
+        } else if (couponCode !== '') {
+            alert('Mã giảm giá không hợp lệ.');
+        }
+
+        couponDiscountElement.innerText = discount.toLocaleString() + 'đ';
+        const total = subtotal - discount;
+        totalElement.innerText = total.toLocaleString() + 'đ';
+        document.getElementById('discount-amount').value = discount;
+        document.getElementById('total-amount').value = total;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Show success modal if checkout was successful
+        if (checkoutSuccess) {
+            var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+            // Clear the session variable via an AJAX call or form submission
+            fetch(`{{ route('clear_checkout_success') }}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            }).then(response => response.json())
+              .then(data => console.log('Session cleared:', data))
+              .catch(error => console.error('Error clearing session:', error));
+        }
+
+        const provinceSelect = document.getElementById("province");
+        const districtSelect = document.getElementById("district");
+        const wardSelect = document.getElementById("ward");
+
+        let locationData = [];
+        async function loadLocationData() {
+            try {
+                const response = await fetch("{{ asset('assets/nested-divisions.json') }}");
+                locationData = await response.json();
+                populateProvinces();
+            } catch (error) {
+                console.error("Error loading JSON:", error);
+            }
+        }
+
+        function populateProvinces() {
+            provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
+            locationData.forEach(province => {
+                const option = document.createElement("option");
+                option.value = province.code;
+                option.textContent = province.name;
+                provinceSelect.appendChild(option);
+            });
+        }
+
+        function populateDistricts(provinceCode) {
+            districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+            wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+            districtSelect.disabled = true;
+            wardSelect.disabled = true;
+
+            if (!provinceCode) return;
+
+            const selectedProvince = locationData.find(p => p.code == provinceCode);
+            if (selectedProvince && selectedProvince.districts) {
+                districtSelect.disabled = false;
+                selectedProvince.districts.forEach(district => {
+                    const option = document.createElement("option");
+                    option.value = district.code;
+                    option.textContent = district.name;
+                    districtSelect.appendChild(option);
+                });
+            }
+        }
+
+        function populateWards(districtCode, provinceCode) {
+            wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+            wardSelect.disabled = true;
+
+            if (!districtCode || !provinceCode) return;
+
+            const selectedProvince = locationData.find(p => p.code == provinceCode);
+            const selectedDistrict = selectedProvince?.districts.find(d => d.code == districtCode);
+
+            if (selectedDistrict && selectedDistrict.wards) {
+                wardSelect.disabled = false;
+                selectedDistrict.wards.forEach(ward => {
+                    const option = document.createElement("option");
+                    option.value = ward.code;
+                    option.textContent = ward.name;
+                    wardSelect.appendChild(option);
+                });
+            }
+        }
+
+        provinceSelect.addEventListener("change", function() {
+            populateDistricts(this.value);
+        });
+
+        districtSelect.addEventListener("change", function() {
+            populateWards(this.value, provinceSelect.value);
+        });
+
+        loadLocationData();
+    });
+</script>
+@endsection

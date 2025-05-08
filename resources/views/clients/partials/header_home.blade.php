@@ -23,7 +23,7 @@
                                                 aria-hidden="true"></i></button>
                                     </div>
                                     <div class="checkout">
-                                        <a href="public/pages/cart.php">
+                                        <a href="{{ route('cart.cart') }}">
                                             <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                                             <span id="checkout_items" class="checkout_items">0</span>
                                         </a>
