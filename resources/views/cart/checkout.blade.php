@@ -151,7 +151,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
+<!-- <script>
     // Pass server-side session data to JavaScript
     const checkoutSuccess = {{ session('checkout_success') ? 'true' : 'false' }};
 
@@ -269,5 +269,5 @@
 
         loadLocationData();
     });
-</script>
+</script> -->
 @endsection

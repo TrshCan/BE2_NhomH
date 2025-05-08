@@ -26,10 +26,11 @@ class Cart extends Model
     /**
      * Get the products in the cart.  This uses BelongsToMany because of the pivot table.
      */
-    public function products(): BelongsToMany
+
+    public function products()
     {
-        return $this->belongsToMany(Product::class, 'cart_product') // Specify the pivot table name
-                    ->withTimestamps(); // If your pivot table has created_at and updated_at
+        return $this->belongsToMany(Product::class, 'cart_product', 'cart_id', 'product_id')
+            ->withPivot('quantity')
+            ->withTimestamps();
     }
 }
-

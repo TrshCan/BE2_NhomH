@@ -2,100 +2,74 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Cart;
 use App\Models\Product;
-use Illuminate\Container\Attributes\Auth;
-use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
-    public function addToCart(Request $request, $id)
+    public function addToCart(Request $request, $productId)
     {
-        // $userId = \Illuminate\Support\Facades\Auth::id();
-        $userId = 1;
-        $product = Product::findOrFail($id);
+        // TEMP: hardcoded user ID until auth is done
+        $userId = 2;
 
         // Get or create the user's cart
-        $cart = \App\Models\Cart::firstOrCreate(['user_id' => $userId]);
+        $cart = Cart::firstOrCreate(['user_id' => $userId]);
 
-        // Add the product to the cart using the relationship
-        $cart->products()->attach($product->id, [
-            'quantity' => \Illuminate\Support\Facades\DB::raw('quantity + 1'),
-        ]);
+        // Ensure product exists
+        $product = Product::findOrFail($productId);
 
-        // Get the updated quantity
-        $quantity = $cart->products()->where('products.id', $product->id)->first()->pivot->quantity;
+        // Check if product is already in the cart
+        $existing = $cart->products()->where('products.product_id', $productId)->first();
 
-        return response()->json([
-            'message' => 'Product added to cart!',
-            'product' => $product->name,
-            'quantity' => $quantity,
-        ]);
-    }
-
-    public function index(Request $request)
-    {
-        // Fetch cart data from the session.  This is simpler, but doesn't persist across logins.
-        $cart = session('cart', []);
-
-        // Get product details from the database based on the IDs in the cart.
-        $products = Product::whereIn('id', array_keys($cart))->get()->keyBy('id');
-
-        // Calculate the total price and quantity of items in the cart.
-        $total = 0;
-        $amount = 0;
-
-        foreach ($cart as $id => $item) {
-            if (isset($products[$id])) {
-                $total += $products[$id]->price * $item['quantity'];
-                $amount += $item['quantity'];
-            }
+        if ($existing) {
+            // Update quantity
+            $cart->products()->updateExistingPivot($productId, [
+                'quantity' => $existing->pivot->quantity + 1,
+                'updated_at' => now(), // ensure timestamps are updated
+            ]);
+        } else {
+            // Add new product to cart (Ensure cart_id is set)
+            $cart->products()->attach($productId, [
+                'cart_id' => 2,  // Ensure cart_id is set manually
+                'quantity' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
 
-        $isLoggedIn = false; //  We are NOT checking for login
-
-        // Pass the data to the view.
-        return view('cart.cart', compact('cart', 'products', 'total', 'amount', 'isLoggedIn'));
+        // Redirect back to the cart page after adding to the cart
+        return redirect()->route('products.home')->with('success', 'Product added to cart');
     }
 
-    // public function index(Request $request)
-    // {
-    //     // Check if the user is logged in
-    //     if (!\Illuminate\Support\Facades\Auth::check()) { // Corrected line
-    //         // Redirect to the login page if the user is not logged in
-    //         return redirect()->route('products.home'); //  Make sure 'login' is your login route name
-    //     }
+    public function index()
+    {
+        // Fetch the cart and related products for the logged-in user (or hardcoded user_id 2 for now)
+        $cart = Cart::with('products')->where('user_id', 2)->first();
 
-    //     // Get the logged-in user's ID
-    //     $userId = \Illuminate\Support\Facades\Auth::id(); // Corrected line
+        // If no cart exists, create an empty cart
+        if (!$cart) {
+            $cart = Cart::create(['user_id' => 2]);
+        }
 
-    //     // Fetch the user's cart.  We'll eager load the items and products.
-    //     $cart = \App\Models\Cart::with('cartItems.product')  // Assumes you have a Cart model.
-    //         ->where('user_id', $userId)
-    //         ->first();
+        // Calculate total price (assuming the products have a 'price' attribute)
+        $total = $cart->products->sum(function ($product) {
+            return $product->pivot->quantity * $product->price;
+        });
 
-    //     // Initialize variables for total and amount
-    //     $total = 0;
-    //     $amount = 0;
-    //     $products = []; // Initialize as empty array.
+        return view('cart.cart', compact('cart', 'total'));
+    }
 
-    //     // If a cart exists, process its items.
-    //     if ($cart) {
-    //         //  $cart->cartItems is a collection of CartItem models.
-    //         foreach ($cart->cartItems as $cartItem) {
-    //             $product = $cartItem->product; // Access the Product model.
-    //             $quantity = $cartItem->quantity;
+    public function removeFromCart($productId)
+    {
+        // Remove the product from the cart
+        $cart = Cart::where('user_id', 2)->first();
 
-    //             $total += $product->price * $quantity;
-    //             $amount += $quantity;
-    //             $products[$product->id] = $product; // Make $products available for the view, if needed
-    //         }
-    //     }
+        if ($cart) {
+            $cart->products()->detach($productId);
+        }
 
-
-    //     $isLoggedIn = true; // User is logged in, so this is always true here.
-
-    //     // Pass the data to the view.  Adjust view name as needed.
-    //     return view('cart.cart', compact('cart', 'products', 'total', 'amount', 'isLoggedIn'));
-    // }
+        // Redirect back to the cart page after removal
+        return redirect()->route('cart.cart')->with('success', 'Product removed from cart');
+    }
 }
