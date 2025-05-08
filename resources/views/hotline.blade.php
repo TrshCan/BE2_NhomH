@@ -13,9 +13,12 @@ $user_id = session('user_id');
         <i class="fas fa-envelope"></i>
     </a>
     
-    <div class="contact-icon zalo" id="toggleChat">
-        <i class="fas fa-comment-dots"></i>
+    <div class="contact-icon chat" id="toggleChat">
+    <i class="fa-brands fa-viber"></i>
     </div>
+    <a href="https://zalo.me/0817007558"" class="contact-icon email">
+    <i class="fas fa-comment-dots"></i>
+    </a>
 </div>
 
 <iframe id="chatWidget"
@@ -24,7 +27,7 @@ $user_id = session('user_id');
 </iframe>
 <script>
     
-console.log("d");
+
         const role = "{{ session('user_role') }}";
         const toggleBtn = document.getElementById('toggleChat');
         const chatWidget = document.getElementById('chatWidget');

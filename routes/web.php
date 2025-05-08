@@ -35,9 +35,9 @@ Route::get('/chatuser', function () {
     return view('chat.livechatuser');
 })->name("chat.widget");
 
-Route::get('/list', function () {
-    return view('list');
-})->name('list');
+Route::get('/hotline', function () {
+    return view('hotline');
+})->name('hotline');
 Route::get('/home', function () {
     return view('home');
 })->name('home');
