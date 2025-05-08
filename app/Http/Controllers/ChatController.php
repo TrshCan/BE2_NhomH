@@ -88,11 +88,7 @@ class ChatController extends Controller
         $sender_id = Session::get('user_id');
         $receiver_id = $request->input('receiver_id');
 
-        // Kiểm tra receiver_id
-        if (!$receiver_id) {
-            return response()->json(['error' => 'Invalid receiver_id'], 400);
-        }
-
+      
         Log::info("User ID: " . Session::get('user_id')); // Debug session
         Log::info("sender_id: $sender_id, receiver_id: $receiver_id");
 
@@ -133,15 +129,11 @@ class ChatController extends Controller
     $receiver_id = $request->input('receiver_id');
     $message = $request->input('message');
 
-    // Validate input
-    if (!$receiver_id || !$message) {
-        return response()->json(['error' => 'Missing required fields'], 400);
-    }
 
    
-    if (!DB::table('users')->where('id', $receiver_id)->exists()) {
-        return response()->json(['error' => 'Invalid receiver'], 400);
-    }
+    // if (!DB::table('users')->where('id', $receiver_id)->exists()) {
+    //     return response()->json(['error' => 'Invalid receiver'], 400);
+    // }
 
     try {
         // Insert message into chats table

@@ -27,9 +27,13 @@ Route::get('/login/{provider}/callback', [LoginController::class, 'handleProvide
 Route::get('/chat/users', [ChatController::class, 'getUsers'])->name('chat.users');
 Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat.messages');
 Route::post('/chat/messages', [ChatController::class, 'storeMessage'])->name('chat.messages');
+
 Route::get('/chat', function () {
     return view('chat.livechat');
-});
+})->name('chat.admin');
+Route::get('/chatuser', function () {
+    return view('chat.livechatuser');
+})->name("chat.widget");
 
 Route::get('/list', function () {
     return view('list');

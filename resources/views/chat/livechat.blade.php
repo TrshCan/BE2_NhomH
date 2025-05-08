@@ -46,7 +46,7 @@
             <div id="error-message" class="error-message"></div>
             <div id="chat-body" class="chat-body"></div>
             <div class="chat-input">
-                <input id="messageInput" type="text" placeholder="Nhập tin nhắn..." autocomplete="off">
+                <input id="messageInput" type="text" placeholder="Nhập tin nhắn..." autocomplete="off" maxlength="255">
                 <button onclick="sendMessage()">Gửi</button>
             </div>
         </div>
@@ -141,7 +141,7 @@
         const sendMessage = async () => {
             const messageInput = document.getElementById('messageInput');
             const message = messageInput.value.trim();
-
+            console.log(message);
             if (!message || !selectedUserId) {
                 showError('Vui lòng chọn người dùng và nhập tin nhắn');
                 return;
@@ -178,7 +178,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             loadUserList();
-            setInterval(loadUserList, 30000);
+            setInterval(loadUserList, 5000);
             setInterval(loadMessages, 5000); 
         });
     </script>

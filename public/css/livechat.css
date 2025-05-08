@@ -196,4 +196,58 @@
   .window {
     width: 100%;
   }
+  ////
   
+  /////
+  <style>
+   .contact-icons {
+    display: flex;
+    gap: 15px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.contact-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+}
+
+.contact-icon i {
+    font-size: 24px;
+}
+
+.contact-icon.email {
+    background-color: #d93025; /* Gmail red */
+    color: #ffffff;
+}
+
+.contact-icon.zalo {
+    background-color: #0088cc; /* Zalo blue */
+    color: #ffffff;
+}
+
+.contact-icon:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.contact-icon.email:hover {
+    background-color: #c5221f;
+}
+
+.contact-icon.zalo:hover {
+    background-color: #0077b3;
+}
+</style>
