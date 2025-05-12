@@ -155,10 +155,9 @@
                         </h6>
                         <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">{{ number_format($product->original_price) }} VNĐ</span></p>
                         <p class="card-text text-danger fw-bold mb-3">{{ number_format($product->price) }} VNĐ</p>
-                        <form action="{{ route('cart.add', ['id' => $product->product_id]) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</button>
-                        </form>
+                        <a href="{{ route('cart.add', ['id' => $product->product_id]) }}" class="btn btn-primary mt-auto add-to-cart-btn">
+                            Add to Cart
+                        </a>
                     </div>
                 </div>
             </div>

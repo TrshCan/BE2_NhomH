@@ -25,11 +25,10 @@ Route::post('/register', [CrudUserController::class, 'postUser'])->name('user.po
 Route::get('/login/{provider}', [LoginController::class, 'redirectToProvider'])->name('social.login');
 Route::get('/login/{provider}/callback', [LoginController::class, 'handleProviderCallback'])->name('social.callback');
 
-Route::get('/test', function() {
-    return 'Test route works';
-// Cart controller
-Route::get('/cart', [CartController::class, 'index'])->name('cart.cart');
-Route::post('/cart/update', [CartController::class, 'updateQuantity'])->name('cart.update');
-Route::get('/cart/delete/{id}', [CartController::class, 'delete'])->name('cart.delete');
-Route::get('/cart/deleteall', [CartController::class, 'deleteAll'])->name('cart.deleteAll');
-Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
+
+// Cart routes
+Route::get('cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+Route::get('cart', [CartController::class, 'viewCart'])->name('cart.cart');
+Route::get('/cart/delete/{product_id}', [CartController::class, 'remove']);
+Route::get('/cart/deleteall', [CartController::class, 'clear']);
+Route::get('/cart/update_quantity/{product_id}/{qty}', [CartController::class, 'updateQuantity']);

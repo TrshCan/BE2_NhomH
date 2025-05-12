@@ -4,33 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Cart extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id',
-    ];
+    protected $primaryKey = 'cart_id';
+    public $incrementing = true;
+    protected $keyType = 'int';
 
-    /**
-     * Get the user that owns the cart.
-     */
-    public function user(): BelongsTo
+    protected $fillable = ['user_id'];
+
+    public function items()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(CartProduct::class, 'cart_id');
     }
 
-    /**
-     * Get the products in the cart.  This uses BelongsToMany because of the pivot table.
-     */
-
-    public function products()
+    public function user()
     {
-        return $this->belongsToMany(Product::class, 'cart_product', 'cart_id', 'product_id')
-            ->withPivot('quantity')
-            ->withTimestamps();
+        return $this->belongsTo(User::class);
     }
 }
