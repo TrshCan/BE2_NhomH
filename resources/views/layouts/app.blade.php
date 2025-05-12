@@ -18,14 +18,14 @@
                 <ul class="navbar-nav ms-auto">
                     @guest
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">Login</a>
+                            <a class="nav-link" href="#">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('register') }}">Create user</a>
+                            <a class="nav-link" href="#">Create user</a>
                         </li>
                     @else
                         <li class="nav-item">
-                            <form action="{{ route('signOut') }}" method="POST">
+                            <form action="#" method="POST">
                                 @csrf
                                 <button type="submit" class="nav-link btn btn-link">Logout</button>
                             </form>
