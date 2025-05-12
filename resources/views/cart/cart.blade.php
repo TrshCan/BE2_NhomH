@@ -76,7 +76,8 @@
         <a href="{{ url('cart/deleteall') }}"
             class="btn btn-warning"
             onclick="return confirm('Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng không?')">Xóa Tất Cả</a>
-        <button class="btn btn-primary checkout-btn">Thanh Toán</button>
+        <a href="{{ route('checkout.show') }}" class="btn btn-primary checkout-btn">Thanh Toán</a>
+
     </div>
     @else
     <div class="alert alert-info text-center" role="alert">
