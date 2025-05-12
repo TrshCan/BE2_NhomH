@@ -34,24 +34,21 @@ class UserSeeder extends Seeder
                 'updated_at' => now(),
             ],
         ]);
-        DB::table('users')->insert([
-            [
-                'name' => 'hongthang',
-                'email' => 'hongthang@gmail.com',
-                'password'=> Hash::make('123456'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
-        DB::table('users')->insert([
-            [
-                'name' => 'baonguyen',
-                'email' => 'baonguyen@gmail.com',
-                'password'=> Hash::make('123456'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        $faker = \Faker\Factory::create();
+
+        for ($i=0; $i < 10; $i++) { 
+            DB::table('users')->insert([
+                [
+                    'name' => $faker->name,
+                    'email' => $faker->email,
+                    'password'=> Hash::make('123456'),
+                    'phone' => $faker->phoneNumber,
+                    'address' => $faker->address,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+            ]);
+        }
         
     }
 }

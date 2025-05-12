@@ -19,11 +19,12 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'nickname',
         'email',
         'password',
         'phone',
-        'github_id',
+        'address',
+        'ban_reason',
+        'status_id',
         'google_id',
     ];
 
@@ -48,5 +49,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'status_id');
     }
 }

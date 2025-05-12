@@ -44,24 +44,21 @@ class LoginController extends Controller
         $user = User::where('email', $socialUser->getEmail())->first();
 
         if ($user) {
-            $user->update(["{$provider}_id" => $socialUser->getId(),
-            'nickname' => $provider === 'github' ? $socialUser->getNickname() : $user->nickname,
-        ]);
+            $user->update(["{$provider}_id" => $socialUser->getId()]);
             return $user;
         }
 
         return User::create([
             "{$provider}_id" => $socialUser->getId(),
-            'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'No Name',
-            'nickname' => $socialUser->getNickname() ?? 'No Nickname',
-            'email' => $socialUser->getEmail() ?? ($provider === 'google' ? $socialUser->getEmail() : "{$provider}_{$socialUser->getId()}@noemail.com"),
+            'name' => $socialUser->getName() ?? 'No Name',
+            'email' => $socialUser->getEmail() ?? "{$provider}_{$socialUser->getId()}@noemail.com",
             'email_verified_at' => now(),
         ]);
     }
 
     private function validateProvider(string $provider): void
     {
-        if (!in_array($provider, ['github', 'google'])) {
+        if (!in_array($provider, ['google'])) {
             throw new \InvalidArgumentException("Nhà cung cấp {$provider} không được hỗ trợ.");
         }
     }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CrudUserController;
+use App\Http\Controllers\ForgotPassword;
 use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,23 @@ Route::post('/register', [CrudUserController::class, 'postUser'])->name('user.po
 Route::get('/login/{provider}', [LoginController::class, 'redirectToProvider'])->name('social.login');
 Route::get('/login/{provider}/callback', [LoginController::class, 'handleProviderCallback'])->name('social.callback');
 
+Route::get('password/forgot',[ForgotPassword::class,'forgotPasswordForm'])->name('password.forgot');
+Route::post('password/forgot',[ForgotPassword::class,'forgotPasswordFormPost'])->name('password.forgot.post');
+Route::get('password/forgot/{token}',[ForgotPassword::class,'showForm'])->name('password.forgot.link');
+Route::post('password/email/submit',[ForgotPassword::class,'resetPassword'])->name('password.forgot.link.submit');
+
+
+Route::get('/list', [CrudUserController::class, 'listUser'])->name('user.list');
+
+// Xem chi tiết người dùng
+Route::get('/user/{id}', [CrudUserController::class, 'showUser'])->name('user.show');
+
+// Cập nhật người dùng
+Route::get('/update/{id}', [CrudUserController::class, 'updateUser'])->name('user.update');
+Route::post('/update/{id}', [CrudUserController::class, 'postUpdateUser'])->name('user.postUpdateUser');
+
+// Xóa người dùng
+Route::post('/delete', [CrudUserController::class, 'deleteUser'])->name('user.delete');
 
 Route::get('/home', function () {
     return view('home');
