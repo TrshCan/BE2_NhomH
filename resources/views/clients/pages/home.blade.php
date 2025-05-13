@@ -1,10 +1,32 @@
+<x-checkout-success-popup/>
+<x-auth-failed-popup/>
 @extends('layouts.clients_home');
 @section('title','Trang chu')
 
 @section('content')
 
+
 <!-- Header -->
 
+<!-- Bootstrap Modal if user  not logged in and try to add to cart -->
+<!-- Login Required Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thông báo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <p id="loginModalMessage">Vui lòng đăng nhập để tiếp tục.</p>
+            </div>
+            <div class="modal-footer">
+                <a href="{{ route('login') }}" class="btn btn-primary">Đăng nhập</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -158,6 +180,8 @@
                         <a href="{{ route('cart.add', ['id' => $product->product_id]) }}" class="btn btn-primary mt-auto add-to-cart-btn">
                             Add to Cart
                         </a>
+
+
                     </div>
                 </div>
             </div>
@@ -289,7 +313,10 @@
                                         </p>
                                         <div class="product_price">{{ number_format($product1->price, 0) }} VND</div>
                                     </div>
-                                    <div class="add_to_cart_button text-center"><a href="#">Add to Cart</a></div>
+                                    <div class="add_to_cart_button text-center"><a href="{{ route('cart.add', ['id' => $product->product_id]) }}" class="btn btn-primary mt-auto add-to-cart-btn">
+                                            Add to Cart
+                                        </a>
+                                    </div>
                                     <div class="favorite favorite_right"></div>
                                 </div>
                             </div>
@@ -430,5 +457,67 @@
         </div>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    // Add to Cart click
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+            const url = this.getAttribute('data-url');
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json',
+                },
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (response.status === 401 && data.modal) {
+                    document.getElementById('loginModalMessage').textContent = data.message;
+                    new bootstrap.Modal(document.getElementById('loginModal')).show();
+                } else {
+                    alert(data.message || 'Đã thêm vào giỏ hàng.');
+                    // Optional: Update cart count here
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi:', error);
+            });
+        });
+    });
+
+    // Intercept View Cart
+    const cartLink = document.querySelector('#cart-link');
+    if (cartLink) {
+        cartLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            const url = this.getAttribute('href');
+
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json',
+                }
+            })
+            .then(async response => {
+                if (response.status === 401) {
+                    const data = await response.json();
+                    document.getElementById('loginModalMessage').textContent = data.message;
+                    new bootstrap.Modal(document.getElementById('loginModal')).show();
+                } else {
+                    window.location.href = url;
+                }
+            });
+        });
+    }
+});
+</script>
+
+
 
 @endsection

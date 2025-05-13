@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -10,8 +11,13 @@ use App\Models\Order;
 
 class CartController extends Controller
 {
-    public function viewCart()
+    public function viewCart(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('products.home')->with('error_auth', 'Bạn cần đăng nhập để tiếp tục.');
+        }
+
+
         $user = Auth::user();
         $cart = Cart::with('items.product')->where('user_id', $user->id)->first();
 
@@ -20,6 +26,10 @@ class CartController extends Controller
 
     public function add(Request $request, $id)
     {
+        if (!Auth::check()) {
+            return redirect()->route('products.home')->with('error_auth', 'Bạn cần đăng nhập để tiếp tục.');
+        }
+
         $user = Auth::user();
 
         // Find or create a cart for the current user

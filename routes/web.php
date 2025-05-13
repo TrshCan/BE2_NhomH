@@ -35,4 +35,4 @@ Route::get('/cart/deleteall', [CartController::class, 'clear']);
 Route::get('/cart/update_quantity/{product_id}/{qty}', [CartController::class, 'updateQuantity']);
 
 Route::get('/checkout', [OrderController::class, 'show'])->name('checkout.show');
-Route::post('/checkout', [OrderController::class, 'process'])->name('checkout.process');
+Route::post('/checkout/process', [OrderController::class, 'process'])->name('checkout.process');

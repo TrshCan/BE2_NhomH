@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -26,8 +27,7 @@ class OrderController extends Controller
     public function process(Request $request)
     {
         $request->validate([
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
+            'name' => 'required|string',
             'email' => 'required|email',
             'address' => 'required|string',
             'phone' => 'required|string',
@@ -52,6 +52,7 @@ class OrderController extends Controller
 
             $order = Order::create([
                 'user_id' => $user->id,
+                'order_date' => now(),
                 'total_amount' => $request->total,
                 'status' => 'pending',
                 'shipping_address' => $shippingAddress,
@@ -67,7 +68,9 @@ class OrderController extends Controller
             }
 
             // Clear the cart
-            $cart->products()->detach();
+            $cart->items()->delete();
+            $cart->delete();
+
 
             DB::commit();
 

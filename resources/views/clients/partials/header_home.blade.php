@@ -23,10 +23,9 @@
                                             aria-hidden="true"></i></button>
                                 </div>
                                 <div class="checkout">
-                                    <a href="{{ route('cart.cart') }}">
+                                    <a href="{{ route('cart.cart') }}" id="cart-link">
                                         <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                                         <span id="checkout_items" class="checkout_items">{{ $cartItemCount }}</span>
-
                                     </a>
                                 </div>
                                 <div class="user-dropdown">

@@ -4,6 +4,15 @@
 <div class="container checkout-container my-5">
     <a href="{{ route('cart.cart') }}" class="btn btn-link mb-3">← Quay lại giỏ hàng</a>
     <h2 class="text-center mb-4 text-primary">Thanh Toán</h2>
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
 
     @php
     $total = $subtotal;
@@ -48,7 +57,6 @@
                             <label for="province" class="form-label">Tỉnh/Thành phố</label>
                             <select class="form-select" id="province" name="province" required>
                                 <option value="">Chọn tỉnh/thành phố</option>
-                                <!-- Options dynamically populated via JS -->
                             </select>
                         </div>
                         <div class="col-md-4">
@@ -117,7 +125,7 @@
                 <div class="coupon-section">
                     <input type="text" class="form-control" id="coupon-code" name="coupon_code"
                         placeholder="Nhập mã giảm giá">
-                    <button type="button" class="btn btn-coupon btn-sm text-white" onclick="applyCoupon()">Áp Dụng</button>
+                    <button type="button" class="btn btn-coupon btn-primary btn-sm text-white" onclick="applyCoupon()">Áp Dụng</button>
                 </div>
 
                 <hr>
