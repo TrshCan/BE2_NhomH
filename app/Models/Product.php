@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
@@ -9,6 +10,9 @@ class Product extends Model
 
 
     protected $primaryKey = 'product_id'; // nếu không phải 'id' thì cần khai báo
+    use HasFactory;
+
+    protected $primaryKey = 'product_id';
 
     protected $fillable = [
         'product_name',
@@ -20,4 +24,12 @@ class Product extends Model
         'image_url',
         'sales_count',
     ];
+    public function images()
+    {
+        return $this->hasMany(Image::class, 'product_id');  // 'product_id' là khóa ngoại trong bảng images
+    }
+    public function details()
+    {
+        return $this->hasOne(ProductDetail::class, 'product_id');
+    }
 }

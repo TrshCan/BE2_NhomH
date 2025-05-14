@@ -420,7 +420,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .search-bar button:hover {
-  background: #e03e42;
+  achtergrond: #e03e42;
 }
 
 .checkout a {
@@ -551,6 +551,18 @@ h1, h2, h3, h4, h5, h6 {
 .banner {
   width: 100%;
   margin-top: 30px;
+  padding: 60px 0;
+  background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
+}
+
+.banner h5 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e1e27;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 40px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .banner_item {
@@ -569,6 +581,12 @@ h1, h2, h3, h4, h5, h6 {
   background: #ffffff;
   min-width: 180px;
   padding: 0 25px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.banner_category:hover {
+  transform: translateY(-3px);
 }
 
 .banner_category a {
@@ -583,29 +601,66 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .banner_category a:hover {
-  color: #b5aec4;
+  color: #fe4c50;
 }
 
 .brand-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  border-radius: 10px;
+  background: #e8e8e8; /* Darker background for better contrast */
   transition: all 0.3s ease;
+}
+
+.brand-card:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .image-circle {
-  transition: all 0.3s ease;
-}
-
-.brand-name {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
 .brand-card:hover .image-circle {
-  box-shadow: 0 0 10px 3px rgba(255, 204, 0, 0.8);
-  border: 2px solid #ffcc00;
+  border: 3px solid #fe4c50;
+  box-shadow: 0 6px 15px rgba(254, 76, 80, 0.3);
+  transform: scale(1.1);
+}
+
+.brand-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e1e27;
+  margin-top: 10px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
 }
 
 .brand-card:hover .brand-name {
-  color: #ffcc00;
-  text-shadow: 0 0 8px rgba(255, 204, 0, 0.8);
+  color: #fe4c50;
+  text-shadow: 0 1px 3px rgba(254, 76, 80, 0.2);
+}
+
+.text-muted {
+  font-size: 12px;
+  color: #b5aec4;
+  font-weight: 500;
+  margin-top: 5px;
+  transition: color 0.3s ease;
+}
+
+.brand-card:hover .text-muted {
+  color: #fe4c50;
 }
 
 /* 6. New Arrivals */
@@ -762,7 +817,7 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-block;
 }
 
-.section_title::after {
+.section con .section_title::after {
   display: block;
   position: absolute;
   top: calc(100% + 13px);
@@ -986,7 +1041,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .best_sellers .carousel-control-prev,
 .best_sellers .carousel-control-next {
-  display: none; /* Ẩn nút điều khiển vì chỉ có 1 slide */
+  display: none; /* Ẩn nú  nút điều khiển vì chỉ có 1 slide */
 }
 
 .best_sellers .carousel-indicators {
@@ -1240,5 +1295,32 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 768px) {
   .carousel-image-wrapper {
     height: 600px;
+  }
+  .banner h5 {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+  }
+  .image-circle {
+    width: 100px;
+    height: 100px;
+  }
+  .brand-name {
+    font-size: 16px;
+  }
+  .text-muted {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 576px) {
+  .image-circle {
+    width: 80px;
+    height: 80px;
+  }
+  .brand-name {
+    font-size: 14px;
+  }
+  .text-muted {
+    font-size: 10px;
   }
 }

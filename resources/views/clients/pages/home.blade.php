@@ -72,9 +72,9 @@
         <!-- Banner -->
 
 
-      <div class="banner py-5" style="background-color: #1c1c1c;">
+ <div class="banner py-5" style="">
     <h5 class="text-center text-dark fw-bold"
-        style="font-size: 2.5rem; text-shadow: 2px 2px 5px rgba(0,0,0,0.2);">
+        style="font-size: 2.5rem; text-shadow: 2px 2px 5px rgba(119, 111, 111, 0.2);">
         Thương Hiệu
     </h5>
 
@@ -151,8 +151,8 @@
                             </div>
                             <div class="card-body d-flex flex-column text-center">
                                 <h6 class="card-title mb-2">
-                                    <a href="{{ url('public/pages/single.php?product_id='.$product->id) }}" class="text-decoration-none text-dark">{{ $product->product_name }}</a>
-                                </h6>
+    <a href="{{ route('products.show', $product->product_id) }}" class="text-decoration-none text-dark">{{ $product->product_name }}</a>
+</h6>
                                 <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">{{ number_format($product->original_price) }} VNĐ</span></p>
                                 <p class="card-text text-danger fw-bold mb-3">{{ number_format($product->price) }} VNĐ</p>
                                 <a href="{{ url('public/includes/cart_crud.php?action=add&id='.$product->id) }}" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
