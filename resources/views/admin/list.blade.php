@@ -1,5 +1,5 @@
 
-@extends('admins.users.admin')
+@extends('layouts.admin')
 @section('content')
 <div class="container">
     <h2 class="mb-4">Quản lý người dùng</h2>

@@ -71,10 +71,10 @@
                 <a href="{{ route('user.list')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
                     <i class="fas fa-users mr-3"></i> Quản lý người dùng
                 </a>
-                <a href="#" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                <a href="{{ route('products.index')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
                     <i class="fas fa-box mr-3"></i> Sản phẩm
                 </a>
-                <a href="#" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                <a href="{{ route('admin.orders.index')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
                     <i class="fas fa-shopping-cart mr-3"></i> Đơn hàng
                 </a>
                 <a href="#" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">

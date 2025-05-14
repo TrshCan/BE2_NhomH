@@ -66,7 +66,7 @@
                 <a href="#" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105 active:bg-teal-500/30">
                     <i class="fas fa-home mr-3"></i> Dashboard
                 </a>
-                <a href="#" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                <a href="{{ route('user.list')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
                     <i class="fas fa-users mr-3"></i> Quản lý người dùng
                 </a>
                 <a href="{{ route('products.index')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">

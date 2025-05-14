@@ -31,7 +31,9 @@ class LoginController extends Controller
                     'email' => 'Tài khoản của bạn đã bị khóa. Lý do: ' . ($user->ban_reason ?? 'Không có lý do cụ thể.'),
                 ]);
             }
+
             Auth::login($user, true);
+
             return redirect()->route('products.home');
         } catch (Exception $e) {
             Log::error("Lỗi đăng nhập với {$provider}: " . $e->getMessage());

@@ -69,8 +69,17 @@ class CrudUserController extends Controller
             }
 
             if (Auth::attempt($credentials)) {
-                Log::info('Login successful', ['email' => $request->email]);
-                return redirect()->intended('/')->with('success', 'Đăng nhập thành công.');
+                Log::info('Login successful', [
+                    'email' => $request->email,
+                    'role' => $user->role,
+                ]);
+
+                // Redirect based on user role
+                if ($user->role === 'admin') {
+                    return redirect()->intended(route('adminpanel'))->with('success', 'Đăng nhập thành công.');
+                }
+
+                return redirect()->intended(route('products.home'))->with('success', 'Đăng nhập thành công.');
             }
 
             throw ValidationException::withMessages([
