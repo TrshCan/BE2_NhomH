@@ -7,6 +7,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\Blog;
 use App\Models\Brand;
+use App\Models\Review;
 
 class ProductController extends Controller
 {
@@ -34,6 +35,7 @@ class ProductController extends Controller
         $brands = Brand::withCount('products')->get();
 
 
+
         // Truyền thời gian kết thúc deal dưới dạng timestamp
         return view('clients.pages.home', compact('products', 'carouselProducts', 'categories', 'dealEndTime', 'categoryId', 'dealOfTheWeekProduct', 'bestSellers', 'latestBlogs', 'brands'));
     }
@@ -41,9 +43,10 @@ class ProductController extends Controller
     {
         // Lấy sản phẩm theo ID và kèm theo danh sách ảnh phụ
         $product = Product::with('details', 'images')->findOrFail($id);
+$count = Review::where('product_id', $id)->get()->count();
+        // lấy các đánh giá
+        $reviews = Review::where('product_id', $id)->paginate(3);
 
-
-
-        return view('clients.pages.product_detail', compact('product'));
+        return view('clients.pages.product_detail', compact('product', 'reviews', 'count'));
     }
 }
