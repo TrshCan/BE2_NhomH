@@ -45,4 +45,11 @@ Route::post('list/user/delete', [CrudUserController::class, 'deleteUser'])->name
 Route::get('admin/adminpanel', [CrudUserController::class, 'adminpanel'])->name('adminpanel');
 Route::get('/home', function () {
     return view('home');
-})->name('home');
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PromotionController;
+
+
+
+Route::get('/', [ProductController::class, 'index'])->name('products.home');
+Route::get('/deal-of-the-week', [ProductController::class, 'dealOfTheWeek'])->name('products.deal');
