@@ -32,4 +32,12 @@ class Product extends Model
     {
         return $this->hasOne(ProductDetail::class, 'product_id');
     }
-}
+    // In Product.php model
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+    public function brand()
+    {
+        return $this->belongsTo(brand::class);
+    }

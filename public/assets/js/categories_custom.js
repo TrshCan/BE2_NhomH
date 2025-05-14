@@ -13,6 +13,8 @@
 7. Init Checkboxes
 
 ******************************/
+console.log('categories_custom.js loaded');
+
 
 jQuery(document).ready(function ($) {
   "use strict";
