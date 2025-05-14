@@ -111,7 +111,7 @@
                         <div class="image-circle mx-auto mb-2" style="
                                 width: 120px;
                                 height: 120px;
-                                background-image: url('{{ asset('storage/' . $brand->logo_url) }}');
+                                background-image: url('{{ asset('assets/images/' . $brand->logo_url) }}');
                                 background-size: cover;
                                 background-position: center;
                                 border-radius: 50%;
@@ -200,8 +200,12 @@
         <div class="row align-items-center">
             <div class="col-lg-6">
                 <div class="deal_ofthe_week_img">
-                    <!-- Hiển thị ảnh sản phẩm Deal of the Week -->
-                    <img src="{{ asset('storage/' . $dealOfTheWeekProduct->image_url) }}" alt="Deal of the Week">
+                    
+                @if ($dealOfTheWeekProduct && $dealOfTheWeekProduct->image_url)
+                        <img src="{{ asset('assets/images/' . $dealOfTheWeekProduct->image_url) }}" alt="Deal of the Week">
+                    @else
+                        <img src="{{ asset('assets/images/placeholder.jpg') }}" alt="No Deal Available">
+                    @endif
 
                 </div>
             </div>
@@ -296,7 +300,7 @@
                             <div class="product-item keyboards">
                                 <div class="product">
                                     <div class="product_image">
-                                        <img src="{{ asset('storage/' . $product1->image_url) }}" class="img-fluid" alt="{{ $product1->product_name }}">
+                                        <img src="{{ asset('assets/images/' . $product1->image_url) }}" class="img-fluid" alt="{{ $product1->product_name }}">
                                     </div>
                                     <div class="product_bubble product_bubble_left"><span>sale</span></div>
                                     <div class="product_bubble product_bubble_right sale_fire"><span>sale</span></div>

@@ -31,9 +31,22 @@
                                 <div class="user-dropdown">
                                     <a href="#" class="user-icon"><i class="fa fa-user" aria-hidden="true"></i></a>
                                     <div class="dropdown-menu">
+                                        @if (Auth::check())
+                                        <!-- Người dùng đã đăng nhập -->
+                                        <span class="dropdown-item disabled">Xin chào, {{ Auth::user()->name }}</span>
+                                        <a href="{{ route('showUser', ['id' => Auth::user()->id]) }}" class="dropdown-item">Cài đặt</a>
+                                        <a href="{{ route('signOut') }}" class="dropdown-item" 
+                                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            Đăng xuất
+                                        </a>
+                                        <form id="logout-form" action="{{ route('signOut') }}" method="POST" style="display: none;">
+                                            @csrf
+                                        </form>
+                                    @else
+                                        <!-- Người dùng chưa đăng nhập -->
                                         <a href="{{ route('login') }}" class="dropdown-item">Đăng nhập</a>
-                                        <a href="{{ route('register') }}" class="dropdown-item">Đăng
-                                            ky</a>
+                                        <a href="{{ route('register') }}" class="dropdown-item">Đăng ký</a>
+                                    @endif
                                     </div>
                                 </div>
                             </div>

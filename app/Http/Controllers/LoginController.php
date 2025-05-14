@@ -32,7 +32,7 @@ class LoginController extends Controller
                 ]);
             }
             Auth::login($user, true);
-            return redirect()->route('home');
+            return redirect()->route('products.home');
         } catch (Exception $e) {
             Log::error("Lỗi đăng nhập với {$provider}: " . $e->getMessage());
             return redirect()->route('login')->withErrors(['error' => 'Đăng nhập thất bại. Vui lòng thử lại.']);

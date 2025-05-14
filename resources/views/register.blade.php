@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('content')
 <div class="container" style="margin-top: 50px;">
     <div class="row justify-content-center">
@@ -8,7 +7,6 @@
                 <div class="card-body">
                     <h5 class="card-title text-center mb-4">Đăng Ký</h5>
                     
-                
                     @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul>
@@ -19,9 +17,8 @@
                         </div>
                     @endif
                     
-                   
                     @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
+                        <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
 
                     <form action="{{ route('register') }}" method="POST">
@@ -63,14 +60,4 @@
         </div>
     </div>
 </div>
-@endsection
-=======
-
-    @if (session('success'))
-        <div class="alert alert-success mt-3 text-center">
-            {{ session('success') }}
-        </div>
-    @endif
-@endsection
-
 @endsection

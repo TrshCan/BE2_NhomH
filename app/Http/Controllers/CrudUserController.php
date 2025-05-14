@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Blog;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Product;
 use App\Models\Status;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -20,9 +25,9 @@ class CrudUserController extends Controller
         return view('login');
     }
     public function adminpanel(){
-        return view('admins.users.admin');
+        return view('admin.admin');
     }
-
+    
     public function authUser(Request $request)
     {
         $request->validate([
@@ -61,10 +66,10 @@ class CrudUserController extends Controller
                     'email' => 'Tài khoản của bạn đã bị khóa. Lý do: ' . ($user->ban_reason ?? 'Không có lý do cụ thể.'),
                 ]);
             }
-    
+       
             if (Auth::attempt($credentials)) {
                 Log::info('Login successful', ['email' => $request->email]);
-                return redirect()->intended('home')->with('success', 'Đăng nhập thành công.');
+                return redirect()->intended('/')->with('success', 'Đăng nhập thành công.');
             }
     
             throw ValidationException::withMessages([
@@ -160,7 +165,7 @@ class CrudUserController extends Controller
             return redirect('list')->with('error', 'Người dùng không tồn tại.');
         }
 
-        return view('admins.users.show', compact('user'));
+        return view('admin.show', compact('user'));
     }
 
     public function deleteUser(Request $request)
@@ -180,7 +185,7 @@ class CrudUserController extends Controller
     {
         $user = User::findOrFail($id);
         $statuses = Status::all();
-        return view('admins.users.update', compact('user', 'statuses'));
+        return view('admin.update', compact('user', 'statuses'));
     }
 
     public function postUpdateUser(Request $request)
@@ -272,6 +277,6 @@ class CrudUserController extends Controller
         Session::flush();
         Auth::logout();
 
-        return redirect('login')->with('success', 'Đăng xuất thành công.');
+        return redirect('/')->with('success', 'Đăng xuất thành công.');
     }
 }

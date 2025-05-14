@@ -13,6 +13,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\OrderManagementController;
+use App\Http\Controllers\UserController;
 
 // Trang chủ
 Route::get('/', [ProductController::class, 'index'])->name('products.home');
@@ -26,14 +27,18 @@ Route::get('/welcome', function () {
 })->name('welcome');
 
 // Trang home
-Route::get('/home', function () {
-    return view('home');
-})->name('home');
-
+// Route::get('home',[CrudUserController::class,'home'])->name('home');
 // QUẢN LÝ NGƯỜI DÙNG
 Route::get('/login', [CrudUserController::class, 'login'])->name('login');
 Route::post('/login', [CrudUserController::class, 'authUser'])->name('user.authUser');
 Route::post('/signOut', [CrudUserController::class, 'signOut'])->name('signOut');
+//Setting
+Route::get('/setting/users/{id}', [UserController::class, 'showUser'])->name('showUser');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/setting/users/profile/update/{id}', [UserController::class, 'editProfile'])->name('user.profile.update');
+    Route::post('/setting/users/profile/update/{id}', [UserController::class, 'updateProfile'])->name('user.profile.post.update');
+});
+
 
 Route::get('/register', [CrudUserController::class, 'createUser'])->name('register');
 Route::post('/register', [CrudUserController::class, 'postUser'])->name('user.postUser');
@@ -54,6 +59,7 @@ Route::post('list/user/delete', [CrudUserController::class, 'deleteUser'])->name
 
 Route::get('admin/adminpanel', [CrudUserController::class, 'adminpanel'])->name('adminpanel');
 
+Route::get('/admin/products', [AdminController::class, 'productIndex'])->name('products.index');
 // QUẢN LÝ ĐƠN HÀNG
 Route::get('/orders', [OrderManagementController::class, 'index'])->name('admin.orders.index');
 Route::get('/orders/{id}', [OrderManagementController::class, 'show'])->name('admin.orders.show');

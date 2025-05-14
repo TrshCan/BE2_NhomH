@@ -62,4 +62,5 @@ class ProductController extends Controller
             return response()->json(['error' => 'Không thể lấy thông tin sản phẩm'], 500);
         }
     }
+   
 }
