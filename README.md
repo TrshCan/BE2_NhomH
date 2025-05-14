@@ -45,5 +45,5 @@ Một trang web thương mại điện tử đơn giản được xây dựng v�
     ├── index.php (main menu)
     ├── .gitignore
     ├── LICENSE
-    └── README.md
-```
+
+

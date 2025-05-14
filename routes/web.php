@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\CrudUserController;
 use App\Http\Controllers\ForgotPassword;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\CrudUserController;
 use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -96,3 +98,19 @@ Route::get('/cart/update_quantity/{product_id}/{qty}', [CartController::class, '
 
 Route::get('/checkout', [OrderController::class, 'show'])->name('checkout.show');
 Route::post('/checkout/process', [OrderController::class, 'process'])->name('checkout.process');
+Route::get('/chat/users', [ChatController::class, 'getUsers'])->name('chat.users');
+Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat.messages');
+Route::post('/chat/messages', [ChatController::class, 'storeMessage'])->name('chat.messages');
+
+Route::get('/chat', function () {
+    return view('chat.livechat');
+})->name('chat.admin');
+Route::get('/chatuser', function () {
+    return view('chat.livechatuser');
+})->name("chat.widget");
+
+Route::get('/hotline', function () {
+    return view('hotline');
+})->name('hotline');
+Route::get('/home', function () {
+    return view('home');
