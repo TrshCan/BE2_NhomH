@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\OrderManagementController;
+use App\Http\Controllers\CouponManagementController;
 
 Route::get('/', [ProductController::class, 'index'])->name('products.home');
 Route::get('/deal-of-the-week', [ProductController::class, 'dealOfTheWeek'])->name('products.deal');
@@ -35,3 +36,9 @@ Route::post('/orders', [OrderManagementController::class, 'store'])->name('admin
 Route::post('/orders/{id}/update', [OrderManagementController::class, 'update'])->name('admin.orders.update');
 Route::get('/orders/{id}/delete', [OrderManagementController::class, 'destroy'])->name('admin.orders.destroy');
 Route::get('/product/get/{id}', [ProductController::class, 'get'])->name('products.get');
+
+Route::get('/coupons', [CouponManagementController::class, 'index'])->name('admin.coupons.index');
+Route::get('/coupons/{id}', [CouponManagementController::class, 'show']);
+Route::post('/coupons', [CouponManagementController::class, 'store'])->name('admin.coupons.store');
+Route::post('/coupons/{id}/update', [CouponManagementController::class, 'update']);
+Route::get('/coupons/{id}/delete', [CouponManagementController::class, 'destroy']);
