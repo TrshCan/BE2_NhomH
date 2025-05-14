@@ -24,21 +24,22 @@ class CrudUserController extends Controller
     {
         return view('login');
     }
-    public function adminpanel(){
+    public function adminpanel()
+    {
         return view('admin.admin');
     }
-    
+
     public function authUser(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
-    
+
         $credentials = $request->only('email', 'password');
-    
+
         $user = User::with('status')->where('email', $request->email)->first();
-    
+
         Log::info('User login attempt', [
             'email' => $request->email,
             'user_exists' => !empty($user),
@@ -46,14 +47,14 @@ class CrudUserController extends Controller
             'status_name' => $user && $user->status ? $user->status->name : 'No status',
             'ban_reason' => $user ? ($user->ban_reason ?? 'No ban reason') : 'No user',
         ]);
-    
+
         try {
             if (!$user) {
                 throw ValidationException::withMessages([
                     'email' => 'Email hoặc mật khẩu không đúng.',
                 ]);
             }
-    
+
             // Kiểm tra trạng thái tài khoản
             if ($user->status && $user->status->name === 'Đã khóa') {
                 Log::info('Blocked login attempt due to locked status', [
@@ -66,12 +67,12 @@ class CrudUserController extends Controller
                     'email' => 'Tài khoản của bạn đã bị khóa. Lý do: ' . ($user->ban_reason ?? 'Không có lý do cụ thể.'),
                 ]);
             }
-       
+
             if (Auth::attempt($credentials)) {
                 Log::info('Login successful', ['email' => $request->email]);
                 return redirect()->intended('/')->with('success', 'Đăng nhập thành công.');
             }
-    
+
             throw ValidationException::withMessages([
                 'email' => 'Email hoặc mật khẩu không đúng.',
             ]);
@@ -189,60 +190,60 @@ class CrudUserController extends Controller
     }
 
     public function postUpdateUser(Request $request)
-{
-    try {
-        $user = User::findOrFail($request->id);
+    {
+        try {
+            $user = User::findOrFail($request->id);
 
-        // Xây dựng rules xác thực tùy theo loại người dùng
-        $rules = [
-            'id' => 'required|exists:users,id',
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $request->id,
-            'phone' => 'nullable|unique:users,phone,' . $request->id . '|min:10',
-            'status_id' => 'required|exists:statuses,id',
-            'ban_reason' => 'nullable|string',
-        ];
+            // Xây dựng rules xác thực tùy theo loại người dùng
+            $rules = [
+                'id' => 'required|exists:users,id',
+                'name' => 'required',
+                'email' => 'required|email|unique:users,email,' . $request->id,
+                'phone' => 'nullable|unique:users,phone,' . $request->id . '|min:10',
+                'status_id' => 'required|exists:statuses,id',
+                'ban_reason' => 'nullable|string',
+            ];
 
-        // Nếu không phải tài khoản Google thì bắt buộc có địa chỉ
-        if (!$user->google_id) {
-            $rules['address'] = 'required';
-        } else {
-            $rules['address'] = 'nullable|string';
-        }
-
-        $request->validate($rules);
-
-        // Cập nhật thông tin
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->phone = $request->phone;
-        $user->address = $request->address;
-        $user->status_id = $request->status_id;
-
-        if ($request->status_id == 2) {
-            if (empty($request->ban_reason)) {
-                return redirect()->route('user.update', $request->id)
-                    ->withErrors(['ban_reason' => 'Vui lòng nhập lý do khóa tài khoản.'])
-                    ->withInput();
+            // Nếu không phải tài khoản Google thì bắt buộc có địa chỉ
+            if (!$user->google_id) {
+                $rules['address'] = 'required';
+            } else {
+                $rules['address'] = 'nullable|string';
             }
-            $user->ban_reason = $request->ban_reason;
-        } else {
-            $user->ban_reason = null;
+
+            $request->validate($rules);
+
+            // Cập nhật thông tin
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+            $user->address = $request->address;
+            $user->status_id = $request->status_id;
+
+            if ($request->status_id == 2) {
+                if (empty($request->ban_reason)) {
+                    return redirect()->route('user.update', $request->id)
+                        ->withErrors(['ban_reason' => 'Vui lòng nhập lý do khóa tài khoản.'])
+                        ->withInput();
+                }
+                $user->ban_reason = $request->ban_reason;
+            } else {
+                $user->ban_reason = null;
+            }
+
+            $user->save();
+            Log::info('User update', ['user' => $user, 'request' => $request->all()]);
+
+            return redirect()->route('user.list')->with('success', 'Cập nhật người dùng thành công.');
+        } catch (\Exception $e) {
+            Log::error('Error updating user: ' . $e->getMessage(), ['user_id' => $request->id]);
+            return redirect()->route('user.update', $request->id)
+                ->withErrors(['error' => 'Lỗi cập nhật. Vui lòng thử lại.'])
+                ->withInput();
         }
-
-        $user->save();
-        Log::info('User update', ['user' => $user, 'request' => $request->all()]);
-
-        return redirect()->route('user.list')->with('success', 'Cập nhật người dùng thành công.');
-    } catch (\Exception $e) {
-        Log::error('Error updating user: ' . $e->getMessage(), ['user_id' => $request->id]);
-        return redirect()->route('user.update', $request->id)
-            ->withErrors(['error' => 'Lỗi cập nhật. Vui lòng thử lại.'])
-            ->withInput();
     }
-}
 
-    
+
 
     public function listUser(Request $request)
     {

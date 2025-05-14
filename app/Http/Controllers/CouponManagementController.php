@@ -5,12 +5,23 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Coupon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class CouponManagementController extends Controller
 {
     //
     public function index(Request $request)
     {
+        // Nếu chưa đăng nhập
+        if (!Auth::check()) {
+            return redirect('login')->with('error_admin', 'Bạn cần đăng nhập và có quyền admin để truy cập.');
+        }
+
+        // Nếu đã đăng nhập nhưng không phải admin
+        if (Auth::user()->role !== 'admin') {
+            Auth::logout();
+            return redirect('login')->with('error_admin', 'Bạn không có quyền truy cập trang quản trị. Đã đăng xuất.');
+        }
         $query = Coupon::query();
 
         // Handle search query

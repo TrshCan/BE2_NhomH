@@ -4,11 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderManagementController extends Controller
 {
     public function index(Request $request)
     {
+        // Nếu chưa đăng nhập
+        if (!Auth::check()) {
+            return redirect('login')->with('error_admin', 'Bạn cần đăng nhập và có quyền admin để truy cập.');
+        }
+
+        // Nếu đã đăng nhập nhưng không phải admin
+        if (Auth::user()->role !== 'admin') {
+            Auth::logout();
+            return redirect('login')->with('error_admin', 'Bạn không có quyền truy cập trang quản trị. Đã đăng xuất.');
+        }
         $query = Order::with('user')->latest();
 
         // Handle search query
