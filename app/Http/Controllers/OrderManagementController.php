@@ -7,9 +7,22 @@ use Illuminate\Http\Request;
 
 class OrderManagementController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with('user')->latest()->get();
+        $query = Order::with('user')->latest();
+
+        // Handle search query
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('order_id', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $orders = $query->paginate(10); // 10 orders per page
         return view('admin.order-management', compact('orders'));
     }
 

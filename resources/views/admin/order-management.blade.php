@@ -6,9 +6,18 @@
     <!-- Header -->
     <div class="flex justify-between items-center">
         <h2 class="text-2xl font-semibold text-gray-800">Quản lý đơn hàng</h2>
-        <button id="openAddModal" class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition duration-200 flex items-center">
-            <i class="fas fa-plus mr-2"></i> Thêm đơn hàng
-        </button>
+        <div class="flex items-center space-x-4">
+            <!-- Search Form -->
+            <form method="GET" action="{{ route('admin.orders.index') }}" class="flex items-center">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm theo mã đơn hàng hoặc khách hàng" class="px-4 py-2 rounded-lg border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500">
+                <button type="submit" class="ml-2 bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition duration-200">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+            <button id="openAddModal" class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition duration-200 flex items-center">
+                <i class="fas fa-plus mr-2"></i> Thêm đơn hàng
+            </button>
+        </div>
     </div>
 
     <!-- Orders Table -->
@@ -54,6 +63,11 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination Links -->
+    <div class="mt-4">
+        {{ $orders->links() }}
+    </div>
 </div>
 
 <!-- Modal for Add/Edit Order -->
@@ -92,7 +106,7 @@
             </div>
             <div class="flex justify-end space-x-2">
                 <button type="button" id="closeModal" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition duration-200">Hủy</button>
-                <button type="submit" class="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition duration-200">Lưu</button>
+                <button type="submit" class="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition duration-200" disabled>Lưu</button>
             </div>
         </form>
     </div>
@@ -122,27 +136,34 @@
     const viewOrderModal = document.getElementById('viewOrderModal');
     const closeViewModal = document.getElementById('closeViewModal');
     const orderDetailsContent = document.getElementById('orderDetailsContent');
-    const baseUrl = "{{ url('') }}";
+    const baseUrl = "{{ url('/') }}"; // Fixed baseUrl for consistency
 
     let detailCount = 1;
+
+    // Function to update submit button state
+    function updateSubmitButtonState() {
+        const submitButton = orderForm.querySelector('button[type="submit"]');
+        const priceInputs = detailsContainer.querySelectorAll('input[name*="details"][name$="[price]"]');
+        const allPricesValid = Array.from(priceInputs).every(input => input.value && Number(input.value) > 0);
+        submitButton.disabled = !allPricesValid;
+    }
 
     // Fetch product price
     async function fetchProductPrice(productId, detailIndex) {
         try {
             const response = await fetch(`${baseUrl}/product/get/${productId}`);
             if (!response.ok) {
-                // Optional: check if it's a 404
                 if (response.status === 404) {
-                    alert(`Không tìm thấy sản phẩm với ID: ${productId}`);
-                } else {
-                    alert(`Lỗi máy chủ khi lấy sản phẩm ID: ${productId}`);
+                    throw new Error(`Sản phẩm không tồn tại. Vui lòng nhập ID hợp lệ.`);
                 }
-                return; // Stop here
+                throw new Error(`Không thể lấy giá sản phẩm: ${response.statusText}`);
             }
-
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Server trả về phản hồi không phải JSON');
+            }
             const product = await response.json();
-
-            // Store price in a hidden input
+            console.log('Product price fetched:', product);
             const hiddenPriceInput = document.querySelector(`input[name="details[${detailIndex}][price]"]`);
             if (hiddenPriceInput) {
                 hiddenPriceInput.value = product.price;
@@ -151,12 +172,18 @@
                 newHiddenInput.type = 'hidden';
                 newHiddenInput.name = `details[${detailIndex}][price]`;
                 newHiddenInput.value = product.price;
-                detailsContainer.querySelector(`.detail-item:nth-child(${parseInt(detailIndex) + 1})`)
-                    .appendChild(newHiddenInput);
+                detailsContainer.querySelector(`.detail-item:nth-child(${detailIndex + 1})`).appendChild(newHiddenInput);
             }
+            updateSubmitButtonState();
         } catch (error) {
             console.error('Lỗi khi lấy giá sản phẩm:', error);
-            alert('Đã xảy ra lỗi khi lấy thông tin sản phẩm. Vui lòng thử lại.');
+            alert(error.message);
+            const productInput = document.querySelector(`input[name="details[${detailIndex}][product_id]"]`);
+            if (productInput) {
+                productInput.value = '';
+                productInput.focus();
+            }
+            updateSubmitButtonState();
         }
     }
 
@@ -171,6 +198,7 @@
             </div>
         `;
         detailCount = 1;
+        updateSubmitButtonState();
         orderModal.classList.remove('hidden');
     });
 
@@ -184,6 +212,7 @@
         `;
         detailsContainer.appendChild(detailItem);
         detailCount++;
+        updateSubmitButtonState();
     });
 
     // Handle product_id input change to fetch price
@@ -220,7 +249,7 @@
         console.log('Sending data:', data);
 
         const orderId = formData.get('order_id');
-        const method = orderId ? 'POST' : 'POST'; // Use POST for both create and update
+        const method = 'POST';
         const url = orderId ? `${baseUrl}/orders/${orderId}/update` : `${baseUrl}/orders`;
 
         try {
@@ -229,20 +258,32 @@
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
                 },
                 body: JSON.stringify(data),
             });
+
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                console.error('Non-JSON response:', text);
+                throw new Error(`Server returned non-JSON response (status: ${response.status})`);
+            }
 
             const result = await response.json();
             if (response.ok) {
                 location.reload();
             } else {
                 console.error('Server error:', result);
-                throw new Error(result.error || 'Có lỗi xảy ra khi lưu đơn hàng');
+                let errorMessage = result.message || 'Có lỗi xảy ra khi lưu đơn hàng';
+                if (result.errors) {
+                    errorMessage += '\n' + Object.values(result.errors).flat().join('\n');
+                }
+                throw new Error(errorMessage);
             }
         } catch (error) {
             console.error('Lỗi khi lưu đơn hàng:', error);
-            location.reload();
+            alert('Lỗi khi lưu đơn hàng: ' + error.message);
         }
     });
 
@@ -252,6 +293,10 @@
             const orderId = button.dataset.id;
             try {
                 const response = await fetch(`${baseUrl}/orders/${orderId}`);
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Server returned non-JSON response');
+                }
                 const order = await response.json();
                 modalTitle.textContent = 'Chỉnh sửa đơn hàng';
                 orderForm.querySelector('[name="order_id"]').value = order.order_id;
@@ -271,11 +316,11 @@
                     detailsContainer.appendChild(detailItem);
                 });
                 detailCount = order.details.length;
-
+                updateSubmitButtonState();
                 orderModal.classList.remove('hidden');
             } catch (error) {
                 console.error('Lỗi khi tải dữ liệu đơn hàng:', error);
-                location.reload();
+                alert('Có lỗi khi tải dữ liệu đơn hàng: ' + error.message);
             }
         });
     });
@@ -286,6 +331,10 @@
             const orderId = button.dataset.id;
             try {
                 const response = await fetch(`${baseUrl}/orders/${orderId}`);
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Server returned non-JSON response');
+                }
                 const order = await response.json();
                 orderDetailsContent.innerHTML = `
                     <p><strong>Mã đơn hàng:</strong> ${order.order_id}</p>
@@ -317,7 +366,7 @@
                 viewOrderModal.classList.remove('hidden');
             } catch (error) {
                 console.error('Lỗi khi tải chi tiết đơn hàng:', error);
-                location.reload();
+                alert('Có lỗi khi tải chi tiết đơn hàng: ' + error.message);
             }
         });
     });
@@ -329,11 +378,15 @@
                 const orderId = button.dataset.id;
                 try {
                     const response = await fetch(`${baseUrl}/orders/${orderId}/delete`, {
-                        method: 'GET', // Changed to GET
+                        method: 'GET',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                         },
                     });
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('Server returned non-JSON response');
+                    }
                     const result = await response.json();
                     if (response.ok) {
                         location.reload();
@@ -343,7 +396,7 @@
                     }
                 } catch (error) {
                     console.error('Lỗi khi xóa đơn hàng:', error);
-                    location.reload();
+                    alert('Có lỗi khi xóa đơn hàng: ' + error.message);
                 }
             }
         });
@@ -369,5 +422,8 @@
             viewOrderModal.classList.add('hidden');
         }
     });
+
+    // Initialize submit button state
+    orderForm.addEventListener('input', updateSubmitButtonState);
 </script>
 @endsection
