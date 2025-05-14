@@ -15,7 +15,6 @@ class Order extends Model
         'shipping_address'
     ];
 
-
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -24,5 +23,10 @@ class Order extends Model
     public function details()
     {
         return $this->hasMany(OrderDetail::class, 'order_id');
+    }
+
+    public function coupons()
+    {
+        return $this->belongsToMany(Coupon::class, 'coupon_order');
     }
 }

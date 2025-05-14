@@ -36,3 +36,5 @@ Route::get('/cart/update_quantity/{product_id}/{qty}', [CartController::class, '
 
 Route::get('/checkout', [OrderController::class, 'show'])->name('checkout.show');
 Route::post('/checkout/process', [OrderController::class, 'process'])->name('checkout.process');
+Route::post('/checkout/apply-coupon', [OrderController::class, 'applyCoupon'])->name('checkout.applyCoupon');
+Route::post('/checkout/remove-coupon', [OrderController::class, 'removeCoupon'])->name('checkout.removeCoupon');

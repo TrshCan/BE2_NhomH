@@ -8,7 +8,7 @@ use App\Models\Promotion; // Assuming you have a Promotion model
 use App\Models\Product;   // Assuming you have a Product model
 use App\Models\Coupon;   // Assuming you have a Product model
 
-class CategoriesController extends Controller
+class CouponController extends Controller
 {
     public function validate(Request $request)
     {
@@ -18,7 +18,9 @@ class CategoriesController extends Controller
         if (!$coupon) {
             return response()->json(['valid' => false, 'message' => 'Mã giảm giá không hợp lệ.']);
         }
-
+        if ($coupon->is_active === 0) {
+            return response()->json(['valid' => false, 'message' => 'Mã giảm giá đã hết hạn.']);
+        }
         $discountAmount = $coupon->type === 'percent'
             ? $request->subtotal * ($coupon->value / 100)
             : $coupon->value;
