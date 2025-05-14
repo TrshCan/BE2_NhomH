@@ -19,6 +19,9 @@ class CrudUserController extends Controller
     {
         return view('login');
     }
+    public function adminpanel(){
+        return view('admins.users.admin');
+    }
 
     public function authUser(Request $request)
     {
@@ -182,24 +185,35 @@ class CrudUserController extends Controller
 
     public function postUpdateUser(Request $request)
 {
-    $request->validate([
-        'id' => 'required|exists:users,id',
-        'name' => 'required',
-        'email' => 'required|email|unique:users,email,' . $request->id,
-        'phone' => 'nullable|unique:users,phone,' . $request->id . '|min:10',
-        'address' => 'required',
-        'status_id' => 'required|exists:statuses,id',
-        'ban_reason' => 'nullable|string',
-    ]);
-
     try {
         $user = User::findOrFail($request->id);
 
+        // Xây dựng rules xác thực tùy theo loại người dùng
+        $rules = [
+            'id' => 'required|exists:users,id',
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email,' . $request->id,
+            'phone' => 'nullable|unique:users,phone,' . $request->id . '|min:10',
+            'status_id' => 'required|exists:statuses,id',
+            'ban_reason' => 'nullable|string',
+        ];
+
+        // Nếu không phải tài khoản Google thì bắt buộc có địa chỉ
+        if (!$user->google_id) {
+            $rules['address'] = 'required';
+        } else {
+            $rules['address'] = 'nullable|string';
+        }
+
+        $request->validate($rules);
+
+        // Cập nhật thông tin
         $user->name = $request->name;
         $user->email = $request->email;
         $user->phone = $request->phone;
         $user->address = $request->address;
         $user->status_id = $request->status_id;
+
         if ($request->status_id == 2) {
             if (empty($request->ban_reason)) {
                 return redirect()->route('user.update', $request->id)
@@ -208,7 +222,7 @@ class CrudUserController extends Controller
             }
             $user->ban_reason = $request->ban_reason;
         } else {
-            $user->ban_reason = null; // Xóa lý do khóa nếu không bị khóa
+            $user->ban_reason = null;
         }
 
         $user->save();
@@ -222,6 +236,7 @@ class CrudUserController extends Controller
             ->withInput();
     }
 }
+
     
 
     public function listUser(Request $request)
@@ -247,7 +262,6 @@ class CrudUserController extends Controller
         }
 
         $users = $query->paginate(10);
-
         return view('admins.users.list', ['users' => $users]);
     }
 

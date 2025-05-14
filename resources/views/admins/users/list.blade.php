@@ -1,5 +1,5 @@
-@extends('layouts.app')
 
+@extends('admins.users.admin')
 @section('content')
 <div class="container">
     <h2 class="mb-4">Quản lý người dùng</h2>
@@ -12,7 +12,7 @@
     @endif
 
 
-    <form method="GET" action="{{ url('list') }}" class="mb-3 d-flex">
+    <form method="GET" action="{{ route('user.list') }}" class="mb-3 d-flex">
         <input type="text" name="search" class="form-control me-2 w-25" placeholder="Tìm theo tên hoặc email..." value="{{ request('search') }}">
         <button type="submit" class="btn btn-primary">Tìm</button>
     </form>

@@ -30,18 +30,19 @@ Route::get('password/forgot/{token}',[ForgotPassword::class,'showForm'])->name('
 Route::post('password/email/submit',[ForgotPassword::class,'resetPassword'])->name('password.forgot.link.submit');
 
 
-Route::get('/list', [CrudUserController::class, 'listUser'])->name('user.list');
+Route::get('list/user', [CrudUserController::class, 'listUser'])->name('user.list');
 
 // Xem chi tiết người dùng
 Route::get('/user/{id}', [CrudUserController::class, 'showUser'])->name('user.show');
 
 // Cập nhật người dùng
-Route::get('/update/{id}', [CrudUserController::class, 'updateUser'])->name('user.update');
-Route::post('/update/{id}', [CrudUserController::class, 'postUpdateUser'])->name('user.postUpdateUser');
+Route::get('list/user/update/{id}', [CrudUserController::class, 'updateUser'])->name('user.update');
+Route::post('list/user/update/{id}', [CrudUserController::class, 'postUpdateUser'])->name('user.postUpdateUser');
 
 // Xóa người dùng
-Route::post('/delete', [CrudUserController::class, 'deleteUser'])->name('user.delete');
+Route::post('list/user/delete', [CrudUserController::class, 'deleteUser'])->name('user.delete');
 
+Route::get('admin/adminpanel', [CrudUserController::class, 'adminpanel'])->name('adminpanel');
 Route::get('/home', function () {
     return view('home');
 })->name('home');

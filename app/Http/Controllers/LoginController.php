@@ -25,6 +25,12 @@ class LoginController extends Controller
         try {
             $socialUser = Socialite::driver($provider)->user();
             $user = $this->findOrCreateUser($socialUser, $provider);
+
+            if ($user->status_id == 2) {
+                return redirect()->route('login')->withErrors([
+                    'email' => 'Tài khoản của bạn đã bị khóa. Lý do: ' . ($user->ban_reason ?? 'Không có lý do cụ thể.'),
+                ]);
+            }
             Auth::login($user, true);
             return redirect()->route('home');
         } catch (Exception $e) {
