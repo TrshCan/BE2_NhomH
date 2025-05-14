@@ -41,3 +41,12 @@ class Product extends Model
     {
         return $this->belongsTo(brand::class);
     }
+
+    public function carts()
+    {
+        return $this->belongsToMany(Cart::class, 'cart_product', 'product_id', 'cart_id')
+                    ->withPivot('quantity')
+                    ->withTimestamps();
+    }
+
+}

@@ -9,6 +9,10 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CouponController;
+
 
 Route::get('/login', [CrudUserController::class, 'login'])->name('login');
 Route::post('/login', [CrudUserController::class, 'authUser'])->name('user.authUser');
@@ -82,3 +86,13 @@ Route::get('/orders/{id}', [OrderManagementController::class, 'show'])->name('ad
 Route::post('/orders', [OrderManagementController::class, 'store'])->name('admin.orders.store');
 Route::post('/orders/{id}/update', [OrderManagementController::class, 'update'])->name('admin.orders.update');
 Route::get('/orders/{id}/delete', [OrderManagementController::class, 'destroy'])->name('admin.orders.destroy');
+
+// Cart routes
+Route::get('cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+Route::get('cart', [CartController::class, 'viewCart'])->name('cart.cart');
+Route::get('/cart/delete/{product_id}', [CartController::class, 'remove']);
+Route::get('/cart/deleteall', [CartController::class, 'clear']);
+Route::get('/cart/update_quantity/{product_id}/{qty}', [CartController::class, 'updateQuantity']);
+
+Route::get('/checkout', [OrderController::class, 'show'])->name('checkout.show');
+Route::post('/checkout/process', [OrderController::class, 'process'])->name('checkout.process');
