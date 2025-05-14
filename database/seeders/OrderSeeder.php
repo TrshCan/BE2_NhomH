@@ -27,7 +27,7 @@ class OrderSeeder extends Seeder
         }
 
         // Get product IDs and prices
-        $products = Product::whereIn('product_id', [1, 2])->get(['product_id', 'price'])->keyBy('product_id'); //get only product 1 and 2
+        $products = Product::whereIn('product_id', [1, 2])->get(['product_name', 'price'])->keyBy('product_id'); //get only product 1 and 2
         if (count($products) < 2) {
             $this->command->error('Not enough products (IDs 1 and 2) found.  Please run the ProductSeeder first, and ensure products with IDs 1 and 2 exist.');
             return;

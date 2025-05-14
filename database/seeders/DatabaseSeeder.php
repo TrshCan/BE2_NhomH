@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,19 +20,23 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
-        $this->call(CartSeeder::class);
-        $this->call(ProductSeeder::class);
-        $this->call([
-            PromotionSeeder::class,
-        ]);
-        $this->call([
-            CategoriesSeeder::class,
-        ]);
-        $this->call([
-            UserSeeder::class,
-        ]);
-        $this->call([
-            CouponSeeder::class,
-        ]);
+        try {
+            $this->call(CartSeeder::class);
+            $this->call(StatusSeeder::class);
+            $this->call(UserSeeder::class);
+            $this->call(BlogPostSeeder::class);
+            $this->call(BrandSeeder::class);
+            $this->call(ProductSeeder::class);
+            $this->call(OrderSeeder::class);
+            $this->call(Images_productSeeder::class);
+            $this->call(ProductDetailsSeeder::class);
+            $this ->call(PromotionsTableSeeder::class);
+            $this->call(PromotionSeeder::class);
+            $this->call(CategoriesSeeder::class);
+            $this->call(CouponSeeder::class);
+        } catch (\Exception $e) {
+            $this->command->error("Error seeding database: " . $e->getMessage());
+        }
     }
 }
+

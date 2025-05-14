@@ -18,5 +18,14 @@ class ProductDetailsSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now()
         ]);
+        DB::table('product_details')->insert([
+            'product_id' => 2, // Giả sử product_id = 1 tồn tại
+            'model' => 'Blue, Red, Green',
+            'connectivity' => 'USB, 3.5mm Jack',
+            'compatibility' => 'PC, PS4, Xbox, Mobile',
+            'weight' => '346g',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
     }
 }

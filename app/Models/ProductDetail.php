@@ -9,7 +9,7 @@ class ProductDetail extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'id'; // Hoặc 'product_detail_id' nếu bạn dùng khóa chính khác
+    protected $primaryKey = 'product_id'; // Hoặc 'product_detail_id' nếu bạn dùng khóa chính khác
 
     protected $fillable = ['product_id', 'model', 'connectivity', 'compatibility', 'weight'];
 
