@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Exception;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\Blog;
 use App\Models\Brand;
+
 
 class ProductController extends Controller
 {
@@ -45,5 +47,19 @@ class ProductController extends Controller
 
 
         return view('clients.pages.product_detail', compact('product'));
+    }
+
+    public function get($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            return response()->json([
+                'product_id' => $product->product_id,
+                'product_name' => $product->product_name,
+                'price' => $product->price,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Không thể lấy thông tin sản phẩm'], 500);
+        }
     }
 }
