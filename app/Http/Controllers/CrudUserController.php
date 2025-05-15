@@ -277,7 +277,7 @@ class CrudUserController extends Controller
         }
 
         $users = $query->paginate(10);
-        return view('admins.users.list', ['users' => $users]);
+        return view('admin.list', ['users' => $users]);
     }
 
 

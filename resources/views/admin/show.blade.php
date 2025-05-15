@@ -1,5 +1,4 @@
-@extends('layouts.app')
-
+@extends('admin.admin')
 @section('content')
     <div class="container">
         <div class="row">
@@ -12,7 +11,7 @@
                     <li><strong>Số điện thoại:</strong> {{ $user->phone }}</li>
                     <li><strong>Địa chỉ:</strong> {{ $user->address }}</li>
                     <li><strong>Vai trò:</strong> {{ $user->role }}</li>
-                    <li><strong>Trạng thái:</strong> {{ $user->status }}</li>
+                    <li><strong>Trạng thái:</strong> {{  $user->status->name }}</li>
                 </ul>
                 <a href="{{ route('user.list') }}" class="btn btn-secondary">Quay lại danh sách</a>
             </div>
