@@ -15,14 +15,12 @@
 ******************************/
 console.log('categories_custom.js loaded');
 
-
 jQuery(document).ready(function ($) {
   "use strict";
 
   /* 
     1. Vars and Inits
     */
-
   var header = $(".header");
   var hamburger = $(".hamburger_container");
   var menu = $(".hamburger_menu");
@@ -49,7 +47,6 @@ jQuery(document).ready(function ($) {
   /* 
     2. Set Header
     */
-
   function setHeader() {
     if (window.innerWidth < 992) {
       if ($(window).scrollTop() > 100) {
@@ -72,7 +69,6 @@ jQuery(document).ready(function ($) {
   /* 
     3. Init Menu
     */
-
   function initMenu() {
     if (hamburger.length) {
       hamburger.on("click", function () {
@@ -119,7 +115,6 @@ jQuery(document).ready(function ($) {
   /* 
     4. Init Favorite
     */
-
   function initFavorite() {
     if ($(".favorite").length) {
       var favs = $(".favorite");
@@ -144,7 +139,6 @@ jQuery(document).ready(function ($) {
   /* 
     5. Init Fix Product Border
     */
-
   function initFixProductBorder() {
     if ($(".product_filter").length) {
       var products = $(".product_filter:visible");
@@ -182,7 +176,6 @@ jQuery(document).ready(function ($) {
   /* 
     6. Init Isotope Filtering
     */
-
   function initIsotopeFiltering() {
     var sortTypes = $(".type_sorting_btn");
     var sortNums = $(".num_sorting_btn");
@@ -196,8 +189,7 @@ jQuery(document).ready(function ($) {
             var priceEle = $(itemElement)
               .find(".product_price")
               .text()
-              .split(" ")[0]
-              .replace("$", "");
+              .replace(/[^\d]/g, ""); // Loại bỏ ký tự không phải số (đ, dấu chấm, dấu cách)
             return parseFloat(priceEle);
           },
           name: function (itemElement) {
@@ -236,10 +228,12 @@ jQuery(document).ready(function ($) {
       $(".custom-checkbox").on("change", function () {
         var filters = [];
         $(".custom-checkbox:checked").each(function () {
-          var filterValue = $(this).attr("id").replace(/^\w+-/, "");
-          filters.push("." + filterValue);
+          var filterValue = $(this).data("filter");
+          if (filterValue) {
+            filters.push("." + filterValue);
+          }
         });
-        var filterString = filters.length > 0 ? filters.join("") : "*";
+        var filterString = filters.length > 0 ? filters.join(", ") : "*";
         $(".product-grid").isotope({ filter: filterString });
         initFixProductBorder();
       });
@@ -247,7 +241,7 @@ jQuery(document).ready(function ($) {
       // Filter based on the price range inputs
       filterButton.on("click", function () {
         var priceMin = parseFloat($("#price-min").val()) || 0;
-        var priceMax = parseFloat($("#price-max").val()) || 1500;
+        var priceMax = parseFloat($("#price-max").val()) || 37500000; // Tương đương 1500 USD
 
         if (priceMin < 0) priceMin = 0;
         if (priceMax < priceMin) priceMax = priceMin;
@@ -258,8 +252,7 @@ jQuery(document).ready(function ($) {
               $(this)
                 .find(".product_price")
                 .text()
-                .split(" ")[0]
-                .replace("$", "")
+                .replace(/[^\d]/g, "") // Loại bỏ ký tự không phải số
             );
             return itemPrice >= priceMin && itemPrice <= priceMax;
           },
@@ -277,7 +270,6 @@ jQuery(document).ready(function ($) {
   /* 
     7. Init Checkboxes
     */
-
   function initCheckboxes() {
     if ($(".custom-checkbox").length) {
       var checkboxes = $(".custom-checkbox");
@@ -296,7 +288,7 @@ jQuery(document).ready(function ($) {
       if ($(".show_more").length) {
         $(".show_more").each(function () {
           var showMoreBtn = $(this);
-          var targetClass = showMoreBtn.data("target"); // Lấy data-target
+          var targetClass = showMoreBtn.data("target");
           var checkboxList = showMoreBtn
             .closest(".sidebar_section")
             .find("." + targetClass);
@@ -306,15 +298,13 @@ jQuery(document).ready(function ($) {
           showMoreBtn.show();
 
           showMoreBtn.on("click", function (e) {
-            e.preventDefault(); // Ngăn hành vi mặc định
+            e.preventDefault();
             checkboxList.toggleClass("show-all");
 
             if (checkboxList.hasClass("show-all")) {
-              // Hiển thị các mục .hidden-item khi mở rộng
               checkboxList.find(".hidden-item").show();
               showMoreBtn.html('<i class="fas fa-minus me-1"></i> Ẩn bớt');
             } else {
-              // Ẩn các mục .hidden-item khi thu gọn
               checkboxList.find(".hidden-item").hide();
               showMoreBtn.html('<i class="fas fa-plus me-1"></i> Xem thêm');
             }
