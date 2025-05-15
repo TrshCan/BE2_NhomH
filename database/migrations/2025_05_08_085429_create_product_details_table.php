@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::create('product_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id') // Cột khóa ngoại
-            ->constrained('products', 'product_id') // Tham chiếu đúng cột 'products_id'
-            ->onDelete('cascade'); // Liên kết với bảng products
+            $table->foreignId('product_id')->constrained()->onDelete('cascade'); // Liên kết với bảng products
             $table->string('model')->nullable();
             $table->string('connectivity')->nullable();
             $table->string('compatibility')->nullable();

@@ -3,41 +3,55 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use Exception;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\Blog;
 use App\Models\Brand;
 
-
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        // Lấy category_id từ query string nếu có
         $categoryId = $request->query('category_id');
+        $search = $request->query('search'); // Lấy từ khóa tìm kiếm từ query string
 
-        // Nếu có category_id, lọc sản phẩm theo category_id, nếu không lấy tất cả sản phẩm
-        $products = $categoryId
-            ? Product::where('category_id', $categoryId)->paginate(2)
-            : Product::paginate(2); // Nếu không có category_id thì lấy tất cả sản phẩm
+        // Query cơ bản
+        $query = Product::query();
 
-        // Lấy tất cả các danh mục
+        // Nếu có category_id thì lọc theo category
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        // Nếu có từ khóa tìm kiếm thì lọc theo tên sản phẩm
+        if ($search) {
+            $query->where('product_name', 'like', '%' . $search . '%');
+        }
+
+        // Phân trang sản phẩm
+        $products = $query->paginate(2)->withQueryString(); // Giữ lại search/category_id khi phân trang
+
+        // Lấy các dữ liệu khác như trước
         $categories = Category::all();
-
-        // Lấy 3 sản phẩm nổi bật
         $carouselProducts = Product::where('is_featured', true)->take(3)->get();
-
-        // Giả sử thời gian kết thúc deal là 7 ngày từ bây giờ
         $dealEndTime = now()->addDays(7);
         $dealOfTheWeekProduct = Product::find(1);
         $bestSellers = Product::orderByDesc('sales_count')->take(6)->get();
         $latestBlogs = Blog::orderByDesc('published_at')->take(3)->get();
         $brands = Brand::withCount('products')->get();
 
-
-        // Truyền thời gian kết thúc deal dưới dạng timestamp
-        return view('clients.pages.home', compact('products', 'carouselProducts', 'categories', 'dealEndTime', 'categoryId', 'dealOfTheWeekProduct', 'bestSellers', 'latestBlogs', 'brands'));
+        return view('clients.pages.home', compact(
+            'products',
+            'carouselProducts',
+            'categories',
+            'dealEndTime',
+            'categoryId',
+            'search',
+            'dealOfTheWeekProduct',
+            'bestSellers',
+            'latestBlogs',
+            'brands'
+        ));
     }
     public function show($id)
     {
@@ -48,19 +62,3 @@ class ProductController extends Controller
 
         return view('clients.pages.product_detail', compact('product'));
     }
-
-    public function get($id)
-    {
-        try {
-            $product = Product::findOrFail($id);
-            return response()->json([
-                'product_id' => $product->product_id,
-                'product_name' => $product->product_name,
-                'price' => $product->price,
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Không thể lấy thông tin sản phẩm'], 500);
-        }
-    }
-   
-}

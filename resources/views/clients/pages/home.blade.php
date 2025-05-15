@@ -19,36 +19,32 @@
         </div>
 
         <!-- Carousel Slides -->
-        <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
-
-            <div class="carousel-inner">
-                @foreach ($carouselProducts as $index => $product)
-                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" style="position: relative;">
-                        <div class="carousel-image-wrapper" style="position: relative; width: 100%; height: 800px; overflow: hidden;">
-                            <img src="{{(asset('assets/images/' . $product->image_url))}}"
-                                class="img-fluid d-block w-50 h-100 object-fit-cover"
-                                style="position: absolute; top: 0; left: 0;" alt="{{ $product->product_name }}">
-                            <div class="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
-                        </div>
-                        <div class="container" style="position: absolute; top: 0; left: 50%; height: 100%; width: 100%; z-index: 2;">
-                            <div class="row align-items-center h-100">
-                                <div class="col text-white text-center">
-                                    <div class="main_slider_content" style="text-shadow: 0 0 8px rgba(0,0,0,0.6);">
-                                        <h6>Featured Product</h6>
-                                        <h1>{{ $product->product_name }}</h1>
-                                        <p class="mt-2 fw-bold text-warning">{{ number_format($product->price) }} VNĐ</p>
-                                        <div class="red_button shop_now_button mt-3">
-                                            <a href="{{ url('public/pages/single.php?product_id=' . $product->id) }}" class="btn btn-danger text-uppercase">Shop now</a>
-                                        </div>
+        <div class="carousel-inner">
+            @foreach ($carouselProducts as $index => $product)
+                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" style="position: relative;">
+                    <div class="carousel-image-wrapper" style="position: relative; width: 100%; height: 800px; overflow: hidden;">
+                        <img src="{{ asset('assets/images/' . $product->image_url) }}"
+                            class="img-fluid d-block w-100 h-100 object-fit-cover"
+                            style="position: absolute; top: 0; left: 0;" alt="{{ $product->product_name }}">
+                        <div class="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
+                    </div>
+                    <div class="container" style="position: absolute; top: 0; left: 0; height: 100%; width: 100%; z-index: 2;">
+                        <div class="row align-items-center h-100">
+                            <div class="col text-white text-center">
+                                <div class="main_slider_content" style="text-shadow: 0 0 8px rgba(0,0,0,0.6);">
+                                    <h6>Featured Product</h6>
+                                    <h1>{{ $product->product_name }}</h1>
+                                    <p class="mt-2 fw-bold text-warning">{{ number_format($product->price) }} VNĐ</p>
+                                    <div class="red_button shop_now_button mt-3">
+                                        <a href="{{ url('public/pages/single.php?product_id=' . $product->id) }}" class="btn btn-danger text-uppercase">Shop now</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                @endforeach
-            </div>
-</div>
-
+                </div>
+            @endforeach
+        </div>
 
         <!-- Controls -->
         <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
@@ -110,7 +106,7 @@
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                         <div class="card h-100 shadow-sm product-card position-relative">
                             <div class="position-relative">
-                                <img src="{{ asset('assets/images/' . $product->image_url) }}" class="card-img-top" alt="{{ $product->product_name }}">
+                                <img src="{{ asset('storage/' . $product->image_url) }}" class="card-img-top" alt="{{ $product->product_name }}">
                                 <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
                             </div>
                             <div class="card-body d-flex flex-column text-center">
@@ -147,7 +143,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     <div class="deal_ofthe_week_img position-relative overflow-hidden rounded shadow-sm">
-                        <img src="{{ asset('assets/images/' . $dealOfTheWeekProduct->image_url) }}"
+                        <img src="{{ asset('storage/' . $dealOfTheWeekProduct->image_url) }}"
                             class="img-fluid w-100 deal-img" alt="{{ $dealOfTheWeekProduct->product_name }}"
                             style="transition: transform 0.3s ease;">
                         <span class="badge bg-danger position-absolute top-0 end-0 m-3 fs-6 px-3 py-2">
@@ -228,7 +224,7 @@
                                         <div class="product-item keyboards">
                                             <div class="product">
                                                 <div class="product_image">
-                                                   <img src="{{ asset('assets/images/' . $product['image_url']) }}" class="card-img-top" alt="{{ $product['product_name'] }}">
+                                                   <img src="{{ asset('storage/' . $product['image_url']) }}" class="card-img-top" alt="{{ $product['product_name'] }}">
                                                 </div>
                                                 <div class="product_bubble product_bubble_left"><span>sale</span></div>
                                                 <div class="product_bubble product_bubble_right sale_fire"><span>sale</span></div>
@@ -274,7 +270,7 @@
                 @foreach($latestBlogs as $blog)
                     <div class="col-md-6 col-lg-4">
                         <div class="blog_item position-relative rounded overflow-hidden shadow">
-                            <div class="blog_background" style="background-image:url('{{ asset('assets/images/' . $blog->image_url) }}');"></div>
+                            <div class="blog_background" style="background-image:url('{{ asset('storage/' . $blog->image_url) }}');"></div>
                             <div class="blog_content d-flex flex-column align-items-center justify-content-center text-center rounded">
                                 <h4 class="blog_title">{{ $blog->title }}</h4>
                                 <span class="blog_meta">by {{ $blog->author }} | {{ \Carbon\Carbon::parse($blog->published_at)->format('M d, Y') }}</span>

@@ -31,6 +31,60 @@
 
 
 </head>
+<style>
+    .carousel-control-prev,
+    .carousel-control-next {
+        background-color: rgba(0, 0, 0, 0.7); /* Black with 70% opacity for visibility */
+        width: 60px; /* Slightly larger for prominence */
+        height: 60px;
+        border-radius: 50%; /* Circular buttons */
+        top: 50%;
+        transform: translateY(-50%); /* Vertically centered */
+        transition: background-color 0.3s ease; /* Smooth hover effect */
+    }
+
+    .carousel-control-prev:hover,
+    .carousel-control-next:hover {
+        background-color: rgba(0, 0, 0, 0.9); /* Darker on hover */
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-image: none; /* Remove default Bootstrap arrow image */
+        position: relative;
+    }
+
+    /* Custom white arrows for contrast */
+    .carousel-control-prev-icon::before,
+    .carousel-control-next-icon::before {
+        content: '';
+        display: block;
+        width: 20px; /* Arrow size */
+        height: 20px;
+        border: solid #ffffff; /* White arrows */
+        border-width: 0 4px 4px 0; /* Thicker arrow */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(135deg); /* Right arrow */
+    }
+
+    .carousel-control-prev-icon::before {
+        transform: translate(-50%, -50%) rotate(-45deg); /* Left arrow */
+    }
+</style>
+
+<body>
+
+    <div class="super_container">
+ @include('clients.partials.header');
+ <main>
+    @yield('content')
+ </main>
+
+ @include('clients.partials.footer');
+
+       
 
 <body>
 

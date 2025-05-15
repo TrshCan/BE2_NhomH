@@ -17,11 +17,13 @@
                                     <li><a href="contact.html">contact</a></li>
                                 </ul>
                                 <div class="navbar_user">
-                                    <div class="search-bar">
-                                        <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." />
-                                        <button id="searchButton"><i class="fa fa-search"
-                                                aria-hidden="true"></i></button>
-                                    </div>
+                                    <form action="{{ route('products.home') }}" method="GET" class="search-bar">
+                                         <input type="text" name="search" id="searchInput" placeholder="Tìm kiếm sản phẩm..." value="{{ request('search') }}" />
+                                                 <button type="submit" id="searchButton">
+                                                               <i class="fa fa-search" aria-hidden="true"></i>
+                                                 </button>
+                                    </form>
+
                                     <div class="checkout">
                                         <a href="public/pages/cart.php">
                                             <i class="fa fa-shopping-cart" aria-hidden="true"></i>

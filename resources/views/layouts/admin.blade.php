@@ -7,6 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpokl5x2f2VjyN6z5z5z5z5z5z5z5z5z5z5z5z5z5z" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         .sidebar-hidden {
             transform: translateX(-100%);
@@ -26,6 +32,40 @@
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+        .pagination {
+    justify-content: center;
+}
+
+.page-item {
+    margin: 0 5px;
+}
+
+.page-link {
+    color: #2dd4bf; /* Teal color to match your theme */
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    border-radius: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    background-color: #2dd4bf;
+    color: #fff;
+    text-decoration: none;
+}
+
+.page-item.active .page-link {
+    background-color: #2dd4bf;
+    color: #fff;
+    border-color: #2dd4bf;
+}
+
+.page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
     </style>
 </head>
 <body class="bg-gray-100 font-['Inter'] antialiased">
@@ -108,5 +148,6 @@
             toggleIcon.classList.toggle('fa-times');
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

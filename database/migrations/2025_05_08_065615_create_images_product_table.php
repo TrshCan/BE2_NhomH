@@ -15,10 +15,7 @@ return new class extends Migration
             Schema::create('images', function (Blueprint $table) {
                 $table->id();
                 $table->string('image_url');
-                
-                $table->foreignId('product_id') // Cột khóa ngoại
-            ->constrained('products', 'product_id') // Tham chiếu đúng cột 'products_id'
-            ->onDelete('cascade'); // Liên kết với bảng products
+                $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
                 $table->timestamps();
             });
         }

@@ -104,3 +104,11 @@ Route::get('/coupons/{id}', [CouponManagementController::class, 'show']);
 Route::post('/coupons', [CouponManagementController::class, 'store'])->name('admin.coupons.store');
 Route::post('/coupons/{id}/update', [CouponManagementController::class, 'update']);
 Route::get('/coupons/{id}/delete', [CouponManagementController::class, 'destroy']);
+// Route::get('/quanlysanpham', [AdminController::class, 'index'])->name('dashboard.show');
+Route::prefix('admin')->group(function () {
+    Route::get('/quanlysanpham', [AdminController::class, 'index'])->name('admin.products');
+    Route::get('/products/{id}', [AdminController::class, 'show'])->name('admin.products.show');
+    Route::post('/products', [AdminController::class, 'store'])->name('admin.products.store');
+    Route::put('/products/{id}', [AdminController::class, 'update'])->name('admin.products.update');
+    Route::delete('/products/{id}', [AdminController::class, 'destroy'])->name('admin.products.destroy');
+});
