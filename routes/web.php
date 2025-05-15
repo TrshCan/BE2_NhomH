@@ -94,3 +94,5 @@ Route::get('/chatuser', function () {
 Route::get('/hotline', function () {
     return view('hotline');
 })->name('hotline');
+Route::post('/checkout/apply-coupon', [OrderController::class, 'applyCoupon'])->name('checkout.applyCoupon');
+Route::post('/checkout/remove-coupon', [OrderController::class, 'removeCoupon'])->name('checkout.removeCoupon');
