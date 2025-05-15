@@ -132,11 +132,11 @@
     const modalTitle = document.getElementById('modalTitle');
     const orderForm = document.getElementById('orderForm');
     const addDetail = document.getElementById('addDetail');
-    const detailsContainer = document.getElementById('detailsContainer');
+    let detailsContainer = document.getElementById('detailsContainer');
     const viewOrderModal = document.getElementById('viewOrderModal');
     const closeViewModal = document.getElementById('closeViewModal');
     const orderDetailsContent = document.getElementById('orderDetailsContent');
-    const baseUrl = "{{ url('/') }}"; // Fixed baseUrl for consistency
+    const baseUrl = "{{ url('/') }}";
 
     let detailCount = 1;
 
@@ -146,6 +146,22 @@
         const priceInputs = detailsContainer.querySelectorAll('input[name*="details"][name$="[price]"]');
         const allPricesValid = Array.from(priceInputs).every(input => input.value && Number(input.value) > 0);
         submitButton.disabled = !allPricesValid;
+    }
+
+    // Ensure detailsContainer is valid
+    function ensureDetailsContainer() {
+        if (!detailsContainer || !document.contains(detailsContainer)) {
+            console.warn('detailsContainer is null or not in DOM, reinitializing');
+            detailsContainer = document.getElementById('detailsContainer');
+            if (!detailsContainer) {
+                console.error('detailsContainer not found, creating new one');
+                const orderDetails = document.getElementById('orderDetails');
+                const newContainer = document.createElement('div');
+                newContainer.id = 'detailsContainer';
+                orderDetails.insertBefore(newContainer, orderDetails.querySelector('#addDetail'));
+                detailsContainer = newContainer;
+            }
+        }
     }
 
     // Fetch product price
@@ -164,7 +180,8 @@
             }
             const product = await response.json();
             console.log('Product price fetched:', product);
-            const hiddenPriceInput = document.querySelector(`input[name="details[${detailIndex}][price]"]`);
+            ensureDetailsContainer();
+            const hiddenPriceInput = detailsContainer.querySelector(`input[name="details[${detailIndex}][price]"]`);
             if (hiddenPriceInput) {
                 hiddenPriceInput.value = product.price;
             } else {
@@ -172,13 +189,19 @@
                 newHiddenInput.type = 'hidden';
                 newHiddenInput.name = `details[${detailIndex}][price]`;
                 newHiddenInput.value = product.price;
-                detailsContainer.querySelector(`.detail-item:nth-child(${detailIndex + 1})`).appendChild(newHiddenInput);
+                const detailItem = detailsContainer.querySelector(`.detail-item:nth-child(${parseInt(detailIndex) + 1})`);
+                if (detailItem) {
+                    detailItem.appendChild(newHiddenInput);
+                } else {
+                    console.error(`Detail item for index ${detailIndex} not found`);
+                }
             }
             updateSubmitButtonState();
         } catch (error) {
             console.error('Lỗi khi lấy giá sản phẩm:', error);
             alert(error.message);
-            const productInput = document.querySelector(`input[name="details[${detailIndex}][product_id]"]`);
+            ensureDetailsContainer();
+            const productInput = detailsContainer.querySelector(`input[name="details[${detailIndex}][product_id]"]`);
             if (productInput) {
                 productInput.value = '';
                 productInput.focus();
@@ -191,6 +214,7 @@
     openAddModal.addEventListener('click', () => {
         modalTitle.textContent = 'Thêm đơn hàng';
         orderForm.reset();
+        ensureDetailsContainer();
         detailsContainer.innerHTML = `
             <div class="detail-item mb-2 flex space-x-2">
                 <input type="number" name="details[0][product_id]" placeholder="ID Sản phẩm" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 product-id-input" required>
@@ -204,6 +228,7 @@
 
     // Add more order detail fields
     addDetail.addEventListener('click', () => {
+        ensureDetailsContainer();
         const detailItem = document.createElement('div');
         detailItem.className = 'detail-item mb-2 flex space-x-2';
         detailItem.innerHTML = `
@@ -249,7 +274,7 @@
         console.log('Sending data:', data);
 
         const orderId = formData.get('order_id');
-        const method = 'POST';
+        const method = orderId ? 'POST' : 'POST';
         const url = orderId ? `${baseUrl}/orders/${orderId}/update` : `${baseUrl}/orders`;
 
         try {
@@ -304,18 +329,30 @@
                 orderForm.querySelector('[name="status"]').value = order.status;
                 orderForm.querySelector('[name="shipping_address"]').value = order.shipping_address;
 
+                ensureDetailsContainer();
                 detailsContainer.innerHTML = '';
-                order.details.forEach((detail, index) => {
-                    const detailItem = document.createElement('div');
-                    detailItem.className = 'detail-item mb-2 flex space-x-2';
-                    detailItem.innerHTML = `
-                        <input type="number" name="details[${index}][product_id]" value="${detail.product_id}" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 product-id-input" required>
-                        <input type="number" name="details[${index}][quantity]" value="${detail.quantity}" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
-                        <input type="hidden" name="details[${index}][price]" value="${detail.price}">
+                if (!order.details || order.details.length === 0) {
+                    console.warn('No order details found, initializing with one empty detail');
+                    detailsContainer.innerHTML = `
+                        <div class="detail-item mb-2 flex space-x-2">
+                            <input type="number" name="details[0][product_id]" placeholder="ID Sản phẩm" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 product-id-input" required>
+                            <input type="number" name="details[0][quantity]" placeholder="Số lượng" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
+                        </div>
                     `;
-                    detailsContainer.appendChild(detailItem);
-                });
-                detailCount = order.details.length;
+                    detailCount = 1;
+                } else {
+                    order.details.forEach((detail, index) => {
+                        const detailItem = document.createElement('div');
+                        detailItem.className = 'detail-item mb-2 flex space-x-2';
+                        detailItem.innerHTML = `
+                            <input type="number" name="details[${index}][product_id]" value="${detail.product_id}" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 product-id-input" required>
+                            <input type="number" name="details[${index}][quantity]" value="${detail.quantity}" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
+                            <input type="hidden" name="details[${index}][price]" value="${detail.price}">
+                        `;
+                        detailsContainer.appendChild(detailItem);
+                    });
+                    detailCount = order.details.length;
+                }
                 updateSubmitButtonState();
                 orderModal.classList.remove('hidden');
             } catch (error) {
@@ -338,7 +375,7 @@
                 const order = await response.json();
                 orderDetailsContent.innerHTML = `
                     <p><strong>Mã đơn hàng:</strong> ${order.order_id}</p>
-                    <p><strong>Khách hàng:</strong> ${order.user.name}</p>
+                    <p><strong>Khách hàng:</strong> ${order.user?.name || 'N/A'}</p>
                     <p><strong>Ngày đặt:</strong> ${new Date(order.order_date).toLocaleString('vi-VN')}</p>
                     <p><strong>Tổng tiền:</strong> ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.total_amount)}</p>
                     <p><strong>Trạng thái:</strong> ${order.status}</p>
@@ -353,13 +390,13 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            ${order.details.map(detail => `
+                            ${(order.details && order.details.length > 0) ? order.details.map(detail => `
                                 <tr>
-                                    <td class="px-4 py-2 text-sm text-gray-800">${detail.product.product_name}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-800">${detail.product?.product_name || 'N/A'}</td>
                                     <td class="px-4 py-2 text-sm text-gray-800">${detail.quantity}</td>
                                     <td class="px-4 py-2 text-sm text-gray-800">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(detail.price)}</td>
                                 </tr>
-                            `).join('')}
+                            `).join('') : '<tr><td colspan="3" class="px-4 py-2 text-sm text-gray-800 text-center">Không có chi tiết sản phẩm</td></tr>'}
                         </tbody>
                     </table>
                 `;
@@ -374,13 +411,14 @@
     // Delete order
     document.querySelectorAll('.delete-order').forEach(button => {
         button.addEventListener('click', async () => {
-            if (confirm('Bạn có chắc muốn xóa đơn hàng này?')) {
-                const orderId = button.dataset.id;
+            const orderId = button.dataset.id;
+            if (confirm('Bạn có chắc muốn xóa đơn hàng này' + orderId + '?')) {
                 try {
                     const response = await fetch(`${baseUrl}/orders/${orderId}/delete`, {
                         method: 'GET',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
                         },
                     });
                     const contentType = response.headers.get('content-type');
@@ -405,6 +443,7 @@
     // Close modals
     closeModal.addEventListener('click', () => {
         orderModal.classList.add('hidden');
+        resetModal();
     });
 
     closeViewModal.addEventListener('click', () => {
@@ -414,6 +453,7 @@
     orderModal.addEventListener('click', (e) => {
         if (e.target === orderModal) {
             orderModal.classList.add('hidden');
+            resetModal();
         }
     });
 
@@ -423,7 +463,24 @@
         }
     });
 
+    // Reset modal state
+    function resetModal() {
+        orderForm.reset();
+        ensureDetailsContainer();
+        detailsContainer.innerHTML = `
+            <div class="detail-item mb-2 flex space-x-2">
+                <input type="number" name="details[0][product_id]" placeholder="ID Sản phẩm" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 product-id-input" required>
+                <input type="number" name="details[0][quantity]" placeholder="Số lượng" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
+            </div>
+        `;
+        detailCount = 1;
+        updateSubmitButtonState();
+    }
+
     // Initialize submit button state
     orderForm.addEventListener('input', updateSubmitButtonState);
+
+    // Ensure detailsContainer on page load
+    ensureDetailsContainer();
 </script>
 @endsection

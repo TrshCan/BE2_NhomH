@@ -14,6 +14,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\OrderManagementController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CouponManagementController;
 
 // Trang chủ
 Route::get('/', [ProductController::class, 'index'])->name('products.home');
@@ -96,3 +97,10 @@ Route::get('/hotline', function () {
 })->name('hotline');
 Route::post('/checkout/apply-coupon', [OrderController::class, 'applyCoupon'])->name('checkout.applyCoupon');
 Route::post('/checkout/remove-coupon', [OrderController::class, 'removeCoupon'])->name('checkout.removeCoupon');
+Route::get('/product/get/{id}', [ProductController::class, 'get'])->name('products.get');
+
+Route::get('/coupons', [CouponManagementController::class, 'index'])->name('admin.coupons.index');
+Route::get('/coupons/{id}', [CouponManagementController::class, 'show']);
+Route::post('/coupons', [CouponManagementController::class, 'store'])->name('admin.coupons.store');
+Route::post('/coupons/{id}/update', [CouponManagementController::class, 'update']);
+Route::get('/coupons/{id}/delete', [CouponManagementController::class, 'destroy']);
