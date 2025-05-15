@@ -14,7 +14,7 @@ class ShopController extends Controller
     {
         $categories = Category::all();
         $brands = Brand::all();
-        $products = Product::paginate(2);
+        $products = Product::paginate(8);
         return view('clients.pages.shop', compact('categories', 'brands', 'products'));
     }
 }

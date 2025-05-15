@@ -43,8 +43,8 @@
                         <td class="px-6 py-4 text-sm text-gray-800 max-w-xs truncate" title="{{ $item->category->category_name ?? 'Không có danh mục' }}">{{ $item->category->category_name ?? 'Không có danh mục' }}</td>
                         <td class="px-6 py-4 text-sm text-gray-800 max-w-xs truncate" title="{{ $item->brand->name ?? 'Không có thương hiệu' }}">{{ $item->brand->name ?? 'Không có thương hiệu' }}</td>
                         <td class="px-6 py-4 text-sm text-gray-800">
-                            <img src="{{ asset('storage/' . $item->image_url) }}" alt="{{ $item->product_name }}" class="h-10 w-10 rounded object-cover" 
-                                 onerror="this.src='{{ asset('assets/images/camera.png') }}'; this.alt='Hình ảnh không khả dụng';">
+                            <img src="{{ asset('assets/images/' . $item->image_url) }}" alt="{{ $item->product_name }}" class="h-10 w-10 rounded object-cover" 
+                                 onerror="this.src=`{{asset('assets/images/camera.png') }}`; this.alt='Hình ảnh không khả dụng';">
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-800">{{ $item->sales_count }}</td>
                         <td class="px-6 py-4 text-sm">
@@ -146,6 +146,7 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', () => {
     const openAddModal = document.getElementById('openAddModal');
     const productModal = document.getElementById('productModal');
     const closeModal = document.getElementById('closeModal');
@@ -222,7 +223,7 @@
 
         const url = currentProductId
             ? `{{ route('admin.products.update', ['id' => ':id']) }}`.replace(':id', currentProductId)
-            : '{{ route('admin.products.store') }}';
+            : `{{ route('admin.products.store') }}`;
         const method = currentProductId ? 'POST' : 'POST';
 
         try {

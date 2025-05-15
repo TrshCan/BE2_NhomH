@@ -59,26 +59,29 @@
 
     <!-- Banner -->
     <div class="banner py-5">
-        <h5 class="text-center text-dark fw-bold" style="font-size: 2.5rem; text-shadow: 2px 2px 5px rgba(119, 111, 111, 0.2);">
-            Thương Hiệu
-        </h5>
-        <br>
-        <div class="container">
-            <div class="row justify-content-center text-center g-4">
-                @foreach($brands as $brand)
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                        <a href="{{ route('products.home', $brand->slug) }}" class="text-decoration-none">
-                            <div class="brand-card">
-                                <div class="image-circle mx-auto mb-2" style="width: 120px; height: 120px; background-image: url('{{ asset('storage/' . $brand->logo_url) }}'); background-size: cover; background-position: center; border-radius: 50%;"></div>
-                                <div class="brand-name text-white fw-bold">{{ $brand->name }}</div>
-                                <div class="text-muted small">{{ $brand->products_count }} sản phẩm</div>
+    <h5 class="text-center text-dark fw-bold" style="font-size: 2.5rem; text-shadow: 2px 2px 5px rgba(119, 111, 111, 0.2);">
+        Thương Hiệu
+    </h5>
+    <br>
+    <div class="container">
+        <div class="row justify-content-center text-center g-4">
+            @foreach($brands as $brand)
+                <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                    <a href="{{ route('products.home', $brand->slug) }}" class="text-decoration-none">
+                        <div class="brand-card">
+                            <div class="image-circle mx-auto mb-2"
+                                 style="width: 120px; height: 120px; background-image: url('{{ asset('assets/images/' . $brand->logo_url) }}'); background-size: cover; background-position: center; border-radius: 50%;">
                             </div>
-                        </a>
-                    </div>
-                @endforeach
-            </div>
+                            <div class="brand-name text-white fw-bold">{{ $brand->name }}</div>
+                            <div class="text-muted small">{{ $brand->products_count }} sản phẩm</div>
+                        </div>
+                    </a>
+                </div>
+            @endforeach
         </div>
     </div>
+</div>
+
 
     <!-- New Arrivals -->
     <div id="scrollToNewArrivals" class="new_arrivals py-5 bg-light">
@@ -106,7 +109,7 @@
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                         <div class="card h-100 shadow-sm product-card position-relative">
                             <div class="position-relative">
-                                <img src="{{ asset('storage/' . $product->image_url) }}" class="card-img-top" alt="{{ $product->product_name }}">
+                                <img src="{{ asset('assets/images/' . $product->image_url) }}" class="card-img-top" alt="{{ $product->product_name }}">
                                 <span class="badge bg-danger position-absolute top-0 end-0 m-2">-10$</span>
                             </div>
                             <div class="card-body d-flex flex-column text-center">
@@ -143,7 +146,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     <div class="deal_ofthe_week_img position-relative overflow-hidden rounded shadow-sm">
-                        <img src="{{ asset('storage/' . $dealOfTheWeekProduct->image_url) }}"
+                        <img src="{{ asset('assets/images/' . $dealOfTheWeekProduct->image_url) }}"
                             class="img-fluid w-100 deal-img" alt="{{ $dealOfTheWeekProduct->product_name }}"
                             style="transition: transform 0.3s ease;">
                         <span class="badge bg-danger position-absolute top-0 end-0 m-3 fs-6 px-3 py-2">
@@ -224,7 +227,7 @@
                                         <div class="product-item keyboards">
                                             <div class="product">
                                                 <div class="product_image">
-                                                   <img src="{{ asset('storage/' . $product['image_url']) }}" class="card-img-top" alt="{{ $product['product_name'] }}">
+                                                   <img src="{{ asset('assets/images/' . $product['image_url']) }}" class="card-img-top" alt="{{ $product['product_name'] }}">
                                                 </div>
                                                 <div class="product_bubble product_bubble_left"><span>sale</span></div>
                                                 <div class="product_bubble product_bubble_right sale_fire"><span>sale</span></div>
@@ -270,7 +273,7 @@
                 @foreach($latestBlogs as $blog)
                     <div class="col-md-6 col-lg-4">
                         <div class="blog_item position-relative rounded overflow-hidden shadow">
-                            <div class="blog_background" style="background-image:url('{{ asset('storage/' . $blog->image_url) }}');"></div>
+                        <div class="blog_background" style="background-image:url('{{ asset('assets/images/' . $blog->image_url) }}');"></div>
                             <div class="blog_content d-flex flex-column align-items-center justify-content-center text-center rounded">
                                 <h4 class="blog_title">{{ $blog->title }}</h4>
                                 <span class="blog_meta">by {{ $blog->author }} | {{ \Carbon\Carbon::parse($blog->published_at)->format('M d, Y') }}</span>

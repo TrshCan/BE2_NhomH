@@ -62,3 +62,4 @@ class ProductController extends Controller
 
         return view('clients.pages.product_detail', compact('product'));
     }
+}

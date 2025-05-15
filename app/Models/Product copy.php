@@ -7,13 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-
-
-    protected $primaryKey = 'product_id'; // nếu không phải 'id' thì cần khai báo
-    public $incrementing = false; // Nếu product_id là khóa chính tự định nghĩa, nó sẽ không tự động tăng
-    protected $keyType = 'int';
     use HasFactory;
 
+    protected $primaryKey = 'product_id';
 
     protected $fillable = [
         'product_name',
@@ -38,16 +34,10 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
+
+
     public function brand()
     {
-        return $this->belongsTo(brand::class);
+        return $this->belongsTo(Brand::class);
     }
-
-    public function carts()
-    {
-        return $this->belongsToMany(Cart::class, 'cart_product', 'product_id', 'cart_id')
-                    ->withPivot('quantity')
-                    ->withTimestamps();
-    }
-
 }

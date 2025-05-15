@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,63 +12,77 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpokl5x2f2VjyN6z5z5z5z5z5z5z5z5z5z5z5z5z5z" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         .sidebar-hidden {
             transform: translateX(-100%);
         }
+
         .content-full {
             margin-left: 0 !important;
         }
+
         .glass-effect {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .animate-slide-in {
             animation: slideIn 0.5s ease-out;
         }
+
         @keyframes slideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
+
         .pagination {
-    justify-content: center;
-}
+            justify-content: center;
+        }
 
-.page-item {
-    margin: 0 5px;
-}
+        .page-item {
+            margin: 0 5px;
+        }
 
-.page-link {
-    color: #2dd4bf; /* Teal color to match your theme */
-    background-color: #fff;
-    border: 1px solid #ddd;
-    padding: 8px 12px;
-    border-radius: 0.25rem;
-    transition: all 0.3s ease;
-}
+        .page-link {
+            color: #2dd4bf;
+            /* Teal color to match your theme */
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+        }
 
-.page-link:hover {
-    background-color: #2dd4bf;
-    color: #fff;
-    text-decoration: none;
-}
+        .page-link:hover {
+            background-color: #2dd4bf;
+            color: #fff;
+            text-decoration: none;
+        }
 
-.page-item.active .page-link {
-    background-color: #2dd4bf;
-    color: #fff;
-    border-color: #2dd4bf;
-}
+        .page-item.active .page-link {
+            background-color: #2dd4bf;
+            color: #fff;
+            border-color: #2dd4bf;
+        }
 
-.page-item.disabled .page-link {
-    color: #6c757d;
-    background-color: #e9ecef;
-    cursor: not-allowed;
-}
+        .page-item.disabled .page-link {
+            color: #6c757d;
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
     </style>
 </head>
+
 <body class="bg-gray-100 font-['Inter'] antialiased">
     <!-- Top Navbar -->
     <nav class="bg-white fixed top-0 left-0 right-0 z-20 shadow-md">
@@ -80,19 +95,20 @@
                     <h1 class="ml-4 text-xl font-semibold text-gray-800">Admin Dashboard</h1>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <div class="relative">
+                    <!-- <div class="relative">
                         <input type="text" placeholder="Tìm kiếm..." class="bg-gray-100 text-gray-800 placeholder-gray-500 rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-200 w-64">
                         <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
-                    </div>
+                    </div> -->
                     <div class="relative">
                         <button class="flex items-center text-gray-600 hover:text-teal-500 focus:outline-none">
                             <i class="fas fa-user-circle text-xl mr-2"></i>
                             <span>Admin</span>
                         </button>
                     </div>
-                    <a href="#" class="text-gray-600 hover:text-teal-500">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </a>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-danger">Đăng xuất</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -109,14 +125,14 @@
                 <a href="{{ route('user.list')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
                     <i class="fas fa-users mr-3"></i> Quản lý người dùng
                 </a>
-                <a href="{{ route('products.index')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                <a href="{{ route('admin.products')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
                     <i class="fas fa-box mr-3"></i> Sản phẩm
                 </a>
                 <a href="{{ route('admin.orders.index')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
                     <i class="fas fa-shopping-cart mr-3"></i> Đơn hàng
                 </a>
                 <a href="{{ route('admin.coupons.index')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
-                    <i class="fas fa-tags mr-3 mr-3"></i> Mã giảm giá 
+                    <i class="fas fa-tags mr-3 mr-3"></i> Mã giảm giá
                 </a>
                 <a href="#" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
                     <i class="fas fa-chart-bar mr-3"></i> Báo cáo
@@ -150,4 +166,5 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
+
 </html>

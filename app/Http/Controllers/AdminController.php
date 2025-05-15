@@ -10,6 +10,8 @@ use App\Models\Brand;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller
 {
@@ -19,6 +21,13 @@ class AdminController extends Controller
         $categories = Category::all();
         $brands = Brand::all();
         return view('admin.quanlysanpham', compact('products', 'categories', 'brands'));
+    }
+
+    public function logout(){
+        Session::flush();
+        Auth::logout();
+
+        return redirect('/')->with('success', 'Đăng xuất thành công.');
     }
 
     public function show($id)
@@ -38,7 +47,7 @@ class AdminController extends Controller
         try {
             $validated = $request->validate($this->productRules());
 
-            // Kiểm tra logic riêng nếu cần
+            // Check business logic for featured products
             if ($request->is_featured && $request->price < 10000) {
                 return response()->json([
                     'success' => false,
@@ -46,11 +55,18 @@ class AdminController extends Controller
                 ], 422);
             }
 
-            $imagePath = $request->file('image')->store('products', 'public');
-            $validated['image_url'] = $imagePath;
+            // Handle image upload to public/assets/images
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('assets/images'), $imageName);
+            $validated['image_url'] = $imageName;
 
             Product::create($validated);
-            return response()->json(['success' => true, 'message' => 'Sản phẩm đã được thêm thành công']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Sản phẩm đã được thêm thành công'
+            ]);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -58,7 +74,10 @@ class AdminController extends Controller
                 'message' => 'Dữ liệu không hợp lệ'
             ], 422);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Lỗi hệ thống'], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi hệ thống: ' . $e->getMessage()
+            ], 500);
         }
     }
 
@@ -67,6 +86,7 @@ class AdminController extends Controller
         try {
             $validated = $request->validate($this->productRules(true));
 
+            // Check business logic for featured products
             if ($request->is_featured && $request->price < 10000) {
                 return response()->json([
                     'success' => false,
@@ -76,20 +96,33 @@ class AdminController extends Controller
 
             $product = Product::findOrFail($id);
 
+            // Handle image upload if provided
             if ($request->hasFile('image')) {
-                if ($product->image_url && Storage::disk('public')->exists($product->image_url)) {
-                    Storage::disk('public')->delete($product->image_url);
+                // Delete old image if it exists
+                if ($product->image_url && file_exists(public_path('assets/images/' . $product->image_url))) {
+                    unlink(public_path('assets/images/' . $product->image_url));
                 }
-                $imagePath = $request->file('image')->store('products', 'public');
-                $validated['image_url'] = $imagePath;
+
+                // Save new image
+                $image = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('assets/images'), $imageName);
+                $validated['image_url'] = $imageName;
             } else {
                 $validated['image_url'] = $product->image_url;
             }
 
             $product->update($validated);
-            return response()->json(['success' => true, 'message' => 'Sản phẩm đã được cập nhật thành công']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Sản phẩm đã được cập nhật thành công'
+            ]);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['success' => false, 'message' => 'Không tìm thấy sản phẩm'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy sản phẩm'
+            ], 404);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -97,7 +130,10 @@ class AdminController extends Controller
                 'message' => 'Dữ liệu không hợp lệ'
             ], 422);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Lỗi hệ thống'], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi hệ thống: ' . $e->getMessage()
+            ], 500);
         }
     }
 

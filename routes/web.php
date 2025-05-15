@@ -33,6 +33,8 @@ Route::get('/welcome', function () {
 Route::get('/login', [CrudUserController::class, 'login'])->name('login');
 Route::post('/login', [CrudUserController::class, 'authUser'])->name('user.authUser');
 Route::post('/signOut', [CrudUserController::class, 'signOut'])->name('signOut');
+
+Route::post('logout',[AdminController::class,'logout'])->name('logout');
 //Setting
 Route::get('/setting/users/{id}', [UserController::class, 'showUser'])->name('showUser');
 Route::middleware(['auth'])->group(function () {
@@ -60,7 +62,6 @@ Route::post('list/user/delete', [CrudUserController::class, 'deleteUser'])->name
 
 Route::get('admin/adminpanel', [CrudUserController::class, 'adminpanel'])->name('adminpanel');
 
-Route::get('/admin/products', [AdminController::class, 'productIndex'])->name('products.index');
 // QUẢN LÝ ĐƠN HÀNG
 Route::get('/orders', [OrderManagementController::class, 'index'])->name('admin.orders.index');
 Route::get('/orders/{id}', [OrderManagementController::class, 'show'])->name('admin.orders.show');

@@ -16,10 +16,11 @@ class BrandSeeder extends Seeder
     {
 
         $brands = [
-            ['name' => 'Nike', 'logo_url' => 'brands/nike.png'],
-            ['name' => 'Adidas', 'logo_url' => 'brands/adidas.png'],
-            ['name' => 'Puma', 'logo_url' => 'brands/puma.png'],
-            ['name' => 'Gucci', 'logo_url' => 'brands/gucci.png'],
+            ['name' => 'Sony', 'logo_url' => 'Sony.png'],
+            ['name' => 'Samsung', 'logo_url' => 'Samsung.png'],
+            ['name' => 'Apple', 'logo_url' => 'Apple.png'],
+            ['name' => 'Asus', 'logo_url' => 'Asus.png'],
+            ['name' => 'Canon', 'logo_url' => 'Canon.png'],
         ];
 
         foreach ($brands as $brand) {

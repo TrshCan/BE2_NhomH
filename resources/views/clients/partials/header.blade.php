@@ -1,3 +1,4 @@
+    extends()
     <header class="header trans_300">
             <!-- Main Navigation -->
             <div class="main_nav_container">
@@ -9,10 +10,8 @@
                             </div>
                             <nav class="navbar">
                                 <ul class="navbar_menu">
-                                    <li><a href="#">home</a></li>
-                                    <li><a href="#">shop</a></li>
-                                    <li><a href="#">promotion</a></li>
-                                    <li><a href="#">pages</a></li>
+                                    <li><a href="{{route('products.home')}}">home</a></li>
+                                    <li><a href="{{route('shop.show')}}">shop</a></li>
                                     <li><a href="#">blog</a></li>
                                     <li><a href="contact.html">contact</a></li>
                                 </ul>
