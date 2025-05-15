@@ -21,7 +21,7 @@ class ProductSeeder extends Seeder
                 'stock_quantity' => 50,
                 'category_id'    => 1,
                 'brand_id'       => 1,
-                'image_url'      => 'images/sony_wh1000xm4.jpg',
+                'image_url'      => 'sony_wh1000xm4.jpg',
                 'sales_count'    => 120,
             ],
             [   'product_id' =>  2,
@@ -31,7 +31,7 @@ class ProductSeeder extends Seeder
                 'stock_quantity' => 100,
                 'category_id'    => 2,
                 'brand_id'       => 2,
-                'image_url'      => 'images/logitech_g502.jpg',
+                'image_url'      => 'logitech_g502.jpg',
                 'sales_count'    => 300,
             ],
             [   'product_id' =>  3,
@@ -41,7 +41,7 @@ class ProductSeeder extends Seeder
                 'stock_quantity' => 75,
                 'category_id'    => 3,
                 'brand_id'       => 3,
-                'image_url'      => 'images/keychron_k6.jpg',
+                'image_url'      => 'keychron_k6.jpg',
                 'sales_count'    => 210,
             ]
         ]);
