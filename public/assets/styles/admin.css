@@ -1,0 +1,18 @@
+.sidebar {
+    min-height: 100vh;
+    background-color: #343a40;
+}
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.75);
+}
+.sidebar .nav-link:hover {
+    color: white;
+}
+.sidebar .nav-link.active {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.card-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
