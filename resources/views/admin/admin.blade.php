@@ -81,6 +81,9 @@
                     <i class="fas fa-chart-bar mr-3"></i> Báo cáo
                 </a>
                 <a href="#" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                    <i class="fas fa-chart-bar mr-3"></i> Thống kê
+                </a>
+                <a href="#" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
                     <i class="fas fa-cog mr-3"></i> Cài đặt
                 </a>
             </nav>

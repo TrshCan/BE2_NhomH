@@ -49,5 +49,9 @@ class Product extends Model
                     ->withPivot('quantity')
                     ->withTimestamps();
     }
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class, 'product_id', 'product_id');
+    }
 
 }

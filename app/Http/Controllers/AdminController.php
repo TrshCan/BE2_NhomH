@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Promotion;
 use App\Models\Product;
+use App\Models\Order;
+use App\Models\OrderDetail;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -15,6 +19,74 @@ class AdminController extends Controller
         return view('admin.quanlysanpham', compact('products'));
     }
 
+    public function index()
+    {
+        // Default date range (last 30 days)
+        $toDate = Carbon::now();
+        $fromDate = Carbon::now()->subDays(30);
+
+        return $this->getStatistics($fromDate, $toDate, 0);
+    }
+
+    public function filter(Request $request)
+    {
+        $fromDateStr = $request->input('from_date');
+        $toDateStr = $request->input('to_date');
+        $categoryId = $request->input('category_id', 0);
+
+        // Parse date strings (DD/MM/YYYY format)
+        $fromDate = Carbon::createFromFormat('d/m/Y', $fromDateStr)->startOfDay();
+        $toDate = Carbon::createFromFormat('d/m/Y', $toDateStr)->endOfDay();
+
+        return $this->getStatistics($fromDate, $toDate, $categoryId);
+    }
+
+    public function getStatistics($fromDate, $toDate, $categoryId)
+    {
+        $fromDateFormatted = $fromDate->format('d/m/Y');
+        $toDateFormatted = $toDate->format('d/m/Y');
+        $selectedCategory = (int)$categoryId;
+
+        $categories = Category::orderBy('category_name')->get();
+
+        // Category filter logic
+        $ordersQuery = Order::getOrdersWithinDateRange($fromDate, $toDate);
+        $categoryFilter = ($categoryId > 0);
+
+        // Get total revenue and order count
+        if ($categoryFilter) {
+            $revenueData = OrderDetail::getRevenueData($fromDate, $toDate, $categoryId);
+            $totalRevenue = $revenueData->total_revenue ?? 0;
+            $orderCount = $revenueData->order_count ?? 0;
+        } else {
+            // No category filter, simple calculation
+            $totalRevenue = $ordersQuery->sum('total_amount');
+            $orderCount = $ordersQuery->count();
+        }
+        
+        $monthlyRevenue = Order::getMonthlyRevenue($fromDate, $toDate, $categoryId);
+        $categoryRevenue = OrderDetail::getCategoryRevenue($fromDate, $toDate, $categoryId);
+        $topProducts = OrderDetail::getTopProducts($fromDate, $toDate, $categoryId);
+        $topProduct = $topProducts->first();
+        $orderStatusData = Order::getOrderStatusDistribution($fromDate, $toDate, $categoryId);
+
+        return view('admin.statistical', compact(
+            'fromDate',
+            'toDate',
+            'fromDateFormatted',
+            'toDateFormatted',
+            'totalRevenue',
+            'orderCount',
+            'monthlyRevenue',
+            'categoryRevenue',
+            'categories',
+            'selectedCategory',
+            'topProducts',
+            'topProduct',
+            'orderStatusData'
+        ));
+    }
+}
     // public function show($id)
     // {
     //     try {
@@ -84,4 +156,3 @@ class AdminController extends Controller
     //         return response()->json(['success' => false, 'message' => 'Đã xảy ra lỗi khi xóa sản phẩm: ' . $e->getMessage()], 500);
     //     }
     // }
-}
