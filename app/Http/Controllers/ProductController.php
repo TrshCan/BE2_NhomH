@@ -29,7 +29,7 @@ class ProductController extends Controller
         }
 
         // Phân trang sản phẩm
-        $products = $query->paginate(2)->withQueryString(); // Giữ lại search/category_id khi phân trang
+        $products = $query->paginate(8)->withQueryString(); // Giữ lại search/category_id khi phân trang
 
         // Lấy các dữ liệu khác như trước
         $categories = Category::all();

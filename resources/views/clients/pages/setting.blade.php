@@ -13,9 +13,9 @@
         <li class="nav-item">
             <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab">Lịch sử đơn hàng</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" id="password-tab" data-bs-toggle="tab" href="#password" role="tab">Đổi mật khẩu</a>
-        </li>
+{{--        <li class="nav-item">--}}
+{{--            <a class="nav-link" id="password-tab" data-bs-toggle="tab" href="#password" role="tab">Đổi mật khẩu</a>--}}
+{{--        </li>--}}
     </ul>
 
     <div class="tab-content pt-3" id="settingsTabContent">
@@ -79,41 +79,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                   
+
                         <tr>
                             <td></td>
                             <td></td>
                             <td> VND</td>
                             <td></td>
                         </tr>
-          
+
                 </tbody>
             </table>
         </div>
 
-        {{-- Đổi mật khẩu --}}
-        <div class="tab-pane fade" id="password" role="tabpanel">
-            <form action="" method="POST">
-                @csrf
-
-                <div class="mb-3">
-                    <label for="current_password" class="form-label">Mật khẩu hiện tại</label>
-                    <input type="password" class="form-control" name="current_password" required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="new_password" class="form-label">Mật khẩu mới</label>
-                    <input type="password" class="form-control" name="new_password" required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="new_password_confirmation" class="form-label">Xác nhận mật khẩu mới</label>
-                    <input type="password" class="form-control" name="new_password_confirmation" required>
-                </div>
-
-                <button type="submit" class="btn btn-warning">Đổi mật khẩu</button>
-            </form>
-        </div>
     </div>
 </div>
 @endsection

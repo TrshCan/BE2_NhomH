@@ -29,10 +29,7 @@ class UserController extends Controller
 
     public function updateProfile(Request $request)
 {
-    // Lấy người dùng đã đăng nhập
     $user = Auth::user();
-    
-    // Kiểm tra xem người dùng đã đăng nhập hay chưa
     if (!$user) {
         return redirect()->route('login')->with('error', 'Bạn phải đăng nhập để thực hiện thao tác này.');
     }
@@ -41,7 +38,7 @@ class UserController extends Controller
         'name' => 'required|string|max:255',
         'phone' => 'nullable|unique:users,phone,' . $user->id . '|min:10',
         'address' => 'nullable|string|max:255',
-        'password' => 'nullable|string|min:6|confirmed', // password_confirmation
+        'password' => 'nullable|string|min:6|confirmed',
     ];
 
     $request->validate($rules);
@@ -51,7 +48,7 @@ class UserController extends Controller
     $user->phone = $request->phone;
     $user->address = $request->address;
 
-    // Chỉ cập nhật mật khẩu nếu người dùng nhập
+
     if ($request->filled('password')) {
         $user->password = bcrypt($request->password);
     }
@@ -63,14 +60,14 @@ class UserController extends Controller
         Log::error('Error saving user data: ' . $e->getMessage());
         return redirect()->route('showUser',['id'=>$user->id])->with('error', 'Có lỗi xảy ra. Vui lòng thử lại.');
     }
-    
+
 
     return redirect()->route('showUser',['id'=>$user->id])->with('success', 'Cập nhật thông tin thành công.');
 }
 
-    
 
-    
+
+
 
 }
 

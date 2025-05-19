@@ -56,4 +56,43 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Status::class, 'status_id');
     }
+
+    // User.php
+
+    public static function findOrCreateFromSocialite($socialUser, string $provider): self
+    {
+        $user = self::where("{$provider}_id", $socialUser->getId())->first();
+        if ($user) {
+            return $user;
+        }
+        $user = self::where('email', $socialUser->getEmail())->first();
+        if ($user) {
+            $user->update(["{$provider}_id" => $socialUser->getId()]);
+            return $user;
+        }
+        return self::create([
+            "{$provider}_id" => $socialUser->getId(),
+            'name' => $socialUser->getName() ?? 'No Name',
+            'email' => $socialUser->getEmail() ?? "{$provider}_{$socialUser->getId()}@noemail.com",
+            'email_verified_at' => now(),
+        ]);
+    }
+
+    public static function search(?string $keyword=null)
+    {
+
+        $query = self::with('status');
+
+        if ($keyword)
+        {
+            $query ->where(function ($q)use($keyword){
+                $q->where('name', 'like', "%$keyword%")
+                    ->orWhere('email', 'like', "%$keyword%");
+            });
+
+
+        }
+        return $query;
+    }
+
 }

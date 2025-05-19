@@ -24,7 +24,7 @@ class LoginController extends Controller
 
         try {
             $socialUser = Socialite::driver($provider)->user();
-            $user = $this->findOrCreateUser($socialUser, $provider);
+            $user = User::findOrCreateFromSocialite($socialUser,$provider);
 
             if ($user->status_id == 2) {
                 return redirect()->route('login')->withErrors([
@@ -41,28 +41,7 @@ class LoginController extends Controller
         }
     }
 
-    private function findOrCreateUser($socialUser, string $provider): User
-    {
-        $user = User::where("{$provider}_id", $socialUser->getId())->first();
 
-        if ($user) {
-            return $user;
-        }
-
-        $user = User::where('email', $socialUser->getEmail())->first();
-
-        if ($user) {
-            $user->update(["{$provider}_id" => $socialUser->getId()]);
-            return $user;
-        }
-
-        return User::create([
-            "{$provider}_id" => $socialUser->getId(),
-            'name' => $socialUser->getName() ?? 'No Name',
-            'email' => $socialUser->getEmail() ?? "{$provider}_{$socialUser->getId()}@noemail.com",
-            'email_verified_at' => now(),
-        ]);
-    }
 
     private function validateProvider(string $provider): void
     {

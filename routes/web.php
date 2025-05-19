@@ -40,6 +40,7 @@ Route::get('/setting/users/{id}', [UserController::class, 'showUser'])->name('sh
 Route::middleware(['auth'])->group(function () {
     Route::get('/setting/users/profile/update/{id}', [UserController::class, 'editProfile'])->name('user.profile.update');
     Route::post('/setting/users/profile/update/{id}', [UserController::class, 'updateProfile'])->name('user.profile.post.update');
+
 });
 
 

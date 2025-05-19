@@ -98,37 +98,7 @@ class CrudUserController extends Controller
     {
         return view('register');
     }
-    // public function storeUser(Request $request)
-    // {
-    //     $validator = Validator::make($request->all(), [
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|email|unique:users,email|max:255',
-    //         'password' => 'required|string|min:8|confirmed',  
-    //         'phone' => 'required|numeric|digits:10',           
-    //         'address' => 'required|string|max:255',
-    //     ]);
 
-    //     // Nếu có lỗi validation
-    //     if ($validator->fails()) {
-    //         return redirect()->back()
-    //                          ->withErrors($validator)
-    //                          ->withInput(); // Trả về lại form với dữ liệu đã nhập
-    //     }
-
-
-    //     User::create([
-    //         'name' => $request->name,
-    //         'email' => $request->email,
-    //         'password' => Hash::make($request->password),
-    //         'phone' => $request->phone,
-    //         'address' => $request->address,
-    //     ]);
-
-
-    //     Auth::loginUsingId(User::latest()->first()->id);
-
-    //     return redirect()->route('home')->with('success', 'Đăng ký thành công!');
-    // }
 
     public function postUser(Request $request)
     {
@@ -203,7 +173,7 @@ class CrudUserController extends Controller
         try {
             $user = User::findOrFail($request->id);
 
-            // Xây dựng rules xác thực tùy theo loại người dùng
+
             $rules = [
                 'id' => 'required|exists:users,id',
                 'name' => 'required',
@@ -213,7 +183,6 @@ class CrudUserController extends Controller
                 'ban_reason' => 'nullable|string',
             ];
 
-            // Nếu không phải tài khoản Google thì bắt buộc có địa chỉ
             if (!$user->google_id) {
                 $rules['address'] = 'required';
             } else {
@@ -256,27 +225,20 @@ class CrudUserController extends Controller
 
     public function listUser(Request $request)
     {
-        // Nếu chưa đăng nhập
+
         if (!Auth::check()) {
             return redirect('login')->with('error_admin', 'Bạn cần đăng nhập và có quyền admin để truy cập.');
         }
 
-        // Nếu đã đăng nhập nhưng không phải admin
+
         if (Auth::user()->role !== 'admin') {
             Auth::logout();
             return redirect('login')->with('error_admin', 'Bạn không có quyền truy cập trang quản trị. Đã đăng xuất.');
         }
 
-        // Nếu là admin
-        $query = User::with('status');
+    $users = User::search($request->search)->paginate(5);
 
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where('name', 'like', "%$search%")
-                ->orWhere('email', 'like', "%$search%");
-        }
 
-        $users = $query->paginate(10);
         return view('admin.list', ['users' => $users]);
     }
 
