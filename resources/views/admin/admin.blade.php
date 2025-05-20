@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    @yield('styles')
     <style>
         .sidebar-hidden {
             transform: translateX(-100%);
@@ -80,9 +82,13 @@
                 <a href="#" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
                     <i class="fas fa-chart-bar mr-3"></i> Báo cáo
                 </a>
+                <a href="{{ route('chat.admin') }}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                    <i class="fas fa-cog mr-3"></i> Chat
+                </a>
                 <a href="#" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
                     <i class="fas fa-cog mr-3"></i> Cài đặt
                 </a>
+               
             </nav>
         </div>
 
@@ -107,5 +113,6 @@
             toggleIcon.classList.toggle('fa-times');
         });
     </script>
+     @yield('scripts')
 </body>
 </html>
