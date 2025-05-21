@@ -24,7 +24,8 @@ class ProductController extends Controller
         $categories = Category::all();
         $carouselProducts = Product::featured()->get();
         $dealEndTime = now()->addDays(4);
-        $dealOfTheWeekProduct = Product::dealOfTheWeek();
+        $dealOfTheWeekProduct = Product::dealOfTheWeek()->with('deal')->first();
+
         $bestSellers = Product::bestSellers()->get();
         $latestBlogs = Blog::orderByDesc('published_at')->take(3)->get();
         $brands = Brand::withCount('products')->get();

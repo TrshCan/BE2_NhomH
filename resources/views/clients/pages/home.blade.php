@@ -36,7 +36,7 @@
                                     <h1>{{ $product->product_name }}</h1>
                                     <p class="mt-2 fw-bold text-warning">{{ number_format($product->price) }} VNĐ</p>
                                     <div class="red_button shop_now_button mt-3">
-                                        <a href="{{ url('public/pages/single.php?product_id=' . $product->id) }}" class="btn btn-danger text-uppercase">Shop now</a>
+                                        <a href="{{route('shop.show')}}" class="btn btn-danger text-uppercase">Shop now</a>
                                     </div>
                                 </div>
                             </div>
@@ -58,7 +58,7 @@
     </div>
 
     <!-- Banner -->
-    <div class="banner py-5">
+   <div class="banner py-5">
     <h5 class="text-center text-dark fw-bold" style="font-size: 2.5rem; text-shadow: 2px 2px 5px rgba(119, 111, 111, 0.2);">
         Thương Hiệu
     </h5>
@@ -67,7 +67,7 @@
         <div class="row justify-content-center text-center g-4">
             @foreach($brands as $brand)
                 <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                    <a href="{{ route('products.home', $brand->slug) }}" class="text-decoration-none">
+                    <a href="{{ route('products.index', $brand->slug) }}" class="text-decoration-none">
                         <div class="brand-card">
                             <div class="image-circle mx-auto mb-2"
                                  style="width: 120px; height: 120px; background-image: url('{{ asset('assets/images/' . $brand->logo_url) }}'); background-size: cover; background-position: center; border-radius: 50%;">
@@ -141,14 +141,15 @@
     </div>
 
     <!-- Deal of the Week -->
-    <div class="deal_ofthe_week py-5" style="background: #f5f7fa; border-radius: 15px;">
-        <div class="container">
+   <div class="deal_ofthe_week py-5" style="background: #f5f7fa; border-radius: 15px;">
+    <div class="container">
+        @if ($dealOfTheWeekProduct)
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     <div class="deal_ofthe_week_img position-relative overflow-hidden rounded shadow-sm">
                         <img src="{{ asset('assets/images/' . $dealOfTheWeekProduct->image_url) }}"
-                            class="img-fluid w-100 deal-img" alt="{{ $dealOfTheWeekProduct->product_name }}"
-                            style="transition: transform 0.3s ease;">
+                             class="img-fluid w-100 deal-img" alt="{{ $dealOfTheWeekProduct->product_name }}"
+                             style="transition: transform 0.3s ease;">
                         <span class="badge bg-danger position-absolute top-0 end-0 m-3 fs-6 px-3 py-2">
                             Save {{ number_format($dealOfTheWeekProduct->original_price - $dealOfTheWeekProduct->price) }} VNĐ
                         </span>
@@ -164,38 +165,41 @@
                         </div>
                         <div class="product-info mb-4">
                             <p class="text-muted mb-2">{{ $dealOfTheWeekProduct->description ?? 'Tai nghe chất lượng cao với thời lượng pin 30 giờ.' }}</p>
-                            <p class="text-muted mb-1">Original Price: <span class="text-decoration-line-through">0 VNĐ</span></p>
+                            <p class="text-muted mb-1">Original Price: <span class="text-decoration-line-through">{{ number_format($dealOfTheWeekProduct->original_price) }} VNĐ</span></p>
                             <p class="text-danger fw-bold fs-3">{{ number_format($dealOfTheWeekProduct->price) }} VNĐ</p>
                         </div>
                         <ul class="timer d-flex justify-content-center gap-3 mb-4">
                             <li class="timer-item bg-white shadow-sm rounded p-3 text-center">
-                                <div id="day" class="timer_num fw-bold fs-3 text-dark">06</div>
+                                <div id="day" class="timer_num fw-bold fs-3 text-dark">00</div>
                                 <div class="timer_unit text-muted text-uppercase">Days</div>
                             </li>
                             <li class="timer-item bg-white shadow-sm rounded p-3 text-center">
-                                <div id="hour" class="timer_num fw-bold fs-3 text-dark">23</div>
+                                <div id="hour" class="timer_num fw-bold fs-3 text-dark">00</div>
                                 <div class="timer_unit text-muted text-uppercase">Hours</div>
                             </li>
                             <li class="timer-item bg-white shadow-sm rounded p-3 text-center">
-                                <div id="minute" class="timer_num fw-bold fs-3 text-dark">59</div>
+                                <div id="minute" class="timer_num fw-bold fs-3 text-dark">00</div>
                                 <div class="timer_unit text-muted text-uppercase">Mins</div>
                             </li>
                             <li class="timer-item bg-white shadow-sm rounded p-3 text-center">
-                                <div id="second" class="timer_num fw-bold fs-3 text-dark">17</div>
+                                <div id="second" class="timer_num fw-bold fs-3 text-dark">00</div>
                                 <div class="timer_unit text-muted text-uppercase">Sec</div>
                             </li>
                         </ul>
                         <div class="d-flex gap-3">
-                            <a href="{{ route('products.show', $dealOfTheWeekProduct->product_id) }}"
-                               class="btn custom-shop-now btn-lg text-uppercase">Shop Now</a>
                             <a href="{{ route('products.show', $dealOfTheWeekProduct->product_id) }}"
                                class="btn btn-outline-secondary custom-view-details btn-lg text-uppercase">View Details</a>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @else
+            <div class="py-5 text-center">
+                <h4>Hiện chưa có Deal Of The Week nào.</h4>
+            </div>
+        @endif
     </div>
+</div>
 
    
 
@@ -277,7 +281,7 @@
                             <div class="blog_content d-flex flex-column align-items-center justify-content-center text-center rounded">
                                 <h4 class="blog_title">{{ $blog->title }}</h4>
                                 <span class="blog_meta">by {{ $blog->author }} | {{ \Carbon\Carbon::parse($blog->published_at)->format('M d, Y') }}</span>
-                                <a class="blog_more" href="{{ route('products.home', $blog->id) }}">Read more</a>
+                                <a class="blog_more" href="{{ route('blog.index', $blog->id) }}">Read more</a>
                             </div>
                         </div>
                     </div>

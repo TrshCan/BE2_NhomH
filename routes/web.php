@@ -26,6 +26,8 @@ Route::get('/', [ProductController::class, 'index'])->name('products.home');
 Route::get('/deal-of-the-week', [ProductController::class, 'dealOfTheWeek'])->name('products.deal');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.show');
+Route::get('/shop/{brandSlug?}', [ShopController::class, 'index'])->name('products.index');
+Route::get('/shop/{brandSlug?}/{categorySlug?}', [ShopController::class, 'index'])->name('shop');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');

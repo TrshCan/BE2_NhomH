@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Image;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ImageController extends Controller
@@ -13,6 +14,7 @@ class ImageController extends Controller
     public function index()
     {
         $images = Image::paginate(10);
+        $product = product::all();
         return view('admin.quanlyanh', compact('images'));
     }
 

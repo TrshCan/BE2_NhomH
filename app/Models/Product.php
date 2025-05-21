@@ -50,8 +50,16 @@ class Product extends Model
 
     public function scopeDealOfTheWeek($query)
     {
-        return $query->find(1);
+        return $query->whereHas('deal', function ($q) {
+            $q->where('start_date', '<=', now())
+                ->where('end_date', '>=', now());
+        });
     }
+    public function scopeByBrand($query, $brandId)
+    {
+        return $brandId ? $query->where('id', $brandId) : $query;
+    }
+
 
     public function images()
     {
@@ -71,5 +79,9 @@ class Product extends Model
     public function brand()
     {
         return $this->belongsTo(Brand::class);
+    }
+    public function deal()
+    {
+        return $this->hasOne(DealProduct::class, 'product_id');
     }
 }

@@ -72,9 +72,15 @@
                 <input type="hidden" name="image_url" id="image_url">
             </div>
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700">Product ID</label>
-                <input type="text" name="product_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
+                 <label class="block text-sm font-medium text-gray-700">Sản phẩm</label>
+                 <select name="product_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
+                   <option value="">-- Chọn sản phẩm --</option>
+                    @foreach ($product as $item)
+                  <option value="{{ $item->product_id }}">{{ $item->product_id }} - {{ $item->product_name }}</option>
+                   @endforeach
+            </select>
             </div>
+
             <div class="flex justify-end space-x-2">
                 <button type="button" id="closeModal" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Hủy</button>
                 <button type="submit" class="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition">Lưu</button>
