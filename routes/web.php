@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CrudUserController;
 use App\Http\Controllers\ForgotPassword;
@@ -10,38 +11,43 @@ use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\OrderManagementController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CouponManagementController;
+use App\Http\Controllers\BrandController; // Added to use BrandController
+use App\Http\Controllers\ContactController; // Added to use BrandController
+use App\Http\Controllers\ImageController; // Added to use BrandController
 
 // Trang chủ
 Route::get('/', [ProductController::class, 'index'])->name('products.home');
 Route::get('/deal-of-the-week', [ProductController::class, 'dealOfTheWeek'])->name('products.deal');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.show');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/post/{id}', [BlogController::class, 'show'])->name('post.show');
 
 // Trang welcome
 Route::get('/welcome', function () {
     return view('welcome');
 })->name('welcome');
 
-// Trang home
-// Route::get('home',[CrudUserController::class,'home'])->name('home');
 // QUẢN LÝ NGƯỜI DÙNG
 Route::get('/login', [CrudUserController::class, 'login'])->name('login');
 Route::post('/login', [CrudUserController::class, 'authUser'])->name('user.authUser');
 Route::post('/signOut', [CrudUserController::class, 'signOut'])->name('signOut');
 
-Route::post('logout',[AdminController::class,'logout'])->name('logout');
+Route::post('logout', [AdminController::class, 'logout'])->name('logout');
 //Setting
 Route::get('/setting/users/{id}', [UserController::class, 'showUser'])->name('showUser');
 Route::middleware(['auth'])->group(function () {
     Route::get('/setting/users/profile/update/{id}', [UserController::class, 'editProfile'])->name('user.profile.update');
     Route::post('/setting/users/profile/update/{id}', [UserController::class, 'updateProfile'])->name('user.profile.post.update');
 });
-
 
 Route::get('/register', [CrudUserController::class, 'createUser'])->name('register');
 Route::post('/register', [CrudUserController::class, 'postUser'])->name('user.postUser');
@@ -105,11 +111,31 @@ Route::get('/coupons/{id}', [CouponManagementController::class, 'show']);
 Route::post('/coupons', [CouponManagementController::class, 'store'])->name('admin.coupons.store');
 Route::post('/coupons/{id}/update', [CouponManagementController::class, 'update']);
 Route::get('/coupons/{id}/delete', [CouponManagementController::class, 'destroy']);
-// Route::get('/quanlysanpham', [AdminController::class, 'index'])->name('dashboard.show');
+
 Route::prefix('admin')->group(function () {
     Route::get('/quanlysanpham', [AdminController::class, 'index'])->name('admin.products');
     Route::get('/products/{id}', [AdminController::class, 'show'])->name('admin.products.show');
     Route::post('/products', [AdminController::class, 'store'])->name('admin.products.store');
     Route::put('/products/{id}', [AdminController::class, 'update'])->name('admin.products.update');
     Route::delete('/products/{id}', [AdminController::class, 'destroy'])->name('admin.products.destroy');
+
+    Route::get('/quanlythuonghieu', [BrandController::class, 'index'])->name('admin.brands');
+    Route::get('/brands/{id}', [BrandController::class, 'show'])->name('admin.brands.show'); // Updated to BrandController
+    Route::post('/brands', [BrandController::class, 'store'])->name('admin.brands.store');
+    Route::put('/brands/{id}', [BrandController::class, 'update'])->name('admin.brands.update');
+    Route::delete('/brands/{id}', [BrandController::class, 'destroy'])->name('admin.brands.destroy');
+
+    Route::get('/quanlydanhmuc', [CategoryController::class, 'index'])->name('admin.categories');
+    Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('admin.categories.show');
+    Route::post('/categories', [CategoryController::class, 'store'])->name('admin.categories.store');
+    Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('admin.categories.update');
+    Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
+
+    Route::get('/images', [ImageController::class, 'index'])->name('admin.images.index');
+    Route::get('/images/create', [ImageController::class, 'create'])->name('admin.images.create');
+    Route::post('/images', [ImageController::class, 'store'])->name('admin.images.store');
+    Route::get('/images/{id}', [ImageController::class, 'show'])->name('admin.images.show');
+    Route::get('/images/{id}/edit', [ImageController::class, 'edit'])->name('admin.images.edit');
+    Route::put('/images/{id}', [ImageController::class, 'update'])->name('admin.images.update'); // Changed from POST to PUT
+    Route::delete('/images/{id}', [ImageController::class, 'destroy'])->name('admin.images.destroy');
 });

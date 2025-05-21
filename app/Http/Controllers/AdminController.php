@@ -12,18 +12,20 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
     public function index()
     {
-        $products = Product::with(['category', 'brand'])->paginate(2);
+        $products = Product::with(['category', 'brand'])->paginate(8);
         $categories = Category::all();
         $brands = Brand::all();
         return view('admin.quanlysanpham', compact('products', 'categories', 'brands'));
     }
 
-    public function logout(){
+    public function logout()
+    {
         Session::flush();
         Auth::logout();
 
@@ -47,7 +49,6 @@ class AdminController extends Controller
         try {
             $validated = $request->validate($this->productRules());
 
-            // Check business logic for featured products
             if ($request->is_featured && $request->price < 10000) {
                 return response()->json([
                     'success' => false,
@@ -55,7 +56,6 @@ class AdminController extends Controller
                 ], 422);
             }
 
-            // Handle image upload to public/assets/images
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
             $image->move(public_path('assets/images'), $imageName);
@@ -86,7 +86,6 @@ class AdminController extends Controller
         try {
             $validated = $request->validate($this->productRules(true));
 
-            // Check business logic for featured products
             if ($request->is_featured && $request->price < 10000) {
                 return response()->json([
                     'success' => false,
@@ -96,14 +95,10 @@ class AdminController extends Controller
 
             $product = Product::findOrFail($id);
 
-            // Handle image upload if provided
             if ($request->hasFile('image')) {
-                // Delete old image if it exists
                 if ($product->image_url && file_exists(public_path('assets/images/' . $product->image_url))) {
                     unlink(public_path('assets/images/' . $product->image_url));
                 }
-
-                // Save new image
                 $image = $request->file('image');
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $image->move(public_path('assets/images'), $imageName);

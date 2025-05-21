@@ -12,8 +12,8 @@
                                 <ul class="navbar_menu">
                                     <li><a href="{{route('products.home')}}">home</a></li>
                                     <li><a href="{{route('shop.show')}}">shop</a></li>
-                                    <li><a href="#">blog</a></li>
-                                    <li><a href="contact.html">contact</a></li>
+                                    <li><a href="{{ route('blog.index') }}">blog</a></li>
+                                    <li><a href="{{ route('contact') }}">contact</a></li>
                                 </ul>
                                 <div class="navbar_user">
                                     <form action="{{ route('products.home') }}" method="GET" class="search-bar">

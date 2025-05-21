@@ -13,30 +13,19 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $categoryId = $request->query('category_id');
-        $search = $request->query('search'); // Lấy từ khóa tìm kiếm từ query string
+        $search = $request->query('search');
 
-        // Query cơ bản
-        $query = Product::query();
+        $products = Product::query()
+            ->byCategory($categoryId)
+            ->search($search)
+            ->paginate(8)
+            ->withQueryString();
 
-        // Nếu có category_id thì lọc theo category
-        if ($categoryId) {
-            $query->where('category_id', $categoryId);
-        }
-
-        // Nếu có từ khóa tìm kiếm thì lọc theo tên sản phẩm
-        if ($search) {
-            $query->where('product_name', 'like', '%' . $search . '%');
-        }
-
-        // Phân trang sản phẩm
-        $products = $query->paginate(2)->withQueryString(); // Giữ lại search/category_id khi phân trang
-
-        // Lấy các dữ liệu khác như trước
         $categories = Category::all();
-        $carouselProducts = Product::where('is_featured', true)->take(3)->get();
-        $dealEndTime = now()->addDays(7);
-        $dealOfTheWeekProduct = Product::find(1);
-        $bestSellers = Product::orderByDesc('sales_count')->take(6)->get();
+        $carouselProducts = Product::featured()->get();
+        $dealEndTime = now()->addDays(4);
+        $dealOfTheWeekProduct = Product::dealOfTheWeek();
+        $bestSellers = Product::bestSellers()->get();
         $latestBlogs = Blog::orderByDesc('published_at')->take(3)->get();
         $brands = Brand::withCount('products')->get();
 
@@ -53,12 +42,10 @@ class ProductController extends Controller
             'brands'
         ));
     }
+
     public function show($id)
     {
-        // Lấy sản phẩm theo ID và kèm theo danh sách ảnh phụ
-        $product = Product::with('details', 'images')->findOrFail($id);
-
-
+        $product = Product::findWithDetails($id);
 
         return view('clients.pages.product_detail', compact('product'));
     }

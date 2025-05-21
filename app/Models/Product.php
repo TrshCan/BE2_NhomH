@@ -7,13 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-
-
-    protected $primaryKey = 'product_id'; // nếu không phải 'id' thì cần khai báo
-    public $incrementing = false; // Nếu product_id là khóa chính tự định nghĩa, nó sẽ không tự động tăng
-    protected $keyType = 'int';
     use HasFactory;
 
+    protected $primaryKey = 'product_id';
 
     protected $fillable = [
         'product_name',
@@ -25,29 +21,55 @@ class Product extends Model
         'image_url',
         'sales_count',
     ];
+
+    public function scopeFeatured($query, $limit = 3)
+    {
+        return $query->where('is_featured', true)->take($limit);
+    }
+
+    // Các scope khác
+    public function scopeByCategory($query, $categoryId)
+    {
+        return $categoryId ? $query->where('category_id', $categoryId) : $query;
+    }
+
+    public function scopeSearch($query, $search)
+    {
+        return $search ? $query->where('product_name', 'like', '%' . $search . '%') : $query;
+    }
+
+    public function scopeBestSellers($query, $limit = 6)
+    {
+        return $query->orderByDesc('sales_count')->take($limit);
+    }
+
+    public function scopeFindWithDetails($query, $id)
+    {
+        return $query->with('details', 'images')->findOrFail($id);
+    }
+
+    public function scopeDealOfTheWeek($query)
+    {
+        return $query->find(1);
+    }
+
     public function images()
     {
-        return $this->hasMany(Image::class, 'product_id');  // 'product_id' là khóa ngoại trong bảng images
+        return $this->hasMany(Image::class, 'product_id');
     }
+
     public function details()
     {
         return $this->hasOne(ProductDetail::class, 'product_id');
     }
-    // In Product.php model
+
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
+
     public function brand()
     {
-        return $this->belongsTo(brand::class);
+        return $this->belongsTo(Brand::class);
     }
-
-    public function carts()
-    {
-        return $this->belongsToMany(Cart::class, 'cart_product', 'product_id', 'cart_id')
-                    ->withPivot('quantity')
-                    ->withTimestamps();
-    }
-
 }

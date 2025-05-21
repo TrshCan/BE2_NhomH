@@ -126,8 +126,18 @@
                     <i class="fas fa-users mr-3"></i> Quản lý người dùng
                 </a>
                 <a href="{{ route('admin.products')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
-                    <i class="fas fa-box mr-3"></i> Sản phẩm
+                    <i class="fas fa-box mr-3"></i> Quản lý Sản phẩm
                 </a>
+                <a href="{{ route('admin.images.index')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                    <i class="fas fa-box mr-3"></i> Quản lý ảnh
+                </a>
+                <a href="{{ route('admin.brands')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                    <i class="fas fa-box mr-3"></i> Brands
+                </a>
+                <a href="{{ route('admin.categories')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                    <i class="fas fa-box mr-3"></i> Quản lý danh mục
+                </a>
+                
                 <a href="{{ route('admin.orders.index')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
                     <i class="fas fa-shopping-cart mr-3"></i> Đơn hàng
                 </a>

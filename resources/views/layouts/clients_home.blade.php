@@ -25,6 +25,7 @@
   
 
    <link rel="stylesheet" href="{{ asset('assets/styles/main_styles.css') }}">
+   <link rel="stylesheet" href="{{ asset('assets/styles/contact_styles.css') }}">
 
 </head>
 
