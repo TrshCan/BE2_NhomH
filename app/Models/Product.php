@@ -15,6 +15,7 @@ class Product extends Model
         'product_name',
         'description',
         'price',
+        'is_featured', // Đã thêm
         'stock_quantity',
         'category_id',
         'brand_id',
@@ -27,7 +28,6 @@ class Product extends Model
         return $query->where('is_featured', true)->take($limit);
     }
 
-    // Các scope khác
     public function scopeByCategory($query, $categoryId)
     {
         return $categoryId ? $query->where('category_id', $categoryId) : $query;

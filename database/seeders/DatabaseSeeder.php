@@ -30,8 +30,8 @@ class DatabaseSeeder extends Seeder
             $this->call(OrderSeeder::class);
             $this->call(Images_productSeeder::class);
             $this->call(ProductDetailsSeeder::class);
-            $this ->call(PromotionsTableSeeder::class);
-            $this->call(PromotionSeeder::class);
+
+
             $this->call(CategoriesSeeder::class);
             $this->call(CouponSeeder::class);
         } catch (\Exception $e) {
@@ -39,4 +39,3 @@ class DatabaseSeeder extends Seeder
         }
     }
 }
-

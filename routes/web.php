@@ -112,7 +112,7 @@ Route::post('/coupons', [CouponManagementController::class, 'store'])->name('adm
 Route::post('/coupons/{id}/update', [CouponManagementController::class, 'update']);
 Route::get('/coupons/{id}/delete', [CouponManagementController::class, 'destroy']);
 
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/quanlysanpham', [AdminController::class, 'index'])->name('admin.products');
     Route::get('/products/{id}', [AdminController::class, 'show'])->name('admin.products.show');
     Route::post('/products', [AdminController::class, 'store'])->name('admin.products.store');
@@ -120,7 +120,7 @@ Route::prefix('admin')->group(function () {
     Route::delete('/products/{id}', [AdminController::class, 'destroy'])->name('admin.products.destroy');
 
     Route::get('/quanlythuonghieu', [BrandController::class, 'index'])->name('admin.brands');
-    Route::get('/brands/{id}', [BrandController::class, 'show'])->name('admin.brands.show'); // Updated to BrandController
+    Route::get('/brands/{id}', [BrandController::class, 'show'])->name('admin.brands.show');
     Route::post('/brands', [BrandController::class, 'store'])->name('admin.brands.store');
     Route::put('/brands/{id}', [BrandController::class, 'update'])->name('admin.brands.update');
     Route::delete('/brands/{id}', [BrandController::class, 'destroy'])->name('admin.brands.destroy');
@@ -136,6 +136,6 @@ Route::prefix('admin')->group(function () {
     Route::post('/images', [ImageController::class, 'store'])->name('admin.images.store');
     Route::get('/images/{id}', [ImageController::class, 'show'])->name('admin.images.show');
     Route::get('/images/{id}/edit', [ImageController::class, 'edit'])->name('admin.images.edit');
-    Route::put('/images/{id}', [ImageController::class, 'update'])->name('admin.images.update'); // Changed from POST to PUT
+    Route::put('/images/{id}', [ImageController::class, 'update'])->name('admin.images.update');
     Route::delete('/images/{id}', [ImageController::class, 'destroy'])->name('admin.images.destroy');
 });

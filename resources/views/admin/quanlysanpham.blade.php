@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const notificationTitle = document.getElementById('notificationTitle');
     const notificationMessage = document.getElementById('notificationMessage');
     let currentProductId = null;
-    let shouldReload = false; // Flag to track if page reload is needed
+    let shouldReload = false;
 
     function showAlert(message, type = 'success') {
         notificationTitle.textContent = type === 'success' ? 'Thành công' : 'Lỗi';
@@ -214,6 +214,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(productForm);
         const categoryId = formData.get('category_id');
         const brandId = formData.get('brand_id');
+        const isFeatured = formData.get('is_featured');
+        formData.set('is_featured', isFeatured === '1' ? '1' : '0');
+
         if (!categoryId || !brandId) {
             showAlert('Vui lòng chọn danh mục và thương hiệu!', 'error');
             return;
@@ -238,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             console.log('Response:', result);
             if (response.ok && result.success) {
-                shouldReload = true; // Set flag to reload after closing modal
+                shouldReload = true;
                 showAlert(result.message, 'success');
                 productModal.classList.add('hidden');
             } else {
@@ -329,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const result = await response.json();
                 if (response.ok && result.success) {
-                    shouldReload = true; // Set flag to reload after closing modal
+                    shouldReload = true;
                     showAlert(result.message, 'success');
                 } else {
                     showAlert(result.message || 'Có lỗi xảy ra!', 'error');
