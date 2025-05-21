@@ -19,8 +19,8 @@ class ProductController extends Controller
 
         // Nếu có category_id, lọc sản phẩm theo category_id, nếu không lấy tất cả sản phẩm
         $products = $categoryId
-            ? Product::where('category_id', $categoryId)->paginate(2)
-            : Product::paginate(2); // Nếu không có category_id thì lấy tất cả sản phẩm
+            ? Product::where('category_id', $categoryId)->paginate(20)
+            : Product::paginate(20); // Nếu không có category_id thì lấy tất cả sản phẩm
 
         // Lấy tất cả các danh mục
         $categories = Category::all();

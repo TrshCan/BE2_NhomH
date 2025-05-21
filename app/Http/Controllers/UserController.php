@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -12,7 +13,8 @@ class UserController extends Controller
     public function showUser($id)
     {
         $user = User::findOrFail($id);
-        return view('clients.pages.setting', ['user' => $user]);
+        $orders = Order::where('user_id', $id)->orderBy('order_date', 'desc')->get();
+        return view('clients.pages.setting', ['user' => $user, 'orders' => $orders]);
     }
 
     public function passwordUser()

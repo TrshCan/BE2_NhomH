@@ -11,4 +11,16 @@ class Coupon extends Model
     {
         return $this->belongsToMany(Order::class, 'coupon_order');
     }
+
+    public static function isActive(string $code): ?Coupon
+    {
+        return self::where('code', $code)->where('is_active', true)->first();
+    }
+
+    public function scopeFilter($query, array $filters)
+    {
+        if (!empty($filters['search'])) {
+            $query->where('code', 'like', '%' . $filters['search'] . '%');
+        }
+    }
 }

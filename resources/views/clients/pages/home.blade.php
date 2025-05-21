@@ -73,7 +73,7 @@
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                         <a href="{{ route('products.home', $brand->slug) }}" class="text-decoration-none">
                             <div class="brand-card">
-                                <div class="image-circle mx-auto mb-2" style="width: 120px; height: 120px; background-image: url('{{ asset('storage/' . $brand->logo_url) }}'); background-size: cover; background-position: center; border-radius: 50%;"></div>
+                                <div class="image-circle mx-auto mb-2" style="width: 120px; height: 120px; background-image: url('{{ asset(`storage/` . $brand->logo_url) }}'); background-size: cover; background-position: center; border-radius: 50%;"></div>
                                 <div class="brand-name text-white fw-bold">{{ $brand->name }}</div>
                                 <div class="text-muted small">{{ $brand->products_count }} sản phẩm</div>
                             </div>
@@ -128,7 +128,7 @@
                                 </div>
                                 <p class="card-text text-muted mb-1">Giá gốc: <span class="text-decoration-line-through">{{ number_format($product->original_price) }} VNĐ</span></p>
                                 <p class="card-text text-danger fw-bold mb-3">{{ number_format($product->price) }} VNĐ</p>
-                                <a href="{{ url('public/includes/cart_crud.php?action=add&id=' . $product->id) }}" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
+                                <a href="{{ route('cart.add', ['id' => $product->product_id]) }}" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
                             </div>
                         </div>
                     </div>
@@ -241,7 +241,7 @@
                                                     </p>
                                                    <div class="product_price">{{ number_format($product['price'], 0) }} VND</div>
                                                 </div>
-                                                <div class="add_to_cart_button text-center"><a href="#">Add to Cart</a></div>
+                                                <div class="add_to_cart_button text-center"><a href="{{ route('cart.add', ['id' => $product['product_id']]) }}">Add to Cart</a></div>
                                                 <div class="favorite favorite_right"></div>
                                             </div>
                                         </div>
@@ -274,7 +274,7 @@
                 @foreach($latestBlogs as $blog)
                     <div class="col-md-6 col-lg-4">
                         <div class="blog_item position-relative rounded overflow-hidden shadow">
-                            <div class="blog_background" style="background-image:url('{{ asset('assets/images/' . $blog->image_url) }}');"></div>
+                            <div class="blog_background" style="background-image:url('{{ asset(`assets/images/` . $blog->image_url) }}');"></div>
                             <div class="blog_content d-flex flex-column align-items-center justify-content-center text-center rounded">
                                 <h4 class="blog_title">{{ $blog->title }}</h4>
                                 <span class="blog_meta">by {{ $blog->author }} | {{ \Carbon\Carbon::parse($blog->published_at)->format('M d, Y') }}</span>

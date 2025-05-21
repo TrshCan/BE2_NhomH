@@ -25,12 +25,7 @@ class CouponManagementController extends Controller
         $query = Coupon::query();
 
         // Handle search query
-        if ($request->has('search') && $request->input('search') !== '') {
-            $search = $request->input('search');
-            $query->where('code', 'like', "%{$search}%");
-        }
-
-        $coupons = $query->latest()->paginate(10); // 10 coupons per page
+        $coupons = Coupon::filter($request->only('search'))->latest()->paginate(10);
 
         return view('admin.coupon-management', compact('coupons'));
     }

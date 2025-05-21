@@ -42,7 +42,9 @@
                     <td class="px-6 py-4 text-sm text-gray-800">{{ $order->order_date->format('d/m/Y H:i') }}</td>
                     <td class="px-6 py-4 text-sm text-gray-800">{{ number_format($order->total_amount, 0, ',', '.') }} VND</td>
                     <td class="px-6 py-4 text-sm text-gray-800">{{ $order->status }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-800 max-w-xs truncate" title="{{ $order->shipping_address }}">{{ $order->shipping_address }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-800 max-w-xs truncate" title="{{ $order->shipping_address }}">
+                        <span class="address-display" data-address="{{ $order->shipping_address }}">{{ $order->shipping_address }}</span>
+                    </td>
                     <td class="px-6 py-4 text-sm">
                         <button class="text-teal-500 hover:text-teal-600 mr-4 view-order" data-id="{{ $order->order_id }}">
                             <i class="fas fa-eye"></i>
@@ -66,7 +68,8 @@
 
     <!-- Pagination Links -->
     <div class="mt-4">
-        {{ $orders->links() }}
+        {{ $orders->appends(['search' => request('search')])->links() }}
+
     </div>
 </div>
 
@@ -92,7 +95,28 @@
             </div>
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Địa chỉ giao hàng</label>
-                <textarea name="shipping_address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"></textarea>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Tỉnh/Thành phố</label>
+                    <select name="province" id="province" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
+                        <option value="">Chọn tỉnh/thành phố</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Quận/Huyện</label>
+                    <select name="district" id="district" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" disabled required>
+                        <option value="">Chọn quận/huyện</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Phường/Xã</label>
+                    <select name="ward" id="ward" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" disabled required>
+                        <option value="">Chọn phường/xã</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Địa chỉ chi tiết</label>
+                    <input type="text" name="house_address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
+                </div>
             </div>
             <div id="orderDetails" class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Chi tiết đơn hàng</label>
@@ -140,6 +164,168 @@
 
     let detailCount = 1;
 
+    // Location data handling
+    let locationData = [];
+    // Convert addresses in the table after page load
+    document.addEventListener('DOMContentLoaded', async () => {
+        await loadLocationData(); // Ensure location data is loaded
+        document.querySelectorAll('.address-display').forEach(span => {
+            const addressString = span.dataset.address;
+            const formattedAddress = convertAddressCodesToNames(addressString);
+            span.textContent = formattedAddress;
+            span.parentElement.title = formattedAddress; // Update tooltip
+        });
+    });
+    async function loadLocationData() {
+        try {
+            const response = await fetch("{{ asset('assets/json/nested-divisions.json') }}");
+            locationData = await response.json();
+        } catch (error) {
+            console.error("Lỗi khi tải dữ liệu tỉnh/thành:", error);
+        }
+    }
+
+    // Function to convert address codes to names
+    function convertAddressCodesToNames(addressString) {
+        if (!addressString || !locationData.length) return addressString;
+
+        const [houseAddress, wardCode, districtCode, provinceCode] = addressString.split(', ').map(str => str.trim());
+        let formattedAddress = houseAddress || '';
+
+        const province = locationData.find(p => p.code == provinceCode);
+        if (province) {
+            formattedAddress += `, ${province.name}`;
+            const district = province.districts?.find(d => d.code == districtCode);
+            if (district) {
+                formattedAddress += `, ${district.name}`;
+                const ward = district.wards?.find(w => w.code == wardCode);
+                if (ward) {
+                    formattedAddress += `, ${ward.name}`;
+                }
+            }
+        }
+
+        return formattedAddress;
+    }
+
+    // Populate dropdowns for address
+    const provinceSelect = orderForm.querySelector('#province');
+    const districtSelect = orderForm.querySelector('#district');
+    const wardSelect = orderForm.querySelector('#ward');
+
+    function populateProvinces(selectedCode = '') {
+        provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
+        locationData.forEach(province => {
+            const option = document.createElement('option');
+            option.value = province.code;
+            option.textContent = province.name;
+            if (province.code == selectedCode) option.selected = true;
+            provinceSelect.appendChild(option);
+        });
+    }
+
+    function populateDistricts(provinceCode, selectedCode = '') {
+        districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+        wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+        districtSelect.disabled = true;
+        wardSelect.disabled = true;
+        const selectedProvince = locationData.find(p => p.code == provinceCode);
+        if (selectedProvince && selectedProvince.districts) {
+            districtSelect.disabled = false;
+            selectedProvince.districts.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district.code;
+                option.textContent = district.name;
+                if (district.code == selectedCode) option.selected = true;
+                districtSelect.appendChild(option);
+            });
+        }
+    }
+
+    function populateWards(districtCode, provinceCode, selectedCode = '') {
+        wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+        wardSelect.disabled = true;
+        const selectedProvince = locationData.find(p => p.code == provinceCode);
+        const selectedDistrict = selectedProvince?.districts.find(d => d.code == districtCode);
+        if (selectedDistrict && selectedDistrict.wards) {
+            wardSelect.disabled = false;
+            selectedDistrict.wards.forEach(ward => {
+                const option = document.createElement('option');
+                option.value = ward.code;
+                option.textContent = ward.name;
+                if (ward.code == selectedCode) option.selected = true;
+                wardSelect.appendChild(option);
+            });
+        }
+    }
+
+    provinceSelect.addEventListener('change', function() {
+        populateDistricts(this.value);
+    });
+
+    districtSelect.addEventListener('change', function() {
+        populateWards(this.value, provinceSelect.value);
+    });
+
+    // Update edit-order event listener
+    document.querySelectorAll('.edit-order').forEach(button => {
+        button.addEventListener('click', async () => {
+            const orderId = button.dataset.id;
+            try {
+                const response = await fetch(`${baseUrl}/orders/${orderId}`);
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Server returned non-JSON response');
+                }
+                const order = await response.json();
+                modalTitle.textContent = 'Chỉnh sửa đơn hàng';
+                orderForm.querySelector('[name="order_id"]').value = order.order_id;
+                orderForm.querySelector('[name="user_id"]').value = order.user_id;
+                orderForm.querySelector('[name="status"]').value = order.status;
+
+                // Parse shipping_address
+                const [houseAddress, wardCode, districtCode, provinceCode] = (order.shipping_address || '').split(', ').map(str => str.trim());
+                orderForm.querySelector('[name="house_address"]').value = houseAddress || '';
+                await loadLocationData(); // Ensure location data is loaded
+                populateProvinces(provinceCode);
+                populateDistricts(provinceCode, districtCode);
+                populateWards(districtCode, provinceCode, wardCode);
+
+                ensureDetailsContainer();
+                detailsContainer.innerHTML = '';
+                if (!order.details || order.details.length === 0) {
+                    console.warn('No order details found, initializing with one empty detail');
+                    detailsContainer.innerHTML = `
+                    <div class="detail-item mb-2 flex space-x-2">
+                        <input type="number" name="details[0][product_id]" placeholder="ID Sản phẩm" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 product-id-input" required>
+                        <input type="number" name="details[0][quantity]" placeholder="Số lượng" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
+                    </div>
+                `;
+                    detailCount = 1;
+                } else {
+                    order.details.forEach((detail, index) => {
+                        const detailItem = document.createElement('div');
+                        detailItem.className = 'detail-item mb-2 flex space-x-2';
+                        detailItem.innerHTML = `
+                        <input type="number" name="details[${index}][product_id]" value="${detail.product_id}" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 product-id-input" required>
+                        <input type="number" name="details[${index}][quantity]" value="${detail.quantity}" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
+                        <input type="hidden" name="details[${index}][price]" value="${detail.price}">
+                    `;
+                        detailsContainer.appendChild(detailItem);
+                    });
+                    detailCount = order.details.length;
+                }
+                updateSubmitButtonState();
+                orderModal.classList.remove('hidden');
+            } catch (error) {
+                console.error('Lỗi khi tải dữ liệu đơn hàng:', error);
+            }
+        });
+    });
+
+    // Initialize location data on page load
+    loadLocationData();
+
     // Function to update submit button state
     function updateSubmitButtonState() {
         const submitButton = orderForm.querySelector('button[type="submit"]');
@@ -167,6 +353,7 @@
     // Fetch product price
     async function fetchProductPrice(productId, detailIndex) {
         try {
+            await loadLocationData();
             const response = await fetch(`${baseUrl}/product/get/${productId}`);
             if (!response.ok) {
                 if (response.status === 404) {
@@ -211,7 +398,7 @@
     }
 
     // Open modal for adding order
-    openAddModal.addEventListener('click', () => {
+    openAddModal.addEventListener('click', async () => {
         modalTitle.textContent = 'Thêm đơn hàng';
         orderForm.reset();
         ensureDetailsContainer();
@@ -222,6 +409,8 @@
             </div>
         `;
         detailCount = 1;
+        await loadLocationData();
+        populateProvinces();
         updateSubmitButtonState();
         orderModal.classList.remove('hidden');
     });
@@ -271,6 +460,14 @@
             }
         });
 
+        // Combine address fields
+        data.shipping_address = [
+            data.house_address,
+            data.ward,
+            data.district,
+            data.province
+        ].filter(Boolean).join(', ');
+
         console.log('Sending data:', data);
 
         const orderId = formData.get('order_id');
@@ -308,60 +505,12 @@
             }
         } catch (error) {
             console.error('Lỗi khi lưu đơn hàng:', error);
-            alert('Lỗi khi lưu đơn hàng: ' + error.message);
+            location.reload();
         }
     });
 
-    // Edit order
-    document.querySelectorAll('.edit-order').forEach(button => {
-        button.addEventListener('click', async () => {
-            const orderId = button.dataset.id;
-            try {
-                const response = await fetch(`${baseUrl}/orders/${orderId}`);
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('Server returned non-JSON response');
-                }
-                const order = await response.json();
-                modalTitle.textContent = 'Chỉnh sửa đơn hàng';
-                orderForm.querySelector('[name="order_id"]').value = order.order_id;
-                orderForm.querySelector('[name="user_id"]').value = order.user_id;
-                orderForm.querySelector('[name="status"]').value = order.status;
-                orderForm.querySelector('[name="shipping_address"]').value = order.shipping_address;
 
-                ensureDetailsContainer();
-                detailsContainer.innerHTML = '';
-                if (!order.details || order.details.length === 0) {
-                    console.warn('No order details found, initializing with one empty detail');
-                    detailsContainer.innerHTML = `
-                        <div class="detail-item mb-2 flex space-x-2">
-                            <input type="number" name="details[0][product_id]" placeholder="ID Sản phẩm" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 product-id-input" required>
-                            <input type="number" name="details[0][quantity]" placeholder="Số lượng" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
-                        </div>
-                    `;
-                    detailCount = 1;
-                } else {
-                    order.details.forEach((detail, index) => {
-                        const detailItem = document.createElement('div');
-                        detailItem.className = 'detail-item mb-2 flex space-x-2';
-                        detailItem.innerHTML = `
-                            <input type="number" name="details[${index}][product_id]" value="${detail.product_id}" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 product-id-input" required>
-                            <input type="number" name="details[${index}][quantity]" value="${detail.quantity}" class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
-                            <input type="hidden" name="details[${index}][price]" value="${detail.price}">
-                        `;
-                        detailsContainer.appendChild(detailItem);
-                    });
-                    detailCount = order.details.length;
-                }
-                updateSubmitButtonState();
-                orderModal.classList.remove('hidden');
-            } catch (error) {
-                console.error('Lỗi khi tải dữ liệu đơn hàng:', error);
-                alert('Có lỗi khi tải dữ liệu đơn hàng: ' + error.message);
-            }
-        });
-    });
-
+    // View order details
     // View order details
     document.querySelectorAll('.view-order').forEach(button => {
         button.addEventListener('click', async () => {
@@ -373,33 +522,34 @@
                     throw new Error('Server returned non-JSON response');
                 }
                 const order = await response.json();
+                const formattedAddress = convertAddressCodesToNames(order.shipping_address || '');
                 orderDetailsContent.innerHTML = `
-                    <p><strong>Mã đơn hàng:</strong> ${order.order_id}</p>
-                    <p><strong>Khách hàng:</strong> ${order.user?.name || 'N/A'}</p>
-                    <p><strong>Ngày đặt:</strong> ${new Date(order.order_date).toLocaleString('vi-VN')}</p>
-                    <p><strong>Tổng tiền:</strong> ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.total_amount)}</p>
-                    <p><strong>Trạng thái:</strong> ${order.status}</p>
-                    <p><strong>Địa chỉ giao:</strong> ${order.shipping_address || 'N/A'}</p>
-                    <h4 class="font-semibold mt-4">Chi tiết sản phẩm:</h4>
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                <p><strong>Mã đơn hàng:</strong> ${order.order_id}</p>
+                <p><strong>Khách hàng:</strong> ${order.user?.name || 'N/A'}</p>
+                <p><strong>Ngày đặt:</strong> ${new Date(order.order_date).toLocaleString('vi-VN')}</p>
+                <p><strong>Tổng tiền:</strong> ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.total_amount)}</p>
+                <p><strong>Trạng thái:</strong> ${order.status}</p>
+                <p><strong>Địa chỉ giao:</strong> ${formattedAddress || 'N/A'}</p>
+                <h4 class="font-semibold mt-4">Chi tiết sản phẩm:</h4>
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sản phẩm</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số lượng</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${(order.details && order.details.length > 0) ? order.details.map(detail => `
                             <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sản phẩm</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số lượng</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá</th>
+                                <td class="px-4 py-2 text-sm text-gray-800">${detail.product?.product_name || 'N/A'}</td>
+                                <td class="px-4 py-2 text-sm text-gray-800">${detail.quantity}</td>
+                                <td class="px-4 py-2 text-sm text-gray-800">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(detail.price)}</td>
                             </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            ${(order.details && order.details.length > 0) ? order.details.map(detail => `
-                                <tr>
-                                    <td class="px-4 py-2 text-sm text-gray-800">${detail.product?.product_name || 'N/A'}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-800">${detail.quantity}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-800">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(detail.price)}</td>
-                                </tr>
-                            `).join('') : '<tr><td colspan="3" class="px-4 py-2 text-sm text-gray-800 text-center">Không có chi tiết sản phẩm</td></tr>'}
-                        </tbody>
-                    </table>
-                `;
+                        `).join('') : '<tr><td colspan="3" class="px-4 py-2 text-sm text-gray-800 text-center">Không có chi tiết sản phẩm</td></tr>'}
+                    </tbody>
+                </table>
+            `;
                 viewOrderModal.classList.remove('hidden');
             } catch (error) {
                 console.error('Lỗi khi tải chi tiết đơn hàng:', error);

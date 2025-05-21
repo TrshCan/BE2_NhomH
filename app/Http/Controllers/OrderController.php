@@ -17,14 +17,15 @@ class OrderController extends Controller
     public function show()
     {
         $user = Auth::user();
-        $cart = Cart::with('items.product')->where('user_id', $user->id)->first();
+        $cart = $user->cart()->with('items.product')->first();
         $cartItems = $cart ? $cart->items : collect();
 
-        $subtotal = $cartItems->reduce(function ($carry, $item) {
-            return $carry + ($item->product->price * $item->quantity);
-        }, 0);
+        $subtotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
+        $appliedCoupons = Session::get('applied_coupons', []);
+        $couponDiscount = array_sum($appliedCoupons); // Sum of all coupon discounts
+        $total = $subtotal - $couponDiscount;
 
-        return view('cart.checkout', compact('user', 'cartItems', 'subtotal'));
+        return view('cart.checkout', compact('user', 'cartItems', 'subtotal', 'couponDiscount', 'total'));
     }
 
     public function applyCoupon(Request $request)
@@ -34,9 +35,7 @@ class OrderController extends Controller
                 'coupon_code' => 'required|string|max:50',
             ]);
 
-            $coupon = Coupon::where('code', $request->coupon_code)
-                ->where('is_active', true)
-                ->first();
+            $coupon = Coupon::isActive($request->coupon_code);
 
             if (!$coupon) {
                 return response()->json([
@@ -45,40 +44,37 @@ class OrderController extends Controller
                 ], 422);
             }
 
-            // Check if coupon is already applied in session
-            if (Session::get('applied_coupon') === $coupon->code) {
+            $appliedCoupons = Session::get('applied_coupons', []);
+
+            if (isset($appliedCoupons[$coupon->code])) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Mã giảm giá đã được áp dụng.',
                 ], 422);
             }
 
-            // Calculate discount
             $user = Auth::user();
-            $cart = Cart::with('items.product')->where('user_id', $user->id)->first();
+            $cart = $user->cart()->with('items.product')->first();
             $cartItems = $cart ? $cart->items : collect();
-            $subtotal = $cartItems->reduce(function ($carry, $item) {
-                return $carry + ($item->product->price * $item->quantity);
-            }, 0);
+            $subtotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
 
             $discount = $coupon->type === 'percent'
                 ? ($subtotal * $coupon->value) / 100
-                : min($coupon->value, $subtotal); // Prevent negative total
+                : min($coupon->value, $subtotal);
 
-            $total = $subtotal - $discount;
+            // Add coupon to session
+            $appliedCoupons[$coupon->code] = $discount;
+            Session::put('applied_coupons', $appliedCoupons);
 
-            // Store coupon in session
-            Session::put('applied_coupon', $coupon->code);
-            Session::put('coupon_discount', $discount);
+            $totalDiscount = array_sum($appliedCoupons);
+            $total = $subtotal - $totalDiscount;
 
             return response()->json([
                 'success' => true,
                 'message' => 'Mã giảm giá được áp dụng thành công.',
-                'coupon' => [
-                    'code' => $coupon->code,
-                    'discount' => $discount,
-                ],
+                'coupon' => ['code' => $coupon->code, 'discount' => $discount],
                 'subtotal' => $subtotal,
+                'total_discount' => $totalDiscount,
                 'total' => $total,
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -99,25 +95,44 @@ class OrderController extends Controller
     public function removeCoupon(Request $request)
     {
         try {
-            // Clear coupon from session
-            Session::forget('applied_coupon');
-            Session::forget('coupon_discount');
+            $request->validate([
+                'coupon_code' => 'required|string|max:50',
+            ]);
 
-            // Recalculate total
+            $couponCode = $request->coupon_code;
+            $appliedCoupons = Session::get('applied_coupons', []);
+
+            if (!isset($appliedCoupons[$couponCode])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Mã giảm giá không được áp dụng.',
+                ], 422);
+            }
+
+            // Remove specific coupon
+            unset($appliedCoupons[$couponCode]);
+            Session::put('applied_coupons', $appliedCoupons);
+
             $user = Auth::user();
-            $cart = Cart::with('items.product')->where('user_id', $user->id)->first();
+            $cart = $user->cart()->with('items.product')->first();
             $cartItems = $cart ? $cart->items : collect();
-            $subtotal = $cartItems->reduce(function ($carry, $item) {
-                return $carry + ($item->product->price * $item->quantity);
-            }, 0);
+            $subtotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
+            $totalDiscount = array_sum($appliedCoupons);
+            $total = $subtotal - $totalDiscount;
 
             return response()->json([
                 'success' => true,
                 'message' => 'Mã giảm giá đã được xóa.',
                 'subtotal' => $subtotal,
-                'total' => $subtotal,
-                'discount' => 0,
+                'total_discount' => $totalDiscount,
+                'total' => $total,
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ.',
+                'errors' => $e->errors(),
+            ], 422);
         } catch (\Exception $e) {
             Log::error('Error removing coupon: ' . $e->getMessage());
             return response()->json([
@@ -143,7 +158,7 @@ class OrderController extends Controller
         ]);
 
         $user = Auth::user();
-        $cart = Cart::where('user_id', $user->id)->first();
+        $cart = $user->cart()->with('products')->first();
 
         if (!$cart || $cart->products->isEmpty()) {
             return redirect()->route('cart.cart')->with('error', 'Giỏ hàng trống.');
@@ -154,8 +169,7 @@ class OrderController extends Controller
         try {
             $shippingAddress = "{$request->address}, {$request->ward}, {$request->district}, {$request->province}";
 
-            $order = Order::create([
-                'user_id' => $user->id,
+            $order = $user->orders()->create([
                 'order_date' => now(),
                 'total_amount' => $request->total,
                 'status' => 'pending',
@@ -163,30 +177,27 @@ class OrderController extends Controller
             ]);
 
             foreach ($cart->products as $product) {
-                OrderDetail::create([
-                    'order_id' => $order->order_id,
+                $order->details()->create([
                     'product_id' => $product->product_id,
                     'quantity' => $product->pivot->quantity,
                     'price' => $product->price,
                 ]);
             }
 
-            // Apply coupon if present in session
-            if (Session::has('applied_coupon')) {
-                $coupon = Coupon::where('code', Session::get('applied_coupon'))->first();
-                if ($coupon) {
-                    // Create coupon_order record
-                    DB::table('coupon_order')->insert([
-                        'coupon_id' => $coupon->id,
-                        'order_id' => $order->order_id,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
+            $appliedCoupons = Session::get('applied_coupons', []);
+            if (!empty($appliedCoupons)) {
+                foreach (array_keys($appliedCoupons) as $couponCode) {
+                    $coupon = Coupon::where('code', $couponCode)->first();
+                    if ($coupon) {
+                        $order->coupons()->attach($coupon->id, [
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
                 }
-                Session::forget(['applied_coupon', 'coupon_discount']);
+                Session::forget('applied_coupons');
             }
 
-            // Clear the cart
             $cart->items()->delete();
             $cart->delete();
 
@@ -196,7 +207,7 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error processing order: ' . $e->getMessage());
-            return redirect()->route('products.home')->with('error_auth', 'Đã xảy ra lỗi khi đặt hàng!' . $e->getMessage());
+            return redirect()->route('products.home')->with('error_auth', 'Đã xảy ra lỗi khi đặt hàng! ' . $e->getMessage());
         }
     }
 }

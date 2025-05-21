@@ -10,32 +10,23 @@ class OrderManagementController extends Controller
 {
     public function index(Request $request)
     {
-        // Nếu chưa đăng nhập
         if (!Auth::check()) {
             return redirect('login')->with('error_admin', 'Bạn cần đăng nhập và có quyền admin để truy cập.');
         }
 
-        // Nếu đã đăng nhập nhưng không phải admin
         if (Auth::user()->role !== 'admin') {
             Auth::logout();
             return redirect('login')->with('error_admin', 'Bạn không có quyền truy cập trang quản trị. Đã đăng xuất.');
         }
-        $query = Order::with('user')->latest();
 
-        // Handle search query
-        if ($request->has('search') && $request->search !== '') {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('order_id', 'like', "%{$search}%")
-                  ->orWhereHas('user', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  });
-            });
-        }
+        $orders = Order::with('user')
+            ->filter($request->only('search'))
+            ->latest()
+            ->paginate(10);
 
-        $orders = $query->paginate(10); // 10 orders per page
         return view('admin.order-management', compact('orders'));
     }
+
 
     public function show($id)
     {
