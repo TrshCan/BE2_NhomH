@@ -15,7 +15,7 @@ class ImageController extends Controller
     {
         $images = Image::paginate(10);
         $product = product::all();
-        return view('admin.quanlyanh', compact('images'));
+        return view('admin.quanlyanh', compact('images', 'product'));
     }
 
     /**
