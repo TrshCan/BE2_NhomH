@@ -54,12 +54,12 @@
                 <button type="submit" class="btn btn-primary w-100">{{ __('Login') }}</button>
             </form>
             <div class="mt-3 text-center">
-                <a href="{{route('password.forgot')}}" class="text-decoration-none">{{ __('Quên mật khẩu?') }}</a><br>
+                <a href="" class="text-decoration-none">{{ __('Quên mật khẩu?') }}</a><br>
                 <a href="{{route('register')}}" class="text-decoration-none">{{ __('Chưa có tài khoản? Đăng kí') }}</a>
             </div>
 
             <div class="mt-4">
-                <a href="{{route('social.login','google')}}" class="btn btn-danger w-100 mb-2">
+                <a href="" class="btn btn-danger w-100 mb-2">
                     <i class="material-icons align-middle">account_circle</i> {{ __('Login với Google') }}
                 </a>
             </div>
