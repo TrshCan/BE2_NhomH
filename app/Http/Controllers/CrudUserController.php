@@ -74,6 +74,8 @@ class CrudUserController extends Controller
                     'role' => $user->role,
                 ]);
 
+                $request->session()->put('user_id', $user->id);
+                $request->session()->put('user_role', $user->role);
                 // Redirect based on user role
                 if ($user->role === 'admin') {
                     return redirect()->intended(route('adminpanel'))->with('success', 'Đăng nhập thành công.');

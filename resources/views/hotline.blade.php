@@ -3,20 +3,20 @@ $role = session('user_role');
 $user_id = session('user_id'); 
 @endphp
 
-@extends('layouts.app')  
 
-@section('content')
+
+
 <h1>{{session('user_role')}}</h1>
 
-<div class="contact-icons">
-    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=thangmai0107@gmail.com" class="contact-icon email">
+<div class="contact-icons" style="z-index: 3;">
+    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=thangmai0107@gmail.com" style="font-size:36px;color:blue" class="contact-icon email">
         <i class="fas fa-envelope"></i>
     </a>
     
     <div class="contact-icon chat" id="toggleChat">
-    <i class="fa-brands fa-viber"></i>
+    <i class="fab fa-facebook-messenger" style="font-size:36px;color:blue"></i>
     </div>
-    <a href="https://zalo.me/0817007558"" class="contact-icon email">
+    <a href="https://zalo.me/0817007558" class="contact-icon zalo" style='font-size:36px;color:red'>
     <i class="fas fa-comment-dots"></i>
     </a>
 </div>
@@ -61,7 +61,7 @@ $user_id = session('user_id');
         });
   
 </script>
-@endsection
+
 
 
 

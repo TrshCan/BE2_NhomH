@@ -4,6 +4,7 @@
 @section('title', 'Trang chu')
 
 @section('content')
+@include('hotline')
     <!-- Header -->
 
     <!-- Carousel -->
