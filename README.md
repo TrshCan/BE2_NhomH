@@ -1,4 +1,24 @@
+<<<<<<< HEAD
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+=======
+# Shop Bán Hàng
+
+Một trang web thương mại điện tử đơn giản được xây dựng với Laravel.
+
+## Cách Sử Dụng
+
+1. Sao chép kho lưu trữ vào máy tính của bạn: `git clone https://your-project.git`
+2. Chuyển vào thư mục dự án: `cd BE2_NhomH`
+3. Chuyển sang nhánh `Login`: `git checkout Login`
+4. Cài đặt các phụ thuộc của dự án: `composer install`
+5. Cài đặt Socialite: `composer require laravel/socialite`
+6. Chạy di trú cơ sở dữ liệu: `php artisan migrate`
+7. Khởi động máy chủ phát triển: `php artisan serve`
+
+
+
+# BE2_NhomH
+>>>>>>> test_merge_semiver2
 
 <p align="center">
 <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
@@ -7,6 +27,7 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+<<<<<<< HEAD
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
@@ -64,3 +85,34 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+=======
+## Project Structure
+```
+.
+└── WebBanHang/
+    ├── database/
+    │   └── db.sql
+    ├── public/
+    │   ├── includes (use for handling php)/
+    │   │   ├── config.php
+    │   │   ├── Product_Database.php
+    │   │   └── User_Database.php
+    │   ├── pages/
+    │   │   ├── cart.php
+    │   │   ├── detail.php
+    │   │   ├── login.php
+    │   │   └── signup.php
+    │   ├── assets/
+    │   │   ├── css
+    │   │   ├── js
+    │   │   └── images
+    │   └── admin/
+    │       ├── dashboard.php
+    │       ├── user_management.php
+    │       └── user_crud.php
+    ├── index.php (main menu)
+    ├── .gitignore
+    ├── LICENSE
+
+
+>>>>>>> test_merge_semiver2

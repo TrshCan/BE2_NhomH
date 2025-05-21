@@ -196,7 +196,7 @@
                     <div class="faq-question">
                         <span class="subtle">{{ $faq->subtle }}</span>
                         <span class="title">{{ $faq->title }}</span>
-                        <i class="fas fa-chevron-down icon"></i>
+                     
                     </div>
                     <div class="faq-answer">
                         <p>{!! $faq->content !!}</p>
