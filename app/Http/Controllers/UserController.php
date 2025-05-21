@@ -15,11 +15,6 @@ class UserController extends Controller
         return view('clients.pages.setting', ['user' => $user]);
     }
 
-    public function passwordUser()
-    {
-        return view('clients.pages.change-password');
-    }
-
     public function editProfile()
     {
         $user = Auth::user();
