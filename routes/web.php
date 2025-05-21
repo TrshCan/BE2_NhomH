@@ -1,16 +1,12 @@
 <?php
-<<<<<<< HEAD
+
 
 use App\Http\Controllers\FaqController;
-use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
-Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
-Route::get('/faq/{id}', [FaqController::class, 'show'])->name('faq.show');
-=======
+
+
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CrudUserController;
 use App\Http\Controllers\ForgotPassword;
@@ -108,6 +104,12 @@ Route::get('/chatuser', function () {
 Route::get('/hotline', function () {
     return view('hotline');
 })->name('hotline');
+
+//FAQ
+Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
+Route::get('/faq/{id}', [FaqController::class, 'show'])->name('faq.show');
+
+
 Route::post('/checkout/apply-coupon', [OrderController::class, 'applyCoupon'])->name('checkout.applyCoupon');
 Route::post('/checkout/remove-coupon', [OrderController::class, 'removeCoupon'])->name('checkout.removeCoupon');
 Route::get('/product/get/{id}', [ProductController::class, 'get'])->name('products.get');
@@ -125,4 +127,4 @@ Route::prefix('admin')->group(function () {
     Route::put('/products/{id}', [AdminController::class, 'update'])->name('admin.products.update');
     Route::delete('/products/{id}', [AdminController::class, 'destroy'])->name('admin.products.destroy');
 });
->>>>>>> test_merge_semiver2
+

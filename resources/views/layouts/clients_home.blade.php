@@ -28,9 +28,7 @@
    <link rel="stylesheet" href="{{ asset('assets/styles/livechat.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
-        <style>
-       
-        </style>
+        
 </head>
 
 <body>

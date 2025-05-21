@@ -209,13 +209,19 @@ body {
   width: 100%;
 }
 .contact-icon{
-  margin: 24px;
+  margin: 12px;
   position: relative;
+
 }
-.contact-icons{
+.contact-icons {
   position: fixed;
   right: 0;
-  bottom: 12px;
+  bottom: 24px;
+  display: flex; /* Đảm bảo sử dụng flexbox */
+  flex-direction: column; /* Sắp xếp theo cột */
+  align-items: center; /* Căn giữa theo chiều ngang */
+ 
+
 }
 .contact-icon::before {
   content: "";

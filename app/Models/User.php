@@ -6,19 +6,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-<<<<<<< HEAD
-=======
+
 use Laravel\Sanctum\HasApiTokens;
->>>>>>> test_merge_semiver2
+
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-<<<<<<< HEAD
     use HasFactory, Notifiable;
-=======
-    use HasApiTokens, HasFactory, Notifiable;
->>>>>>> test_merge_semiver2
 
     /**
      * The attributes that are mass assignable.
@@ -29,14 +24,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-<<<<<<< HEAD
-=======
         'phone',
         'address',
         'ban_reason',
         'status_id',
         'google_id',
->>>>>>> test_merge_semiver2
+
     ];
 
     /**
@@ -61,12 +54,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-<<<<<<< HEAD
-=======
+
 
     public function status()
     {
         return $this->belongsTo(Status::class, 'status_id');
     }
->>>>>>> test_merge_semiver2
+
 }
