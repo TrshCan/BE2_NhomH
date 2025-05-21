@@ -59,7 +59,7 @@
             </div>
 
             <div class="mt-4">
-                <a href="{{route('social.login','google')}}" class="btn btn-danger w-100 mb-2">
+                <a href="" class="btn btn-danger w-100 mb-2">
                     <i class="material-icons align-middle">account_circle</i> {{ __('Login với Google') }}
                 </a>
             </div>
