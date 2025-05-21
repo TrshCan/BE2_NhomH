@@ -9,6 +9,17 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"
         type="text/css">
+        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+        <style>
+        .contact-icon{
+            margin: 24px;
+        }
+        .contact-icons{
+            position: fixed;
+            right: 0;
+            bottom: 12px;
+        }
+        </style>
 </head>
 <body>
     <!--

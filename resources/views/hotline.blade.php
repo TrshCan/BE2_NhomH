@@ -14,9 +14,9 @@ $user_id = session('user_id');
     </a>
     
     <div class="contact-icon chat" id="toggleChat">
-    <i class="fa-brands fa-viber"></i>
+    <i class='fab fa-facebook-messenger' style='font-size:36px;color:red'></i>
     </div>
-    <a href="https://zalo.me/0817007558"" class="contact-icon email">
+    <a href="https://zalo.me/0817007558" class="contact-icon email">
     <i class="fas fa-comment-dots"></i>
     </a>
 </div>
