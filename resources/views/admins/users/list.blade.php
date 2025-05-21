@@ -46,7 +46,7 @@
                 </td>
                 <td>{{ $user->role ?? 'user' }}</td>
                 <td>
-                    <a href="{{ url('update/' . $user->id) }}" class="btn btn-warning btn-sm">Sửa</a>
+                    <a href="{{route('user.update',$user->id)}}" class="btn btn-warning btn-sm">Sửa</a>
                     <form action="{{ url('delete') }}" method="POST" style="display:inline-block;">
                         @csrf
                         <input type="hidden" name="id" value="{{ $user->id }}">
