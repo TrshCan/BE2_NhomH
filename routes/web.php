@@ -23,6 +23,8 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\OrderManagementController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CouponManagementController;
+use App\Http\Controllers\ReviewController;
+
 
 // Trang chủ
 Route::get('/', [ProductController::class, 'index'])->name('products.home');
@@ -109,6 +111,13 @@ Route::get('/hotline', function () {
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 Route::get('/faq/{id}', [FaqController::class, 'show'])->name('faq.show');
 
+//review
+Route::middleware(['auth'])->group(function () {
+    Route::get('/review/{product_id}', [ReviewController::class, 'index'])->name('reviews.form');   
+});
+
+Route::get('/products/{product_id}/review', [ReviewController::class, 'create'])->name('reviews.create');
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
 Route::post('/checkout/apply-coupon', [OrderController::class, 'applyCoupon'])->name('checkout.applyCoupon');
 Route::post('/checkout/remove-coupon', [OrderController::class, 'removeCoupon'])->name('checkout.removeCoupon');
