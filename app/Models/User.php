@@ -67,4 +67,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class, 'user_id');
     }
+
+    public function getOrCreateCart()
+    {
+        return $this->cart ?? $this->cart()->create();
+    }
 }
