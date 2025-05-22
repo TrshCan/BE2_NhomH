@@ -20,7 +20,8 @@ $user_id = session('user_id');
         <i class="fab fa-facebook-messenger" style="font-size:36px;color:blue"></i>
     </div>
     <a href="https://zalo.me/0817007558" class="contact-icon zalo" style='font-size:36px;color:red'>
-        <i class="fas fa-comment-dots"></i>
+    <img width="60" height="60" src="https://img.icons8.com/plasticine/100/zalo.png" alt="zalo"/>
+
     </a>
 </div>
 

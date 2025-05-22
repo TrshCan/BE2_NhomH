@@ -3,16 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-<<<<<<< HEAD
+
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-=======
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-
-
->>>>>>> test_merge_semiver2
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -22,14 +16,6 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-<<<<<<< HEAD
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-    }
-}
-=======
         // User::factory()->create([
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
@@ -54,4 +40,4 @@ class DatabaseSeeder extends Seeder
     }
 }
 
->>>>>>> test_merge_semiver2
+

@@ -2,7 +2,9 @@
 <x-auth-failed-popup/>
 @extends('layouts.clients_home')
 @section('title', 'Trang chu')
-
+@section('styles')
+<link rel="stylesheet" href="{{ asset('assets/styles/livechat.css') }}">
+@endsection
 @section('content')
 @include('hotline')
     <!-- Header -->
