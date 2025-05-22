@@ -210,4 +210,49 @@ class OrderController extends Controller
             return redirect()->route('products.home')->with('error_auth', 'Đã xảy ra lỗi khi đặt hàng! ' . $e->getMessage());
         }
     }
+
+    public function getOrderDetails($orderId)
+    {
+        try {
+            // Fetch the order with its details and related products, ensuring it belongs to the authenticated user
+            $order = Order::with('details.product')
+                ->where('user_id', Auth::id())
+                ->where('order_id', $orderId)
+                ->first();
+
+            if (!$order) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Đơn hàng không tồn tại hoặc đã bị xóa.'
+                ], 404);
+            }
+
+            // Format the order data for the response
+            return response()->json([
+                'success' => true,
+                'order_id' => $order->order_id,
+                'user' => [
+                    'name' => $order->user->name ?? 'N/A'
+                ],
+                'order_date' => $order->order_date->toDateTimeString(),
+                'total_amount' => $order->total_amount,
+                'status' => $order->status,
+                'shipping_address' => $order->shipping_address,
+                'details' => $order->details->map(function ($detail) {
+                    return [
+                        'product_id' => $detail->product_id,
+                        'product_name' => $detail->product->product_name ?? 'N/A',
+                        'quantity' => $detail->quantity,
+                        'price' => $detail->price,
+                    ];
+                })->toArray()
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching order details: ' . $e->getMessage(), ['order_id' => $orderId]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi tải chi tiết đơn hàng.'
+            ], 500);
+        }
+    }
 }
