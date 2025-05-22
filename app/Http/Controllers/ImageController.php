@@ -10,9 +10,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ImageController extends Controller
 {
-    /**
-     * Display a listing of the images.
-     */
     public function index()
     {
         try {
@@ -25,9 +22,6 @@ class ImageController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new image.
-     */
     public function create()
     {
         try {
@@ -39,15 +33,20 @@ class ImageController extends Controller
         }
     }
 
-    /**
-     * Store a newly created image in public/assets/images.
-     */
     public function store(Request $request)
     {
         try {
             $request->validate([
-                'image' => 'required|image|max:2048',
+                'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
                 'product_id' => 'required|integer|exists:products,product_id',
+            ], [
+                'image.required' => 'Vui lòng chọn ảnh cho danh mục',
+                'image.image' => 'Hình ảnh phải có định dạng .jpg, .png, jpeg',
+                'image.mimes' => 'Hình ảnh phải có định dạng .jpg, .png, jpeg',
+                'image.max' => 'Hình ảnh không được vượt quá 2mb',
+                'product_id.required' => 'Không được để trống', // Thay vì "tên danh mục", dùng chung cho product_id
+                'product_id.integer' => 'ID sản phẩm phải là số nguyên',
+                'product_id.exists' => 'ID sản phẩm không tồn tại'
             ]);
 
             $file = $request->file('image');
@@ -60,7 +59,7 @@ class ImageController extends Controller
 
             $fileSize = $file->getSize();
             if ($fileSize > 2048 * 1024) {
-                throw new \Exception('Kích thước file vượt quá giới hạn 2MB');
+                throw new \Exception('Hình ảnh không được vượt quá 2mb');
             }
 
             $file->move($destination, $filename);
@@ -86,13 +85,10 @@ class ImageController extends Controller
         }
     }
 
-    /**
-     * Display the specified image.
-     */
     public function show($id)
     {
         try {
-            $image = Image::findOrFail($id); // Use withTrashed() if soft-deleted images should be accessible
+            $image = Image::findOrFail($id);
             return response()->json(['success' => true, 'data' => $image]);
         } catch (ModelNotFoundException $e) {
             Log::error('Image not found with ID: ' . $id);
@@ -109,13 +105,10 @@ class ImageController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified image.
-     */
     public function edit($id)
     {
         try {
-            $image = Image::findOrFail($id); // Use withTrashed() if needed
+            $image = Image::findOrFail($id);
             $products = Product::all();
             return response()->json(['success' => true, 'data' => $image, 'products' => $products]);
         } catch (ModelNotFoundException $e) {
@@ -133,17 +126,21 @@ class ImageController extends Controller
         }
     }
 
-    /**
-     * Update the specified image in public/assets/images.
-     */
     public function update(Request $request, $id)
     {
         try {
-            $image = Image::findOrFail($id); // Use withTrashed() if needed
+            $image = Image::findOrFail($id);
 
             $request->validate([
-                'image' => 'image|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
                 'product_id' => 'required|integer|exists:products,product_id',
+            ], [
+                'image.image' => 'Hình ảnh phải có định dạng .jpg, .png, jpeg',
+                'image.mimes' => 'Hình ảnh phải có định dạng .jpg, .png, jpeg',
+                'image.max' => 'Hình ảnh không được vượt quá 2mb',
+                'product_id.required' => 'Không được để trống',
+                'product_id.integer' => 'ID sản phẩm phải là số nguyên',
+                'product_id.exists' => 'ID sản phẩm không tồn tại'
             ]);
 
             if ($request->hasFile('image')) {
@@ -164,7 +161,7 @@ class ImageController extends Controller
 
                 $fileSize = $file->getSize();
                 if ($fileSize > 2048 * 1024) {
-                    throw new \Exception('Kích thước file vượt quá giới hạn 2MB');
+                    throw new \Exception('Hình ảnh không được vượt quá 2mb');
                 }
 
                 $file->move($destination, $filename);
@@ -196,13 +193,10 @@ class ImageController extends Controller
         }
     }
 
-    /**
-     * Remove the specified image from public/assets/images.
-     */
     public function destroy($id)
     {
         try {
-            $image = Image::findOrFail($id); // Use withTrashed() if restoring soft-deleted images is needed
+            $image = Image::findOrFail($id);
 
             $path = public_path('assets/images/' . $image->image_url);
             if (file_exists($path) && is_writable($path)) {
@@ -211,7 +205,7 @@ class ImageController extends Controller
                 Log::warning("Cannot delete file: $path");
             }
 
-            $image->delete(); // Soft delete if SoftDeletes trait is used
+            $image->delete();
 
             return response()->json(['success' => true, 'message' => 'Ảnh đã được xóa thành công!']);
         } catch (ModelNotFoundException $e) {
