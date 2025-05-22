@@ -1,0 +1,101 @@
+product_name,description,price,is_featured,stock_quantity,category_id,brand_id,image_url,sales_count,created_at,updated_at
+"Sony Xperia 1 V","6.5-inch 4K OLED, Snapdragon 8 Gen 2",1399.99,1,45,1,1,/images/xperia1v.jpg,120,2023-06-10 09:30:00,2025-01-15 14:20:00
+"Samsung Galaxy S23","6.1-inch AMOLED, 50MP camera",849.99,0,60,1,2,/images/galaxys23.jpg,90,2023-08-15 11:45:00,2025-02-20 10:30:00
+"Apple iPhone 14 Pro","6.1-inch Super Retina XDR, A16 Bionic",999.99,1,50,1,3,/images/iphone14pro.jpg,150,2023-05-20 13:00:00,2024-12-10 16:10:00
+"Asus ROG Phone 7","6.78-inch AMOLED, 165Hz refresh",1099.99,0,30,1,4,/images/rogphone7.jpg,80,2023-07-25 10:15:00,2025-03-05 12:40:00
+"Canon EOS R10","24.2MP mirrorless, 4K video",899.99,1,40,3,5,/images/eosr10.jpg,200,2023-09-10 14:30:00,2025-04-01 09:50:00
+"Apple MacBook Air M2","13.6-inch Retina, 8GB RAM",1199.99,1,20,2,3,/images/macbookairm2.jpg,70,2023-04-15 12:20:00,2024-11-25 15:00:00
+"Samsung Galaxy Book 3","15.6-inch AMOLED, Intel i7",1299.99,0,25,2,2,/images/galaxybook3.jpg,60,2023-10-20 09:40:00,2025-01-30 11:10:00
+"Sony VAIO Z","14-inch 4K, Intel i7",1799.99,1,15,2,1,/images/vaioz.jpg,50,2023-03-25 15:50:00,2024-09-15 13:20:00
+"Asus ZenBook 14","14-inch OLED, Ryzen 7",999.99,0,35,2,4,/images/zenbook14.jpg,65,2023-06-20 11:30:00,2025-02-15 14:40:00
+"Canon PowerShot G7X","20.1MP, 4.2x optical zoom",699.99,0,80,3,5,/images/powershotg7x.jpg,180,2023-08-05 13:10:00,2025-03-20 10:00:00
+"Samsung Galaxy Z Fold 5","7.6-inch foldable AMOLED",1799.99,1,20,1,2,/images/zfold5.jpg,100,2023-11-15 12:00:00,2025-04-10 15:30:00
+"Apple AirPods Pro","Active noise cancellation, wireless",249.99,1,70,3,3,/images/airpodspro.jpg,220,2023-05-30 10:50:00,2024-12-05 09:20:00
+"Sony WH-1000XM5","Noise-canceling headphones, 30h battery",399.99,0,65,3,1,/images/wh1000xm5.jpg,190,2023-07-10 14:20:00,2025-02-25 11:50:00
+"Asus TUF Gaming A15","15.6-inch 144Hz, RTX 3060",1299.99,1,12,2,4,/images/tufgaminga15.jpg,55,2023-09-20 09:30:00,2024-11-10 13:40:00
+"Canon EF 50mm Lens","F1.8, STM, compact design",129.99,0,90,3,5,/images/ef50mm.jpg,170,2023-12-10 11:40:00,2025-05-15 12:30:00
+"Apple iPhone 13","6.1-inch Super Retina, A15 chip",699.99,0,55,1,3,/images/iphone13.jpg,110,2023-04-10 15:00:00,2024-10-20 14:10:00
+"Samsung Galaxy A54","6.4-inch AMOLED, 50MP camera",449.99,0,60,1,2,/images/galaxya54.jpg,95,2023-06-25 12:10:00,2025-01-20 09:50:00
+"Sony Xperia 5 IV","6.1-inch OLED, 120Hz refresh",999.99,1,40,1,1,/images/xperia5iv.jpg,85,2023-08-30 13:50:00,2025-03-10 11:20:00
+"Asus VivoBook 15","15.6-inch FHD, Ryzen 5",799.99,0,30,2,4,/images/vivobook15.jpg,60,2023-03-15 10:40:00,2024-12-15 15:30:00
+"Canon Camera Bag","Water-resistant, padded",59.99,0,100,3,5,/images/canonbag.jpg,200,2023-10-05 09:20:00,2025-04-20 14:00:00
+"Apple MacBook Pro 14","14.2-inch Liquid Retina, M2 Pro",1599.99,1,10,2,3,/images/macbookpro14.jpg,75,2023-05-15 14:30:00,2024-11-30 12:50:00
+"Samsung Galaxy Buds 2","True wireless, ANC, 7h battery",149.99,0,85,3,2,/images/galaxybuds2.jpg,180,2023-07-20 11:10:00,2025-02-10 13:40:00
+"Sony WF-1000XM4","True wireless, noise-canceling",279.99,1,75,3,1,/images/wf1000xm4.jpg,160,2023-09-25 15:40:00,2025-03-25 09:30:00
+"Asus ROG Strix G16","16-inch 165Hz, RTX 4070",1699.99,0,15,2,4,/images/rogstrixg16.jpg,50,2023-12-20 12:20:00,2025-05-10 11:50:00
+"Canon Selphy CP1500","Compact photo printer",139.99,0,80,3,5,/images/selphycp1500.jpg,190,2023-04-20 09:50:00,2024-10-15 14:20:00
+"Sony Xperia 10 V","6.0-inch OLED, budget-friendly",499.99,0,50,1,1,/images/xperia10v.jpg,90,2023-06-10 13:30:00,2025-01-25 10:40:00
+"Samsung Galaxy Book Flex","13.3-inch QLED, Intel i5",1099.99,1,20,2,2,/images/galaxybookflex.jpg,65,2023-08-15 10:00:00,2024-12-20 12:30:00
+"Apple Watch Series 9","41mm, fitness tracking",399.99,1,70,3,3,/images/applewatch9.jpg,170,2023-11-10 14:50:00,2025-04-05 09:20:00
+"Asus ZenBook Pro Duo","15.6-inch OLED, dual screen",1999.99,0,8,2,4,/images/zenbookproduo.jpg,45,2023-05-25 12:40:00,2024-11-15 15:10:00
+"Canon Pixma TR4720","All-in-one wireless printer",99.99,0,90,3,5,/images/pixmatr4720.jpg,200,2023-07-30 09:30:00,2025-02-15 11:00:00
+"Apple iPhone 15","6.1-inch OLED, A16 chip",799.99,1,45,1,3,/images/iphone15.jpg,130,2023-09-20 11:20:00,2025-03-20 14:30:00
+"Samsung Galaxy Z Flip 5","6.7-inch foldable AMOLED",999.99,0,35,1,2,/images/zflip5.jpg,80,2023-12-15 13:40:00,2025-05-01 10:50:00
+"Sony VAIO SX14","14-inch FHD, Intel i5",1199.99,0,25,2,1,/images/vaiosx14.jpg,60,2023-04-10 15:10:00,2024-10-25 12:20:00
+"Asus ROG Zephyrus G14","14-inch QHD, RTX 4060",1499.99,1,12,2,4,/images/rogzephyrusg14.jpg,55,2023-06-25 09:50:00,2025-01-30 14:00:00
+"Canon RF 35mm Lens","F1.8 macro, STM",499.99,0,85,3,5,/images/rf35mm.jpg,180,2023-08-10 12:30:00,2025-03-10 09:40:00
+"Sony Xperia Pro-I","6.5-inch OLED, 1-inch camera sensor",1599.99,1,40,1,1,/images/xperiaproi.jpg,100,2023-10-15 14:20:00,2025-04-15 11:10:00
+"Samsung Galaxy S22","6.1-inch AMOLED, 50MP camera",699.99,0,60,1,2,/images/galaxys22.jpg,95,2023-05-20 11:50:00,2024-12-10 13:30:00
+"Apple MacBook Pro 16","16.2-inch Liquid Retina, M2 Max",2499.99,1,10,2,3,/images/macbookpro16.jpg,70,2023-07-15 09:30:00,2025-02-20 15:40:00
+"Asus VivoBook S14","14-inch OLED, Intel i7",1099.99,0,20,2,4,/images/vivobooks14.jpg,65,2023-09-25 12:10:00,2024-11-20 10:50:00
+"Canon Speedlite EL-5","Flash for EOS cameras",399.99,0,75,3,5,/images/speedliteel5.jpg,170,2023-12-05 14:40:00,2025-05-20 12:20:00
+"Sony WF-C510","True wireless, budget earbuds",59.99,1,90,3,1,/images/wfc510.jpg,200,2023-04-15 11:20:00,2024-10-30 13:50:00
+"Samsung Galaxy A34","6.6-inch AMOLED, 48MP camera",399.99,0,55,1,2,/images/galaxya34.jpg,90,2023-06-20 09:40:00,2025-01-15 11:30:00
+"Apple iPhone 14 Plus","6.7-inch Super Retina, A15 chip",899.99,1,50,1,3,/images/iphone14plus.jpg,120,2023-08-25 13:10:00,2025-03-05 14:20:00
+"Asus TUF Dash F15","15.6-inch 144Hz, RTX 3050",999.99,0,25,2,4,/images/tufdashf15.jpg,60,2023-11-10 15:50:00,2025-04-10 09:30:00
+"Canon EOS M50 Mark II","24.1MP, 4K video",599.99,0,80,3,5,/images/eosm50.jpg,190,2023-05-30 12:30:00,2024-12-15 11:40:00
+"Sony Xperia 5 V","6.1-inch OLED, Snapdragon 8",1099.99,1,45,1,1,/images/xperia5v.jpg,100,2023-07-10 14:50:00,2025-02-25 12:10:00
+"Samsung Galaxy Book Pro","13.3-inch AMOLED, Intel i5",999.99,0,20,2,2,/images/galaxybookpro.jpg,65,2023-09-15 11:20:00,2024-11-25 14:30:00
+"Apple AirPods Max","Over-ear, spatial audio",549.99,1,70,3,3,/images/airpodsmax.jpg,180,2023-12-20 09:50:00,2025-05-15 13:20:00
+"Asus ROG Flow X13","13.4-inch QHD, Ryzen 9",1499.99,0,15,2,4,/images/rogflowx13.jpg,55,2023-04-25 12:40:00,2024-10-20 15:10:00
+"Canon LP-E6 Battery","For EOS R series",79.99,0,100,3,5,/images/lpe6battery.jpg,200,2023-06-30 14:20:00,2025-03-20 11:50:00
+"Apple iPhone SE 2022","4.7-inch Retina, A15 chip",429.99,0,60,1,3,/images/iphonese.jpg,110,2023-08-05 09:30:00,2024-12-05 12:40:00
+"Samsung Galaxy S23 Ultra","6.8-inch AMOLED, 200MP camera",1199.99,1,40,1,2,/images/galaxys23ultra.jpg,130,2023-10-25 13:50:00,2025-04-01 10:20:00
+"Sony VAIO E15","15.6-inch FHD, Intel i3",699.99,0,30,2,1,/images/vaioe15.jpg,60,2023-05-15 11:10:00,2024-11-30 14:50:00
+"Asus ZenBook Flip 13","13.3-inch OLED, Intel i7",1199.99,1,12,2,4,/images/zenbookflip13.jpg,50,2023-07-20 15:40:00,2025-02-15 09:30:00
+"Canon RF 85mm Lens","F2 macro, STM",599.99,0,85,3,5,/images/rf85mm.jpg,170,2023-09-30 12:20:00,2025-03-25 11:40:00
+"Sony Xperia 1 IV","6.5-inch 4K OLED, 120Hz",1299.99,1,45,1,1,/images/xperia1iv.jpg,100,2023-12-15 14:30:00,2025-05-10 12:50:00
+"Samsung Galaxy A14","6.6-inch FHD, 50MP camera",199.99,0,65,1,2,/images/galaxya14.jpg,90,2023-04-20 09:50:00,2024-10-15 13:20:00
+"Apple MacBook Air M1","13.3-inch Retina, 8GB RAM",999.99,0,20,2,3,/images/macbookairm1.jpg,70,2023-06-25 12:40:00,2025-01-20 15:10:00
+"Asus ROG Strix Scar 17","17.3-inch 240Hz, RTX 4080",2499.99,1,8,2,4,/images/rogstrixscar17.jpg,45,2023-08-10 11:30:00,2024-12-10 09:40:00
+"Canon EOS R50","24.2MP, 4K video, compact",799.99,0,80,3,5,/images/eosr50.jpg,190,2023-11-20 14:50:00,2025-04-20 12:20:00
+"Sony WF-1000XM5","True wireless, 8h battery",299.99,1,75,3,1,/images/wf1000xm5.jpg,180,2023-05-30 09:20:00,2024-11-15 11:50:00
+"Samsung Galaxy Z Fold 4","7.6-inch foldable AMOLED",1699.99,0,25,1,2,/images/zfold4.jpg,85,2023-07-15 13:40:00,2025-02-25 14:30:00
+"Apple iPhone 15 Pro","6.7-inch OLED, A17 Pro chip",1099.99,1,50,1,3,/images/iphone15pro.jpg,140,2023-09-25 10:50:00,2025-03-10 12:40:00
+"Asus VivoBook Pro 16","16-inch OLED, Ryzen 7",1299.99,0,15,2,4,/images/vivobookpro16.jpg,60,2023-12-05 12:10:00,2025-05-01 09:50:00
+"Canon Tripod Grip HG-100","For PowerShot G7X",49.99,0,100,3,5,/images/tripodgrip.jpg,200,2023-04-10 14:20:00,2024-10-25 11:30:00
+"Sony Xperia 10 IV","6.0-inch OLED, 5000mAh battery",399.99,0,55,1,1,/images/xperia10iv.jpg,95,2023-06-20 09:30:00,2025-01-30 13:50:00
+"Samsung Galaxy Book 3 Pro","14-inch AMOLED, Intel i7",1499.99,1,20,2,2,/images/galaxybook3pro.jpg,70,2023-08-15 12:40:00,2024-12-15 15:20:00
+"Apple Watch SE","40mm, fitness tracking",279.99,0,80,3,3,/images/watchse.jpg,170,2023-10-30 11:50:00,2025-04-05 14:10:00
+"Asus TUF Gaming F17","17.3-inch 144Hz, RTX 3050",1099.99,0,25,2,4,/images/tufgamingf17.jpg,65,2023-05-15 13:20:00,2024-11-20 09:40:00
+"Canon RF 100-400mm","Telephoto zoom lens",649.99,1,85,3,5,/images/rf100400mm.jpg,180,2023-07-25 10:50:00,2025-03-15 12:20:00
+"Sony Xperia Pro","6.5-inch OLED, 5G",1199.99,1,40,1,1,/images/xperiapro.jpg,100,2023-09-20 14:30:00,2025-04-10 11:50:00
+"Samsung Galaxy S21 FE","6.4-inch AMOLED, 64MP camera",599.99,0,60,1,2,/images/galaxys21fe.jpg,90,2023-12-10 09:20:00,2025-05-20 13:40:00
+"Apple MacBook Pro 13","13.3-inch Retina, M2 chip",1299.99,1,15,2,3,/images/macbookpro13.jpg,75,2023-04-25 12:50:00,2024-10-30 14:20:00
+"Asus ZenBook 13","13.3-inch OLED, Intel i5",899.99,0,20,2,4,/images/zenbook13.jpg,60,2023-06-30 11:10:00,2025-02-10 15:30:00
+"Canon Battery Charger LC-E6","For EOS R batteries",69.99,0,90,3,5,/images/lce6charger.jpg,190,2023-08-25 14:50:00,2025-03-25 09:20:00
+"Sony WF-C500","True wireless, 10h battery",99.99,1,80,3,1,/images/wfc500.jpg,200,2023-11-15 12:40:00,2025-04-15 11:30:00
+"Samsung Galaxy A24","6.5-inch AMOLED, 50MP camera",299.99,0,55,1,2,/images/galaxya24.jpg,95,2023-05-20 09:50:00,2024-12-05 13:10:00
+"Apple iPhone 12","6.1-inch Super Retina, A14 chip",599.99,0,50,1,3,/images/iphone12.jpg,110,2023-07-10 15:20:00,2025-02-20 14:40:00
+"Asus ROG Flow Z13","13.4-inch QHD, RTX 3050",1399.99,1,12,2,4,/images/rogflowz13.jpg,55,2023-09-25 11:30:00,2025-01-15 12:50:00
+"Canon EOS R6","20.1MP, 4K video, full-frame",1999.99,0,80,3,5,/images/eosr6.jpg,180,2023-12-20 14:20:00,2025-05-10 09:30:00
+"Sony Xperia 1 III","6.5-inch 4K OLED, Snapdragon 888",1099.99,1,45,1,1,/images/xperia1iii.jpg,100,2023-04-15 12:10:00,2024-11-10 15:50:00
+"Samsung Galaxy Book 2","15.6-inch FHD, Intel i5",799.99,0,25,2,2,/images/galaxybook2.jpg,65,2023-06-25 09:40:00,2025-03-20 11:20:00
+"Apple AirPods 3","Spatial audio, 6h battery",179.99,1,75,3,3,/images/airpods3.jpg,170,2023-08-30 13:50:00,2025-04-01 12:40:00
+"Asus VivoBook Flip 14","14-inch FHD, Ryzen 5",699.99,0,20,2,4,/images/vivobookflip14.jpg,60,2023-11-05 10:50:00,2025-05-15 14:20:00
+"Canon RF 24-70mm","F2.8 zoom lens, IS",2299.99,0,85,3,5,/images/rf2470mm.jpg,190,2023-05-30 12:20:00,2024-12-20 11:50:00
+"Sony Xperia 5 III","6.1-inch OLED, 120Hz",899.99,0,50,1,1,/images/xperia5iii.jpg,95,2023-07-15 14:30:00,2025-02-25 09:40:00
+"Samsung Galaxy Z Flip 4","6.7-inch foldable AMOLED",899.99,1,35,1,2,/images/zflip4.jpg,80,2023-09-20 11:10:00,2025-04-10 13:20:00
+"Apple MacBook Pro 16 M3","16.2-inch Liquid Retina, 32GB RAM",2799.99,1,8,2,3,/images/macbookpro16m3.jpg,70,2023-12-10 15:40:00,2025-05-20 12:30:00
+"Asus ROG Strix G15","15.6-inch 165Hz, RTX 3060",1299.99,0,15,2,4,/images/rogstrixg15.jpg,55,2023-04-20 09:50:00,2024-10-15 14:50:00
+"Canon PowerShot SX740","40x optical zoom, 4K",399.99,0,90,3,5,/images/powershotsx740.jpg,200,2023-06-30 12:40:00,2025-03-15 11:10:00
+"Sony WH-CH720N","Noise-canceling headphones",149.99,1,80,3,1,/images/whch720n.jpg,180,2023-08-25 09:30:00,2025-01-30 14:20:00
+"Samsung Galaxy S22 Ultra","6.8-inch AMOLED, 108MP camera",1099.99,0,45,1,2,/images/galaxys22ultra.jpg,120,2023-11-15 13:20:00,2025-04-20 10:50:00
+"Apple iPhone 13 Mini","5.4-inch Super Retina, A15 chip",599.99,0,60,1,3,/images/iphone13mini.jpg,110,2023-05-20 11:40:00,2024-12-05 15:30:00
+"Asus ZenBook Duo 14","14-inch OLED, dual screen",1399.99,1,12,2,4,/images/zenbookduo14.jpg,65,2023-07-25 14:50:00,2025-02-10 12:20:00
+"Canon RF 70-200mm","F4 zoom lens, compact",1599.99,0,85,3,5,/images/rf70200mm.jpg,190,2023-10-05 09:20:00,2025-05-01 11:50:00
+"Sony Xperia 10 III","6.0-inch OLED, 4500mAh battery",349.99,0,55,1,1,/images/xperia10iii.jpg,90,2023-12-20 12:30:00,2025-03-25 14:40:00
+"Samsung Galaxy Book Go","14-inch FHD, Snapdragon 7c",399.99,0,30,2,2,/images/galaxybookgo.jpg,60,2023-04-15 11:50:00,2024-11-10 09:30:00
+"Apple Magic Keyboard","For iPad Pro, backlit",299.99,1,75,3,3,/images/magickeyboard.jpg,170,2023-06-20 14:20:00,2025-04-15 12:10:00
+"Asus ROG Zephyrus M16","16-inch QHD, RTX 4070",1999.99,0,10,2,4,/images/rogzephyrusm16.jpg,50,2023-08-30 09:40:00,2025-01-20 13:50:00
+"Canon EOS R8","24.2MP, full-frame, 4K video",1499.99,1,80,3,5,/images/eosr8.jpg,200,2023-11-10 15:20:00,2025-05-10 11:30:00
