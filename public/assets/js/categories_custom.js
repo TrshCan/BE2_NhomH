@@ -314,3 +314,23 @@ jQuery(document).ready(function ($) {
     }
   }
 });
+// Đảm bảo đang dùng jQuery
+$(".custom-checkbox").on("change", function () {
+    var filters = [];
+
+    $(".custom-checkbox:checked").each(function () {
+        var filterValue = $(this).data("filter");
+        if (filterValue) {
+            filters.push("." + filterValue);
+        }
+    });
+
+    var filterString = filters.length > 0 ? filters.join(", ") : "*";
+    $(".product-grid").isotope({ filter: filterString });
+});
+
+// Nút "Xóa bộ lọc"
+$("#clear-category-filter").on("click", function () {
+    $(".custom-checkbox").prop("checked", false);
+    $(".product-grid").isotope({ filter: "*" });
+});

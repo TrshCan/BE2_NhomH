@@ -24,9 +24,9 @@ class ShopController extends Controller
         }
 
         // If a category slug is provided, filter products by that category
+        // If a category ID is provided, filter products by that category ID
         if ($categorySlug) {
-            $category = Category::where('slug', $categorySlug)->firstOrFail();
-            $query->where('category_id', $category->category_id);
+            $query->where('category_id', $categorySlug); // Sử dụng $categorySlug trực tiếp làm category_id
         }
 
         // Paginate the filtered products
