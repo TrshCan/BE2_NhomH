@@ -160,8 +160,8 @@
     </div>
 </div>
  <!-- Tab Reviews -->
- <div id="tab_3" class="tab_container">
-                        <div class="row">
+ <div id="tab_3" class="tab_container " >
+                        <div class="row d-flex justify-content-center" >
                             <!-- User Reviews -->
                             <div class="col-lg-6 reviews_col">
                                 <div class="tab_title reviews_title">
@@ -195,11 +195,7 @@
                                     </div>
                                 </div>
                                 @endforeach
-                                {{ $reviews->links('pagination::bootstrap-5') }}
-                            </div>
-
-
-                            <div class="col-lg-6 add_review_col">
+                                <div class="col-lg-6 add_review_col my-4 mx-auto">
                                 <div class="add_review">
                                     <form id="review_form" action="{{ route('reviews.form', ['product_id' => $product->product_id]) }}" method="GET">
                                         @csrf
@@ -209,8 +205,13 @@
                                         </div>
                                     </form>
                                 </div>
-                            </div>
                         </div>
+                        <div style="margin-left: -25px;">
+                        {{ $reviews->links('pagination::bootstrap-5') }}
+                        </div>
+                         </div>
+                              
+                            </div>
                     </div>
                 </div>
             </div>
