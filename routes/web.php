@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CrudUserController;
 use App\Http\Controllers\ForgotPassword;
@@ -73,7 +74,8 @@ Route::get('cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::get('cart', [CartController::class, 'viewCart'])->name('cart.cart');
 Route::get('/cart/delete/{product_id}', [CartController::class, 'remove']);
 Route::get('/cart/deleteall', [CartController::class, 'clear']);
-Route::get('/cart/update_quantity/{product_id}/{qty}', [CartController::class, 'updateQuantity']);
+Route::post('/cart/update_quantity/{product_id}', [CartController::class, 'updateQuantity']);
+Route::get('/cart/update_quantity/{product_id}', [CartController::class, 'updateQuantity']);
 
 Route::get('/checkout', [OrderController::class, 'show'])->name('checkout.show');
 Route::post('/checkout/process', [OrderController::class, 'process'])->name('checkout.process');
