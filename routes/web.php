@@ -62,14 +62,6 @@ Route::post('password/forgot', [ForgotPassword::class, 'forgotPasswordFormPost']
 Route::get('password/forgot/{token}', [ForgotPassword::class, 'showForm'])->name('password.forgot.link');
 Route::post('password/email/submit', [ForgotPassword::class, 'resetPassword'])->name('password.forgot.link.submit');
 
-Route::get('list/user', [CrudUserController::class, 'listUser'])->name('user.list');
-Route::get('/user/{id}', [CrudUserController::class, 'showUser'])->name('user.show');
-Route::get('list/user/update/{id}', [CrudUserController::class, 'updateUser'])->name('user.update');
-Route::post('list/user/update/{id}', [CrudUserController::class, 'postUpdateUser'])->name('user.postUpdateUser');
-Route::post('list/user/delete', [CrudUserController::class, 'deleteUser'])->name('user.delete');
-
-Route::get('admin/adminpanel', [CrudUserController::class, 'adminpanel'])->name('adminpanel');
-
 // QUẢN LÝ ĐƠN HÀNG
 Route::get('/orders', [OrderManagementController::class, 'index'])->name('admin.orders.index');
 Route::get('/orders/{id}', [OrderManagementController::class, 'show'])->name('admin.orders.show');
@@ -115,6 +107,15 @@ Route::post('/coupons/{id}/update', [CouponManagementController::class, 'update'
 Route::get('/coupons/{id}/delete', [CouponManagementController::class, 'destroy']);
 
 Route::prefix('admin')->middleware('auth')->group(function () {
+
+    Route::get('/adminPanel', [AdminController::class, 'adminPanel'])->name('admin.adminPanel');
+
+    Route::get('/quanlynguoidung', [CrudUserController::class, 'index'])->name('admin.indexUser');
+    Route::get('/user/{id}', [CrudUserController::class, 'showUser'])->name('admin.showUser');
+    Route::get('/user/update/{id}', [CrudUserController::class, 'updateUser'])->name('admin.updateUser');
+    Route::post('/user/update/{id}', [CrudUserController::class, 'postUpdateUser'])->name('admin.postUpdateUser');
+    Route::post('/user/delete', [CrudUserController::class, 'deleteUser'])->name('admin.deleteUser');
+
     Route::get('/quanlysanpham', [AdminController::class, 'index'])->name('admin.products');
     Route::get('/products/{id}', [AdminController::class, 'show'])->name('admin.products.show');
     Route::post('/products', [AdminController::class, 'store'])->name('admin.products.store');

@@ -201,9 +201,9 @@
     </div>
 </div>
 
-   
 
-  
+
+
 <!-- Best Sellers (Moved here for better flow) -->
     <div class="best_sellers py-5">
         <div class="container">
@@ -319,7 +319,7 @@
         </div>
     </div>
 
-   
+
     <style>
         .carousel-image-wrapper { min-height: 800px; }
         .overlay { z-index: 1; }

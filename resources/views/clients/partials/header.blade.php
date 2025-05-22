@@ -6,7 +6,7 @@
                     <div class="row">
                         <div class="col-lg-12 text-right">
                             <div class="logo_container">
-                                <a href="#">tech<span>gear</span></a>
+                                <a href="#">Thế Giới <span> Manh Động</span></a>
                             </div>
                             <nav class="navbar">
                                 <ul class="navbar_menu">
@@ -47,4 +47,3 @@
                 </div>
             </div>
         </header>
-        

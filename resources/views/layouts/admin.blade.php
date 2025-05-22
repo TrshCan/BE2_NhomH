@@ -100,9 +100,11 @@
                         <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
                     </div> -->
                     <div class="relative">
-                        <button class="flex items-center text-gray-600 hover:text-teal-500 focus:outline-none">
+                        <button class="flex items-center text-gray-600 hover:text-red-500 focus:outline-none">
                             <i class="fas fa-user-circle text-xl mr-2"></i>
-                            <span>Admin</span>
+                            @if(Auth::check())
+                            <span>Chúc Ông Chủ May Mắn {{Auth::user()->name}}</span>
+                            @endif
                         </button>
                     </div>
                     <form action="{{ route('logout') }}" method="POST">
@@ -119,35 +121,32 @@
         <div id="sidebar" class="bg-gradient-to-b from-indigo-900 to-indigo-800 text-white w-64 space-y-6 py-7 px-4 fixed h-full transition-transform duration-300 z-10 glass-effect">
             <h2 class="text-2xl font-bold text-center mb-6">Control Panel</h2>
             <nav>
-                <a href="#" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105 active:bg-teal-500/30">
-                    <i class="fas fa-home mr-3"></i> Dashboard
-                </a>
-                <a href="{{ route('user.list')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                <a href="{{ route('admin.indexUser')}}" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105" style="text-decoration: none">
                     <i class="fas fa-users mr-3"></i> Quản lý người dùng
                 </a>
-                <a href="{{ route('admin.products')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                <a href="{{ route('admin.products')}}" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105" style="text-decoration: none">
                     <i class="fas fa-box mr-3"></i> Quản lý Sản phẩm
                 </a>
-                <a href="{{ route('admin.images.index')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                <a href="{{ route('admin.images.index')}}" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-box mr-3"></i> Quản lý ảnh
                 </a>
-                <a href="{{ route('admin.brands')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                <a href="{{ route('admin.brands')}}" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-box mr-3"></i> Brands
                 </a>
-                <a href="{{ route('admin.categories')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                <a href="{{ route('admin.categories')}}" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-box mr-3"></i> Quản lý danh mục
                 </a>
-                
-                <a href="{{ route('admin.orders.index')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+
+                <a href="{{ route('admin.orders.index')}}" class="block py-2.5 px-4 rounded hover:bg-yellow-500  transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-shopping-cart mr-3"></i> Đơn hàng
                 </a>
-                <a href="{{ route('admin.coupons.index')}}" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                <a href="{{ route('admin.coupons.index')}}" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-tags mr-3 mr-3"></i> Mã giảm giá
                 </a>
-                <a href="#" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                <a href="#" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-chart-bar mr-3"></i> Báo cáo
                 </a>
-                <a href="#" class="block py-2.5 px-4 rounded hover:bg-teal-500/20 transition duration-200 flex items-center transform hover:scale-105">
+                <a href="#" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-cog mr-3"></i> Cài đặt
                 </a>
             </nav>

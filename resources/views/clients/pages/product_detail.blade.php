@@ -71,7 +71,7 @@
                         <span id="quantity_value">1</span>
                         <span class="plus"><i class="fa fa-plus" aria-hidden="true"></i></span>
                     </div>
-                    <a href="{{ url('/cart/add/' . $product->id) }}" class="add_to_cart_button">Add to Cart</a>
+                    <a href="{{ url('/cart/add/' . $product->product_id) }}" class="btn btn-outline-danger">Add to Cart</a>
                 </div>
             </div>
         </div>

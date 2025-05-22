@@ -24,7 +24,7 @@
                        type="checkbox"
                        value="{{ $category->slug }}"
                        id="category-{{ $category->category_id }}"
-                       {{ $categorySlug == $category->slug ? 'checked' : '' }}
+                       {{ $categorySlug == $category->category_id ? 'checked' : '' }}
                        onchange="window.location.href='{{ route('products.index', [$brandSlug, $category->slug]) }}'">
                 <label class="form-check-label" for="category-{{ $category->category_id }}">
                   {{ $category->category_name }}
@@ -127,10 +127,10 @@
                   </div>
                   <div class="card-body product_info text-center">
                     <h6 class="card-title product_name"><a href="{{ route('products.show', $item2->product_id) }}">{{ $item2->product_name }}</a></h6>
-                    <div class="product_price">{{ number_format($item2->price * 25000, 0, ',', '.') }}đ <span></span></div>
+                    <div class="product_price">{{ number_format($item2->price, 0, ',', '.') }}đ <span></span></div>
                   </div>
                   <div class="card-footer add_to_cart_button">
-                    <a href="#" class="btn red_button w-100">Add to Cart</a>
+                    <a href="{{ route('cart.add', $item2->product_id) }}" class="btn red_button w-100">Add to Cart</a>
                   </div>
                 </div>
               </div>

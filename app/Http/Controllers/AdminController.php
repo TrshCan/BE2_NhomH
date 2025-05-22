@@ -23,6 +23,9 @@ class AdminController extends Controller
         $brands = Brand::all();
         return view('admin.quanlysanpham', compact('products', 'categories', 'brands'));
     }
+    public function adminPanel(){
+        return view('layouts.admin');
+    }
 
     public function logout()
     {

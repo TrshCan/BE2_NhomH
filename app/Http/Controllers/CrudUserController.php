@@ -24,10 +24,10 @@ class CrudUserController extends Controller
     {
         return view('login');
     }
-    public function adminpanel()
-    {
-        return view('admin.admin');
-    }
+//    public function adminpanel()
+//    {
+//        return view('admin.admin');
+//    }
 
     public function authUser(Request $request)
     {
@@ -76,7 +76,7 @@ class CrudUserController extends Controller
 
                 // Redirect based on user role
                 if ($user->role === 'admin') {
-                    return redirect()->intended(route('adminpanel'))->with('success', 'Đăng nhập thành công.');
+                    return redirect()->intended(route('admin.adminPanel'))->with('success', 'Đăng nhập thành công.');
                 }
 
                 return redirect()->intended(route('products.home'))->with('success', 'Đăng nhập thành công.');
@@ -103,8 +103,8 @@ class CrudUserController extends Controller
     //     $validator = Validator::make($request->all(), [
     //         'name' => 'required|string|max:255',
     //         'email' => 'required|email|unique:users,email|max:255',
-    //         'password' => 'required|string|min:8|confirmed',  
-    //         'phone' => 'required|numeric|digits:10',           
+    //         'password' => 'required|string|min:8|confirmed',
+    //         'phone' => 'required|numeric|digits:10',
     //         'address' => 'required|string|max:255',
     //     ]);
 
@@ -231,7 +231,7 @@ class CrudUserController extends Controller
 
             if ($request->status_id == 2) {
                 if (empty($request->ban_reason)) {
-                    return redirect()->route('user.update', $request->id)
+                    return redirect()->route('admin.updateUser', $request->id)
                         ->withErrors(['ban_reason' => 'Vui lòng nhập lý do khóa tài khoản.'])
                         ->withInput();
                 }
@@ -243,7 +243,7 @@ class CrudUserController extends Controller
             $user->save();
             Log::info('User update', ['user' => $user, 'request' => $request->all()]);
 
-            return redirect()->route('user.list')->with('success', 'Cập nhật người dùng thành công.');
+            return redirect()->route('admin.indexUser')->with('success', 'Cập nhật người dùng thành công.');
         } catch (\Exception $e) {
             Log::error('Error updating user: ' . $e->getMessage(), ['user_id' => $request->id]);
             return redirect()->route('user.update', $request->id)
@@ -254,7 +254,7 @@ class CrudUserController extends Controller
 
 
 
-    public function listUser(Request $request)
+    public function index(Request $request)
     {
         // Nếu chưa đăng nhập
         if (!Auth::check()) {

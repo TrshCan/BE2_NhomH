@@ -5,7 +5,7 @@
                 <div class="row">
                     <div class="col-lg-12 text-right">
                         <div class="logo_container">
-                            <a href="#">tech<span>gear</span></a>
+                            <a href="#">Thế Giới <span> Manh Động</span></a>
                         </div>
                         <nav class="navbar">
                             <ul class="navbar_menu">
@@ -34,7 +34,7 @@
                                         <!-- Người dùng đã đăng nhập -->
                                         <span class="dropdown-item disabled">Xin chào, {{ Auth::user()->name }}</span>
                                         <a href="{{ route('showUser', ['id' => Auth::user()->id]) }}" class="dropdown-item">Cài đặt</a>
-                                        <a href="{{ route('signOut') }}" class="dropdown-item" 
+                                        <a href="{{ route('signOut') }}" class="dropdown-item"
                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                             Đăng xuất
                                         </a>

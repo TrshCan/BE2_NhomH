@@ -13,7 +13,7 @@
                     <li><strong>Vai trò:</strong> {{ $user->role }}</li>
                     <li><strong>Trạng thái:</strong> {{  $user->status->name }}</li>
                 </ul>
-                <a href="{{ route('user.list') }}" class="btn btn-secondary">Quay lại danh sách</a>
+                <a href="{{ route('admin.indexUser') }}" class="btn btn-secondary">Quay lại danh sách</a>
             </div>
             <div class="col-md-4">
                 <img src="https://i.ibb.co/SXd1FDnZ/t-o-cho-t-i-h-nh-nh-logo-Group-H.png" alt="Hình ảnh trang trí" class="img-fluid">
