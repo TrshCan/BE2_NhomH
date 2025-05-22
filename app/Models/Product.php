@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+
 
 class Product extends Model
 {
@@ -58,6 +60,21 @@ class Product extends Model
     public function scopeByBrand($query, $brandId)
     {
         return $brandId ? $query->where('id', $brandId) : $query;
+    }
+    public function scopeFilter(Builder $query, $brandSlug = null, $categorySlug = null)
+    {
+        if ($brandSlug) {
+            $brand = \App\Models\Brand::where('slug', $brandSlug)->first();
+            if ($brand) {
+                $query->where('brand_id', $brand->id);
+            }
+        }
+
+        if ($categorySlug) {
+            $query->where('category_id', $categorySlug);
+        }
+
+        return $query;
     }
 
 
