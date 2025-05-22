@@ -10,7 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpokl5x2f2VjyN6z5z5z5z5z5z5z5z5z5z5z5z5z5z" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpokl5x2f2VjyN6z5z5z5z5z5z5z5z5z5z5z5z5z5z" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -102,8 +103,8 @@
                     <div class="relative">
                         <button class="flex items-center text-gray-600 hover:text-red-500 focus:outline-none">
                             <i class="fas fa-user-circle text-xl mr-2"></i>
-                            @if(Auth::check())
-                            <span>Chúc Ông Chủ May Mắn {{Auth::user()->name}}</span>
+                            @if (Auth::check())
+                                <span>Chúc Ông Chủ May Mắn {{ Auth::user()->name }}</span>
                             @endif
                         </button>
                     </div>
@@ -118,35 +119,51 @@
 
     <div class="flex pt-16">
         <!-- Sidebar -->
-        <div id="sidebar" class="bg-gradient-to-b from-indigo-900 to-indigo-800 text-white w-64 space-y-6 py-7 px-4 fixed h-full transition-transform duration-300 z-10 glass-effect">
+        <div id="sidebar"
+            class="bg-gradient-to-b from-indigo-900 to-indigo-800 text-white w-64 space-y-6 py-7 px-4 fixed h-full transition-transform duration-300 z-10 glass-effect">
             <h2 class="text-2xl font-bold text-center mb-6">Control Panel</h2>
             <nav>
-                <a href="{{ route('admin.indexUser')}}" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105" style="text-decoration: none">
+                <a href="{{ route('admin.indexUser') }}"
+                    class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"
+                    style="text-decoration: none">
                     <i class="fas fa-users mr-3"></i> Quản lý người dùng
                 </a>
-                <a href="{{ route('admin.products')}}" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105" style="text-decoration: none">
+                <a href="{{ route('admin.products') }}"
+                    class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"
+                    style="text-decoration: none">
                     <i class="fas fa-box mr-3"></i> Quản lý Sản phẩm
                 </a>
-                <a href="{{ route('admin.images.index')}}" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
+                <a href="{{ route('admin.images.index') }}"
+                    class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-box mr-3"></i> Quản lý ảnh
                 </a>
-                <a href="{{ route('admin.brands')}}" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
-                    <i class="fas fa-box mr-3"></i> Brands
+                <a href="{{ route('admin.brands') }}"
+                    class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
+                    <i class="fas fa-box mr-3"></i>Quản lý Brands
                 </a>
-                <a href="{{ route('admin.categories')}}" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
+                <a href="{{ route('admin.categories') }}"
+                    class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-box mr-3"></i> Quản lý danh mục
                 </a>
+                <a href="{{ route('admin.deals.index') }}"
+                    class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
+                    <i class="fas fa-box mr-3"></i> Quản lý Deal
+                </a>
 
-                <a href="{{ route('admin.orders.index')}}" class="block py-2.5 px-4 rounded hover:bg-yellow-500  transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
+                <a href="{{ route('admin.orders.index') }}"
+                    class="block py-2.5 px-4 rounded hover:bg-yellow-500  transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-shopping-cart mr-3"></i> Đơn hàng
                 </a>
-                <a href="{{ route('admin.coupons.index')}}" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
+                <a href="{{ route('admin.coupons.index') }}"
+                    class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-tags mr-3 mr-3"></i> Mã giảm giá
                 </a>
-                <a href="#" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
+                <a href="#"
+                    class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-chart-bar mr-3"></i> Báo cáo
                 </a>
-                <a href="#" class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
+                <a href="#"
+                    class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-cog mr-3"></i> Cài đặt
                 </a>
             </nav>
@@ -173,7 +190,9 @@
             toggleIcon.classList.toggle('fa-times');
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
 </body>
 
 </html>
