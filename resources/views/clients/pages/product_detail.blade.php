@@ -167,6 +167,10 @@
                                 <div class="tab_title reviews_title">
                                     <h4>Reviews ({{ $count }})</h4>
                                 </div>
+                                @if($reviews->isEmpty())
+                                <!-- Hiển thị thông báo nếu không có review -->
+                                <p class="text-center">Chưa có đánh giá nào cho sản phẩm này.</p>
+                                @else
                                 @foreach($reviews as $review)
                                 <div class="user_review_container d-flex flex-column flex-sm-row gap-3">
                                     <!-- Phần thông tin người dùng -->
