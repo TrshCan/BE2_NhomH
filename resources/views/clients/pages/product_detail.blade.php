@@ -167,6 +167,7 @@
                                 <div class="tab_title reviews_title">
                                     <h4>Reviews ({{ $count }})</h4>
                                 </div>
+                                @if($reviews->isNotEmpty())
                                 @foreach($reviews as $review)
                                 <div class="user_review_container d-flex flex-column flex-sm-row gap-3">
                                     <!-- Phần thông tin người dùng -->
@@ -197,6 +198,9 @@
                                     </div>
                                 </div>
                                 @endforeach
+                                @else
+                                <p>Không có đánh giá sản phẩm nào.</p>
+                                @endif
                                 <div class="col-lg-6 add_review_col my-4 mx-auto">
                                     <div class="add_review">
                                         <form id="review_form" action="{{ route('reviews.form', ['product_id' => $product->product_id]) }}" method="GET">
@@ -246,7 +250,7 @@
 
 <!-- Consolidated JavaScript -->
 <script>
-    console.log(<?= $review->user ?>)
+    
     document.addEventListener('DOMContentLoaded', function() {
         // Hamburger Menu Toggle
         const hamburgerContainer = document.querySelector('.hamburger_container');
