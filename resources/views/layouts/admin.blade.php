@@ -135,19 +135,19 @@
                 </a>
                 <a href="{{ route('admin.images.index') }}"
                     class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
-                    <i class="fas fa-box mr-3"></i> Quản lý ảnh
+                    <i class="fas fa-image mr-3"></i> Quản lý ảnh
                 </a>
                 <a href="{{ route('admin.brands') }}"
                     class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
-                    <i class="fas fa-box mr-3"></i>Quản lý Brands
+                    <i class="fas fa-copyright mr-3"></i>Quản lý Brands
                 </a>
                 <a href="{{ route('admin.categories') }}"
                     class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
-                    <i class="fas fa-box mr-3"></i> Quản lý danh mục
+                    <i class="fas fa-handshake mr-3"></i> Quản lý danh mục
                 </a>
                 <a href="{{ route('admin.deals.index') }}"
                     class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
-                    <i class="fas fa-box mr-3"></i> Quản lý Deal
+                    <i class="fas fa-blog mr-3"></i> Quản lý Deal
                 </a>
                 <a href="{{ route('admin.blogs.index') }}"
                     class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
