@@ -238,52 +238,65 @@
                 if (!order.success) {
                     orderErrorDiv.style.display = 'block';
                     orderErrorDiv.textContent =
-                        'Có lỗi khi tải chi tiết đơn hàng: Đơn hàng không tồn tại hoặc đã bị xóa. Vui lòng tải lại trang.';
+                        'Có lỗi khi tải chi tiết đơn hàng: Đơn hàng không tồn tại hoặc đã bị xóa. Vui lòng tải lại trang  dùm cái.';
                     setTimeout(() => {
                         orderErrorDiv.style.display = 'none';
                     }, 5000);
                     return;
                 }
-                const formattedAddress = convertAddressCodesToNames(order.shipping_address || '');
+
+                if (!order.success) {
+                    orderErrorDiv.style.display = 'block';
+                    orderErrorDiv.textContent =
+                        'Có lỗi khi tải chi tiết đơn hàng: Đơn hàng không tồn tại hoặc đã bị xóa. Vui lòng tải lại trang dùm cái.';
+                    setTimeout(() => {
+                        orderErrorDiv.style.display = 'none';
+                    }, 5000);
+                    return;
+                }
+
+                const formattedAddress = convertAddressCodesToNames(order.order.shipping_address || '');
                 orderDetailsContent.innerHTML = `
-                    <p><strong>Mã đơn hàng:</strong> ${order.order_id}</p>
-                    <p><strong>Khách hàng:</strong> ${order.user?.name || 'N/A'}</p>
-                    <p><strong>Ngày đặt:</strong> ${new Date(order.order_date).toLocaleString('vi-VN')}</p>
-                    <p><strong>Tổng tiền:</strong> ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.total_amount)}</p>
-                    <p><strong>Trạng thái:</strong> ${
-                        order.status === 'pending' ? 'Chờ xử lý' :
-                        order.status === 'processing' ? 'Đang xử lý' :
-                        order.status === 'shipped' ? 'Đã giao' :
-                        order.status === 'delivered' ? 'Đã nhận' :
-                        order.status === 'cancelled' ? 'Đã hủy' : order.status
-                    }</p>
-                    <p><strong>Địa chỉ giao:</strong> ${formattedAddress || 'N/A'}</p>
-                    <h4 class="font-semibold mt-4">Chi tiết sản phẩm:</h4>
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sản phẩm</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số lượng</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            ${(order.details && order.details.length > 0) ? order.details.map(detail => `
-                                                                                <tr>
-                                                                                    <td class="px-4 py-2 text-sm text-gray-800">${detail.product?.product_name || 'N/A'}</td>
-                                                                                    <td class="px-4 py-2 text-sm text-gray-800">${detail.quantity}</td>
-                                                                                    <td class="px-4 py-2 text-sm text-gray-800">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(detail.price)}</td>
-                                                                                </tr>
-                                                                            `).join('') : '<tr><td colspan="3" class="px-4 py-2 text-sm text-gray-800 text-center">Không có chi tiết sản phẩm</td></tr>'}
-                        </tbody>
-                    </table>
-                `;
-                orderErrorDiv.style.display = 'none'; // Hide error div if successful
+    <p><strong>Mã đơn hàng:</strong> ${order.order.order_id}</p>
+    <p><strong>Khách hàng:</strong> ${order.order.user?.name || 'N/A'}</p>
+    <p><strong>Ngày đặt:</strong> ${new Date(order.order.order_date).toLocaleString('vi-VN')}</p>
+    <p><strong>Tổng tiền:</strong> ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.order.total_amount)}</p>
+    <p><strong>Trạng thái:</strong> ${
+        order.order.status === 'pending' ? 'Chờ xử lý' :
+        order.order.status === 'processing' ? 'Đang xử lý' :
+        order.order.status === 'shipped' ? 'Đã giao' :
+        order.order.status === 'delivered' ? 'Đã nhận' :
+        order.order.status === 'cancelled' ? 'Đã hủy' : order.order.status
+    }</p>
+    <p><strong>Địa chỉ giao:</strong> ${formattedAddress || 'N/A'}</p>
+    <h4 class="font-semibold mt-4">Chi tiết sản phẩm:</h4>
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sản phẩm</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số lượng</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            ${(order.order.orderdetails && order.order.orderdetails.length > 0) ? order.order.orderdetails.map(detail => `
+                <tr>
+                    <td class="px-4 py-2 text-sm text-gray-800">${detail.product?.product_name || 'N/A'}</td>
+                    <td class="px-4 py-2 text-sm text-gray-800">${detail.quantity}</td>
+                    <td class="px-4 py-2 text-sm text-gray-800">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(detail.price)}</td>
+                </tr>
+            `).join('') : '<tr><td colspan="3" class="px-4 py-2 text-sm text-gray-800 text-center">Không có chi tiết sản phẩm</td></tr>'}
+        </tbody>
+    </table>
+`;
+
+                orderErrorDiv.style.display = 'none';
+                // Hide error div if successful
             } catch (error) {
                 console.error('Lỗi khi tải chi tiết đơn hàng:', error);
                 orderErrorDiv.style.display = 'block';
                 orderErrorDiv.textContent =
-                    'Có lỗi khi tải chi tiết đơn hàng: Đơn hàng không tồn tại hoặc đã bị xóa. Vui lòng tải lại trang.';
+                    'Có lỗi khi tải chi tiết đơn hàng: Đơn hàng không tồn tại hoặc đã bị xóa. Vui lòng tải lại trang nhaaa.';
                 // Close the modal if it's open
                 const modal = bootstrap.Modal.getInstance(viewOrderModal);
                 if (modal) modal.hide();

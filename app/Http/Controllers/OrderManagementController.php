@@ -39,8 +39,13 @@ class OrderManagementController extends Controller
             ], 404); // HTTP 404 Not Found
         }
 
-        return response()->json($order);
+        // Add 'success' => true to the JSON response
+        return response()->json([
+            'success' => true,
+            'order' => $order,
+        ]);
     }
+
 
 
     public function store(Request $request)
