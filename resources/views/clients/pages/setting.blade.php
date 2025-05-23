@@ -236,6 +236,15 @@
                         throw new Error('Server returned non-JSON response');
                     }
                     const order = await response.json();
+                    if (!order.success) {
+                        orderErrorDiv.style.display = 'block';
+                        orderErrorDiv.textContent =
+                            'Có lỗi khi tải chi tiết đơn hàng: Đơn hàng không tồn tại hoặc đã bị xóa. Vui lòng tải lại trang.';
+                        setTimeout(() => {
+                            orderErrorDiv.style.display = 'none';
+                        }, 5000);
+                        return;
+                    }
                     const formattedAddress = convertAddressCodesToNames(order.shipping_address || '');
                     orderDetailsContent.innerHTML = `
                     <p><strong>Mã đơn hàng:</strong> ${order.order_id}</p>
