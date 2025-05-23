@@ -72,6 +72,7 @@
         <h3 id="modalTitle" class="text-lg font-semibold text-gray-800 mb-4">Thêm mã giảm giá</h3>
         <form id="couponForm">
             <input type="hidden" name="id">
+            <input type="hidden" name="updated_at">
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Mã giảm giá</label>
                 <input type="text" name="code" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
@@ -130,6 +131,7 @@
         modalTitle.textContent = 'Thêm mã giảm giá';
         couponForm.reset();
         couponForm.querySelector('[name="id"]').value = '';
+        couponForm.querySelector('[name="updated_at"]').value = ''; // Clear updated_at
         couponForm.querySelector('[name="is_active"]').checked = true;
         couponModal.classList.remove('hidden');
     });
@@ -170,7 +172,11 @@
 
             const result = await response.json();
             if (response.ok) {
+                alert(result.message || 'Mã giảm giá đã được lưu thành công.');
                 location.reload();
+            } else if (response.status === 409) {
+                // Handle conflict due to updated_at mismatch
+                alert(result.message || 'Mã giảm giá đã được chỉnh sửa bởi người khác. Vui lòng tải lại dữ liệu.');
             } else {
                 console.error('Server error:', result);
                 let errorMessage = result.message || 'Có lỗi xảy ra khi lưu mã giảm giá';
@@ -206,6 +212,7 @@
                 couponForm.querySelector('[name="type"]').value = coupon.type;
                 couponForm.querySelector('[name="value"]').value = coupon.value;
                 couponForm.querySelector('[name="is_active"]').checked = coupon.is_active;
+                couponForm.querySelector('[name="updated_at"]').value = result.updated_at; // Set updated_at
                 couponModal.classList.remove('hidden');
             } catch (error) {
                 console.error('Lỗi khi tải dữ liệu mã giảm giá:', error);
@@ -251,20 +258,38 @@
             if (confirm('Bạn có chắc muốn xóa mã giảm giá này?')) {
                 const couponId = button.dataset.id;
                 try {
-                    const response = await fetch(`${baseUrl}/coupons/${couponId}/delete`, {
+                    // Fetch coupon to get updated_at
+                    const fetchResponse = await fetch(`${baseUrl}/coupons/${couponId}`);
+                    const contentTypeFetch = fetchResponse.headers.get('content-type');
+                    if (!contentTypeFetch || !contentTypeFetch.includes('application/json')) {
+                        throw new Error('Server returned non-JSON response');
+                    }
+                    const fetchResult = await fetchResponse.json();
+                    if (!fetchResult.success) {
+                        throw new Error(fetchResult.message || 'Không thể tải dữ liệu mã giảm giá');
+                    }
+                    const updatedAt = fetchResult.updated_at;
+
+                    // Send delete request with updated_at as query parameter
+                    const response = await fetch(`${baseUrl}/coupons/${couponId}/delete?updated_at=${encodeURIComponent(updatedAt)}`, {
                         method: 'GET',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                             'Accept': 'application/json',
                         },
                     });
+
                     const contentType = response.headers.get('content-type');
                     if (!contentType || !contentType.includes('application/json')) {
                         throw new Error('Server returned non-JSON response');
                     }
                     const result = await response.json();
                     if (response.ok) {
+                        alert(result.message || 'Mã giảm giá đã được xóa thành công.');
                         location.reload();
+                    } else if (response.status === 409) {
+                        // Handle conflict due to updated_at mismatch
+                        alert(result.message || 'Mã giảm giá đã được chỉnh sửa bởi người khác. Vui lòng tải lại dữ liệu.');
                     } else {
                         console.error('Server error:', result);
                         throw new Error(result.message || 'Có lỗi xảy ra khi xóa mã giảm giá');

@@ -23,4 +23,11 @@ class Coupon extends Model
             $query->where('code', 'like', '%' . $filters['search'] . '%');
         }
     }
+
+    public static function validateValue($value, $type, $fail)
+    {
+        if ($type === 'percent' && ($value < 0 || $value > 100)) {
+            $fail('Giá trị phải nằm trong khoảng từ 0 đến 100 khi loại là phần trăm.');
+        }
+    }
 }
