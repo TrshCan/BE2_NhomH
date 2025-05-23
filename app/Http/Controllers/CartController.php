@@ -16,39 +16,18 @@ class CartController extends Controller
             return redirect()->route('products.home')->with('error_auth', 'Bạn cần đăng nhập để tiếp tục.');
         }
 
-        try {
-            $cart = Auth::user()->cart()->with('items.product')->first();
+        $user = Auth::user();
+        $cart = $user->cart ? $user->cart->loadAndCleanItems() : ['cart' => null, 'removedItems' => 0];
 
-            if ($cart) {
-                $removedItems = 0;
-                // Check each cart item and remove those with missing products
-                $cart->items()->each(function ($item) use (&$removedItems) {
-                    if (!$item->product) {
-                        $item->delete();
-                        $removedItems++;
-                    }
-                });
-
-                // If items were removed, add a session message
-                if ($removedItems > 0) {
-                    $request->session()->flash('info', "Đã xóa $removedItems sản phẩm không còn tồn tại khỏi giỏ hàng.");
-                }
-
-                // Refresh the cart to ensure we have the updated items
-                $cart->load('items.product');
-
-                // If no valid items remain, set cart to null
-                if ($cart->items->isEmpty()) {
-                    $cart = null;
-                }
-            }
-
-            return view('cart.cart', compact('cart'));
-        } catch (\Exception $e) {
-            Log::error('Error loading cart: ' . $e->getMessage());
-            return view('cart.cart', ['cart' => null])
-                ->with('error', 'Có lỗi xảy ra khi tải giỏ hàng. Vui lòng thử lại.');
+        if ($cart['removedItems'] > 0) {
+            $request->session()->flash('info', "Đã xóa {$cart['removedItems']} sản phẩm không còn tồn tại khỏi giỏ hàng.");
         }
+
+        if (!$cart['cart']) {
+            return view('cart.cart', ['cart' => null])->with('error', 'Có lỗi xảy ra khi tải giỏ hàng. Vui lòng thử lại.');
+        }
+
+        return view('cart.cart', ['cart' => $cart['cart']]);
     }
 
     public function add(Request $request, $id)
@@ -57,9 +36,7 @@ class CartController extends Controller
             return redirect()->route('products.home')->with('error_auth', 'Bạn cần đăng nhập để tiếp tục.');
         }
 
-        $user = Auth::user();
-        $cart = $user->cart ?? $user->cart()->create();
-
+        $cart = Cart::getOrCreateForUser(Auth::user());
         $cart->addProduct($id);
 
         return redirect()->route('products.home')->with('success', 'Sản phẩm đã được thêm vào giỏ hàng.');
@@ -96,15 +73,13 @@ class CartController extends Controller
 
     public function updateQuantity(Request $request, $product_id)
     {
-        // Ensure the request is POST
         if (!$request->isMethod('post')) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Phương thức không được hỗ trợ. Vui lòng sử dụng POST.'
-            ], 405); // 405 Method Not Allowed
+            ], 405);
         }
 
-        // Validate request parameters
         $request->validate([
             'qty' => 'required|integer|min:1',
             'updated_at' => 'required|string',
@@ -124,26 +99,8 @@ class CartController extends Controller
             ], 404);
         }
 
-        $result = $cart->updateProductQuantityIfUnchanged(
-            $product_id,
-            $request->qty,
-            $request->updated_at
-        );
+        $result = $cart->updateProductQuantityIfUnchanged($product_id, $request->qty, $request->updated_at);
 
-        return match ($result) {
-            'success' => response()->json([
-                'status' => 'success',
-                'message' => 'Cập nhật số lượng thành công.'
-            ]),
-            'conflict' => response()->json([
-                'status' => 'error',
-                'message' => 'Số lượng sản phẩm đã bị thay đổi bởi phiên làm việc khác. Vui lòng tải lại trang.',
-                'latest_updated_at' => $cart->getItemByProductId($product_id)?->updated_at->toDateTimeString()
-            ], 409),
-            default => response()->json([
-                'status' => 'error',
-                'message' => 'Sản phẩm không tồn tại trong giỏ hàng.'
-            ], 404),
-        };
+        return response()->json($result, $result['status'] === 'error' && isset($result['latest_updated_at']) ? 409 : 200);
     }
 }
