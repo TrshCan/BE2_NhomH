@@ -149,6 +149,10 @@
                     class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-box mr-3"></i> Quản lý Deal
                 </a>
+                <a href="{{ route('admin.blogs.index') }}"
+                    class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
+                    <i class="fas fa-box mr-3"></i> Quản lý Blogs
+                </a>
 
                 <a href="{{ route('admin.orders.index') }}"
                     class="block py-2.5 px-4 rounded hover:bg-yellow-500  transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">

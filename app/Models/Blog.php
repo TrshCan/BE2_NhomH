@@ -9,9 +9,30 @@ class Blog extends Model
 {
     use HasFactory;
 
-    // Xác định bảng tương ứng
     protected $table = 'blogs';
 
-    // Các cột có thể gán đại trà (mass assignment)
-    protected $fillable = ['title', 'slug', 'content'];
+    protected $fillable = [
+        'title',
+        'slug',
+        'content',
+        'image_url',
+        'author',
+        'published_at',
+    ];
+
+    protected $casts = [
+        'published_at' => 'datetime',
+    ];
+
+    public function scopePublished($query)
+    {
+        return $query->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
+    }
+
+
+    public function scopePublishedById($query, $id)
+    {
+        return $query->published()->where('id', $id);
+    }
 }

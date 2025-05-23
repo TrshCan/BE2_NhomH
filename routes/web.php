@@ -22,6 +22,7 @@ use App\Http\Controllers\ContactController; // Added to use BrandController
 use App\Http\Controllers\ImageController; // Added to use BrandController
 use App\Http\Controllers\DealProductController;
 
+
 // Trang chủ
 Route::get('/', [ProductController::class, 'index'])->name('products.home');
 Route::get('/deal-of-the-week', [ProductController::class, 'dealOfTheWeek'])->name('products.deal');
@@ -31,8 +32,8 @@ Route::get('/shop/{brandSlug?}', [ShopController::class, 'index'])->name('produc
 Route::get('/shop/{brandSlug?}/{categorySlug?}', [ShopController::class, 'index'])->name('shop');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
-Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
-Route::get('/post/{id}', [BlogController::class, 'show'])->name('post.show');
+Route::get('/blog', [BlogController::class, 'clientIndex'])->name('blog.index');
+Route::get('/post/{id}', [BlogController::class, 'clientShow'])->name('post.show');
 
 // Trang welcome
 Route::get('/welcome', function () {
@@ -146,4 +147,10 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('deals', [DealProductController::class, 'index'])->name('admin.deals.index');
     Route::get('deals/{id}', [DealProductController::class, 'show'])->name('admin.deals.show');
     Route::put('deals/{id}', [DealProductController::class, 'update'])->name('admin.deals.update');
+
+    Route::get('/blogs', [BlogController::class, 'index'])->name('admin.blogs.index');
+    Route::post('/blogs', [BlogController::class, 'store'])->name('admin.blogs.store');
+    Route::get('/blogs/{id}', [BlogController::class, 'show'])->name('admin.blogs.show');
+    Route::put('/blogs/{id}', [BlogController::class, 'update'])->name('admin.blogs.update');
+    Route::delete('/blogs/{id}', [BlogController::class, 'destroy'])->name('admin.blogs.destroy');
 });
