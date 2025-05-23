@@ -354,7 +354,7 @@
                     ensureDetailsContainer();
                     detailsContainer.innerHTML = '';
 
-                    if (!order.details || order.details.length === 0) {
+                    if (!order.orderdetails || order.orderdetails.length == 0) {
                         console.warn('No order details found, initializing with one empty detail');
                         detailsContainer.innerHTML = `
                     <div class="detail-item mb-2 flex space-x-2">
@@ -364,7 +364,7 @@
                 `;
                         detailCount = 1;
                     } else {
-                        order.details.forEach((detail, index) => {
+                        order.orderdetails.forEach((detail, index) => {
                             const detailItem = document.createElement('div');
                             detailItem.className = 'detail-item mb-2 flex space-x-2';
                             detailItem.innerHTML = `
@@ -374,7 +374,7 @@
                     `;
                             detailsContainer.appendChild(detailItem);
                         });
-                        detailCount = order.details.length;
+                        detailCount = order.orderdetails.length;
                     }
 
                     updateSubmitButtonState();
@@ -601,7 +601,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        ${(order.details && order.details.length > 0) ? order.details.map(detail => `
+                        ${(order.orderdetails && order.orderdetails.length > 0) ? order.orderdetails.map(detail => `
                             <tr>
                                 <td class="px-4 py-2 text-sm text-gray-800">${detail.product?.product_name || 'N/A'}</td>
                                 <td class="px-4 py-2 text-sm text-gray-800">${detail.quantity}</td>

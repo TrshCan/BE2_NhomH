@@ -145,7 +145,7 @@ class OrderController extends Controller
     public function validate(Request $request)
     {
         try {
-            $user = Auth::user()->with('status')->first();
+            $user = Auth::user()->load('status');
 
             if (!$user) {
                 return response()->json([
@@ -162,9 +162,18 @@ class OrderController extends Controller
 
             $cart = $user->cart()->with('items.product')->first();
             if (!$cart || $cart->items->isEmpty()) {
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'Giỏ hàng của bạn đang trống.',
+                    'message' => 'Giỏ hàng của bạn đang trống nhaaaaa.',
+                    'debug' => [
+                        'cart_exists' => $cart ? true : false,
+                        'cart_id' => $cart?->cart_id,
+                        'items_count' => $cart?->items()->count(),
+                        'items' => $cart?->items,
+                        'user' => $user?->id,
+                        'user_status' => $user?->status_id,
+                    ]
                 ], 422);
             }
 
@@ -237,7 +246,7 @@ class OrderController extends Controller
         // Check if cart exists and is not empty
         $cart = $user->cart()->with('products')->first();
         if (!$cart || $cart->products->isEmpty()) {
-            return redirect()->route('cart.cart')->with('error', 'Giỏ hàng của bạn đang trống.');
+            return redirect()->route('cart.cart')->with('error', 'Giỏ hàng của bạn đang trống đấy nha.');
         }
 
         DB::beginTransaction();
@@ -293,7 +302,7 @@ class OrderController extends Controller
 
             // Create order details
             foreach ($cart->products as $product) {
-                $order->details()->create([
+                $order->orderdetails()->create([
                     'product_id' => $product->product_id,
                     'quantity' => $product->pivot->quantity,
                     'price' => $product->price,
@@ -330,7 +339,7 @@ class OrderController extends Controller
     {
         try {
             // Fetch the order with its details and related products, ensuring it belongs to the authenticated user
-            $order = Order::with('details.product')
+            $order = Order::with('orderdetails.product')
                 ->where('user_id', Auth::id())
                 ->where('order_id', $orderId)
                 ->first();

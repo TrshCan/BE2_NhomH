@@ -18,7 +18,7 @@ class OrderManagementController extends Controller
             Auth::logout();
             return redirect('login')->with('error_admin', 'Bạn không có quyền truy cập trang quản trị. Đã đăng xuất.');
         }
-
+        Order::doesntHave('user')->delete();
         $orders = Order::with('user')
             ->filter($request->only('search'))
             ->latest()
@@ -29,7 +29,7 @@ class OrderManagementController extends Controller
 
     public function show($id)
     {
-        $order = Order::with(['user', 'details.product'])->find($id);
+        $order = Order::with(['user', 'orderdetails.product'])->find($id);
 
         // Check if the order exists
         if (!$order) {
@@ -55,16 +55,29 @@ class OrderManagementController extends Controller
             'details.*.price' => 'required|numeric|min:0',
         ]);
 
+        $mergedDetails = collect($validated['details'])
+            ->groupBy('product_id')
+            ->map(function ($group) {
+                $first = $group->first();
+                return [
+                    'product_id' => $first['product_id'],
+                    'quantity' => $group->sum('quantity'),
+                    'price' => $first['price'],
+                ];
+            })
+            ->values()
+            ->all();
+
         $order = Order::create([
             'user_id' => $validated['user_id'],
             'order_date' => now(),
             'status' => $validated['status'],
             'shipping_address' => $validated['shipping_address'],
-            'total_amount' => collect($validated['details'])->sum(fn($d) => $d['price'] * $d['quantity']),
+            'total_amount' => collect($mergedDetails)->sum(fn($d) => $d['price'] * $d['quantity']),
         ]);
 
-        foreach ($validated['details'] as $detail) {
-            $order->details()->create($detail);
+        foreach ($mergedDetails as $detail) {
+            $order->orderdetails()->create($detail);
         }
 
         return response()->json([
@@ -74,9 +87,10 @@ class OrderManagementController extends Controller
         ]);
     }
 
+
     public function update(Request $request, $id)
     {
-        $order = Order::with('user', 'details.product')->find($id);
+        $order = Order::with('user', 'orderdetails.product')->find($id);
         if (!$order) {
             return response()->json(['success' => true, 'message' => 'Đơn hàng đã bị chỉnh sửa hoặc xóa ở phiên làm việc khác. Vui lòng tải lại trang.'], 404);
         }
@@ -104,18 +118,31 @@ class OrderManagementController extends Controller
         }
 
 
+        $mergedDetails = collect($validated['details'])
+            ->groupBy('product_id')
+            ->map(function ($group) {
+                $first = $group->first();
+                return [
+                    'product_id' => $first['product_id'],
+                    'quantity' => $group->sum('quantity'),
+                    'price' => $first['price'],
+                ];
+            })
+            ->values()
+            ->all();
+
         $order->update([
             'user_id' => $validated['user_id'],
             'status' => $validated['status'],
             'shipping_address' => $validated['shipping_address'],
-            'total_amount' => collect($validated['details'])->sum(fn($d) => $d['price'] * $d['quantity']),
+            'total_amount' => collect($mergedDetails)->sum(fn($d) => $d['price'] * $d['quantity']),
         ]);
 
-        // Delete existing details and create new ones
-        $order->details()->delete();
-        foreach ($validated['details'] as $detail) {
-            $order->details()->create($detail);
+        $order->orderdetails()->delete();
+        foreach ($mergedDetails as $detail) {
+            $order->orderdetails()->create($detail);
         }
+
 
         return response()->json(['success' => true, 'message' => 'Cập nhật đơn hàng thành công.']);
     }
@@ -139,10 +166,9 @@ class OrderManagementController extends Controller
         ]);
 
         // Delete order details and order itself
-        $order->details()->delete();
+        $order->orderdetails()->delete();
         $order->delete();
 
         return response()->json(['success' => true, 'message' => 'Xóa đơn hàng thành công.']);
     }
-
 }

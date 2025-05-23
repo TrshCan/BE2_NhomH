@@ -215,6 +215,17 @@
             } else {
                 couponError.textContent = result.message || 'Giỏ hàng hoặc mã giảm giá không hợp lệ. Vui lòng kiểm tra lại.';
                 couponError.style.display = 'block';
+
+                if (result.debug) {
+                    console.group('Checkout Validation Debug');
+                    console.log('Cart Exists:', result.debug.cart_exists);
+                    console.log('Cart ID:', result.debug.cart_id);
+                    console.log('Items Count:', result.debug.items_count);
+                    console.log('Items:', result.debug.items);
+                    console.log('User:', result.debug.user);
+                    console.log('Status:', result.debug.user_status);
+                    console.groupEnd();
+                }
             }
         } catch (error) {
             console.error('Error validating checkout:', error);
@@ -322,7 +333,6 @@
 
         loadLocationData();
 
-        // Coupon handling
         // Coupon handling
         window.applyCoupon = async function() {
             const couponCode = document.getElementById('coupon-code').value.trim();
