@@ -1,0 +1,164 @@
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container-s {
+            max-width: 100%;
+            margin: 0 auto;
+            
+        }
+
+        .header-s {
+            margin-bottom: 20px;
+        }
+
+        .header-s h1 {
+            color: #0066cc;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .filter-panel {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .date-input-container-s {
+            position: relative;
+        }
+
+        .date-input {
+            padding: 8px 30px 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 150px;
+        }
+
+        .calendar-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            color: #999;
+        }
+
+        .select-container-s {
+            flex-grow: 1;
+            min-width: 200px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .filter-button {
+            background-color: #0066ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .filter-button:hover {
+            background-color: #0052cc;
+        }
+
+        .stats-container-s {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stats-card {
+            background-color: #0066ff;
+            color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-card h3 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .stats-card p {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .charts-container-s {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .chart-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .chart-card h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .chart-container-s {
+            height: 300px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-container-s {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-container-s {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .select-container-s {
+                width: 100%;
+            }
+        }

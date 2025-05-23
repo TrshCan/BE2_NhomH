@@ -101,6 +101,12 @@ Route::get('/chatuser', function () {
 Route::get('/hotline', function () {
     return view('hotline');
 })->name('hotline');
+//Thong ke
+Route::get('/admin/statistical', [AdminController::class, 'index'])->name('admin.statistical');
+
+    
+// Statistics filter
+Route::get('/statistics/filter', [AdminController::class, 'filter'])->name('admin.statistics.filter');
 Route::post('/checkout/apply-coupon', [OrderController::class, 'applyCoupon'])->name('checkout.applyCoupon');
 Route::post('/checkout/remove-coupon', [OrderController::class, 'removeCoupon'])->name('checkout.removeCoupon');
 Route::get('/product/get/{id}', [ProductController::class, 'get'])->name('products.get');

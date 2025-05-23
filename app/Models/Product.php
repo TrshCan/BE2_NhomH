@@ -101,4 +101,9 @@ class Product extends Model
     {
         return $this->hasOne(DealProduct::class, 'product_id');
     }
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class, 'product_id', 'product_id');
+    }
+
 }
