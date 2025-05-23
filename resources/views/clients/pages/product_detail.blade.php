@@ -88,7 +88,7 @@
                             <ul class="tabs nav">
                                 <li class="tab active mx-2" data-active-tab="tab_1"><span>Description</span></li>
                                 <li class="tab mx-2" data-active-tab="tab_2"><span>Additional Information</span></li>
-                                <li class="tab mx-2" data-active-tab="tab_3"><span>Reviews (2)</span></li>
+                                <li class="tab mx-2" data-active-tab="tab_3"><span>Reviews ({{ $count }})</span></li>
                             </ul>
                         </div>
                     </div>
@@ -188,62 +188,63 @@
                                         <p>The sound quality is amazing for the price! The surround sound really enhances my gaming experience, though the microphone could be a bit clearer.</p>
                                     </div>
                                 </div>
-                                <!-- User Review -->
+                                @if($reviews->isNotEmpty())
+                                @foreach($reviews as $review)
                                 <div class="user_review_container d-flex flex-column flex-sm-row gap-3">
-                                    <div class="user">
-                                        <div class="user_pic"></div>
+                                    <!-- Phần thông tin người dùng -->
+                                    <div class="user" style="width: 45%;">
+
+                                        <div class="user_name">{{ $review->user->name ?? 'Anonymous' }}</div>
+
+
                                         <div class="user_rating">
                                             <ul class="star_rating list-unstyled d-flex gap-1">
-                                                <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <li>
+                                                    <i class="fa {{ $i <= $review->rating ? 'fa-star' : 'fa-star-o' }}" aria-hidden="true"></i>
+                                                    </li>
+                                                    @endfor
                                             </ul>
                                         </div>
                                     </div>
-                                    <div class="review">
-                                        <div class="review_date">10 Mar 2025</div>
-                                        <div class="user_name">Sarah Tech</div>
-                                        <p>Very comfortable for long gaming sessions. The RGB lighting is a nice touch, and the sound quality is top-notch for this price range.</p>
+
+                                    <!-- Phần nội dung đánh giá -->
+                                    <div class="review" style="width: 55%;">
+                                        <div class="review_date">{{ $review->created_at->format('d M Y') }}</div>
+
+                                        <p>
+                                            {{ strlen($review->comment) > 55 ? substr($review->comment, 0, 35) . '...' : $review->comment }}
+                                        </p>
+                                        <img src="{{ asset($review->image) }}" alt="review Image" style="width: 50px; height: 50px; border-radius: 50%;">
                                     </div>
+                                </div>
+                                @endforeach
+                                @else
+                                <p>Không có đánh giá sản phẩm nào.</p>
+                                @endif
+                                <div class="col-lg-6 add_review_col my-4 mx-auto">
+                                    <div class="add_review">
+                                        <form id="review_form" action="{{ route('reviews.form', ['product_id' => $product->product_id]) }}" method="GET">
+                                            @csrf
+
+                                            <div class="text-left text-sm-right">
+                                                <button id="review_submit" type="submit" class="red_button review_submit_btn">Đánh giá</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div style="margin-left: -25px;">
+                                    {{ $reviews->links('pagination::bootstrap-5') }}
                                 </div>
                             </div>
 
-                            <!-- Add Review -->
-                            <div class="col-lg-6 add_review_col">
-                                <div class="add_review">
-                                    <form id="review_form" action="{{ url('/reviews/store') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                        <div>
-                                            <h1>Add Review</h1>
-                                            <input id="review_name" class="form_input input_name" type="text" name="name" placeholder="Name*" required>
-                                            <input id="review_email" class="form_input input_email" type="email" name="email" placeholder="Email*" required>
-                                        </div>
-                                        <div>
-                                            <h1>Your Rating:</h1>
-                                            <ul class="user_star_rating list-unstyled d-flex gap-1">
-                                                <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
-                                            </ul>
-                                            <textarea id="review_message" class="input_review" name="message" placeholder="Your Review" rows="4" required></textarea>
-                                        </div>
-                                        <div class="text-left text-sm-right">
-                                            <button id="review_submit" type="submit" class="red_button review_submit_btn">Submit</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Benefit -->
     @include('clients.partials.benefit')

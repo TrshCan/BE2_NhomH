@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
@@ -22,9 +23,8 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
+   
+
     public function boot()
     {
         View::composer('*', function ($view) {
@@ -39,5 +39,6 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('cartItemCount', $count);
         });
+
     }
 }

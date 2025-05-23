@@ -1,5 +1,12 @@
 <?php
 
+
+use App\Http\Controllers\FaqController;
+
+
+
+
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CrudUserController;
 use App\Http\Controllers\ForgotPassword;
@@ -21,6 +28,7 @@ use App\Http\Controllers\BrandController; // Added to use BrandController
 use App\Http\Controllers\ContactController; // Added to use BrandController
 use App\Http\Controllers\ImageController; // Added to use BrandController
 use App\Http\Controllers\DealProductController;
+use App\Http\Controllers\ReviewController;
 
 
 // Trang chủ
@@ -107,6 +115,19 @@ Route::get('/admin/statistical', [AdminController::class, 'index'])->name('admin
     
 // Statistics filter
 Route::get('/statistics/filter', [AdminController::class, 'filter'])->name('admin.statistics.filter');
+
+//FAQ
+Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
+Route::get('/faq/{id}', [FaqController::class, 'show'])->name('faq.show');
+
+//review
+Route::middleware(['auth'])->group(function () {
+    Route::get('/review/{product_id}', [ReviewController::class, 'index'])->name('reviews.form');   
+});
+
+Route::get('/products/{product_id}/review', [ReviewController::class, 'create'])->name('reviews.create');
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
 Route::post('/checkout/apply-coupon', [OrderController::class, 'applyCoupon'])->name('checkout.applyCoupon');
 Route::post('/checkout/remove-coupon', [OrderController::class, 'removeCoupon'])->name('checkout.removeCoupon');
 Route::get('/product/get/{id}', [ProductController::class, 'get'])->name('products.get');

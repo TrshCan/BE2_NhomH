@@ -12,12 +12,12 @@ $user_id = session('user_id');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Trò Chuyện Trực Tuyến</title>
-    <link rel="stylesheet" href="{{ asset('css/livechat.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/styles/livechat.css') }}">
     <style>
         .chat-widget {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 30px;
+            right: 35px;
             width: 80%;
             height: 80%;
             max-height: 450px;
@@ -29,6 +29,7 @@ $user_id = session('user_id');
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
             z-index: 9999;
             overflow: hidden;
+            border: 1px solid black;
         }
 
         .chat-header {
@@ -96,7 +97,7 @@ $user_id = session('user_id');
             max-width: 80%;
         }
 
-      
+
         .close-chat {
             cursor: pointer;
             font-size: 14px;
@@ -117,14 +118,14 @@ $user_id = session('user_id');
             </div>
         </div>
         <div class="chat-input">
-                <input id="messageInput" type="text" placeholder="Nhập tin nhắn..." autocomplete="off" maxlength="255">
-                <button onclick="sendMessage()" >Gửi</button>
-            </div>
+            <input id="messageInput" type="text" placeholder="Nhập tin nhắn..." autocomplete="off" maxlength="255">
+            <button onclick="sendMessage()">Gửi</button>
         </div>
+    </div>
     </div>
 
     <script>
- const userId = <?= json_encode($user_id) ?>;
+        const userId = <?= json_encode($user_id) ?>;
         const selectedUserId = 0;
         let lastMessageId = 0;
 
@@ -137,20 +138,27 @@ $user_id = session('user_id');
             }, 3000);
         };
 
-        
+
         const loadMessages = async () => {
             try {
                 const response = await fetch(`{{ route("chat.messages") }}?receiver_id=${selectedUserId}`);
-                if (!response.ok) throw new Error('Không thể tải tin nhắn');
-                
+                if (!response.ok) {
+                    throw new Error('Không thể tải tin nhắn');
+
+                }
+
                 const data = await response.json();
+                if (data.messages.length === 0) {
+                    return;
+                }
                 const chatBody = document.getElementById('chat-body');
                 chatBody.innerHTML = '';
                 data.messages.forEach(msg => {
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = msg.sender_id == userId ? 'message agent' : 'message customer';
-                        messageDiv.innerHTML = `<div class="message-bubble">${msg.message}</div>`;
-                        chatBody.appendChild(messageDiv);
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = msg.sender_id == userId ? 'message agent' : 'message customer';
+                    messageDiv.innerHTML = `<div class="message-bubble">${msg.message}</div>`;
+                    chatBody.appendChild(messageDiv);
+
                 });
 
                 chatBody.scrollTop = chatBody.scrollHeight;
@@ -193,8 +201,9 @@ $user_id = session('user_id');
         });
         loadMessages();
         document.addEventListener('DOMContentLoaded', () => {
-            setInterval(loadMessages, 5000); 
+            setInterval(loadMessages, 5000);
         });
     </script>
 </body>
+
 </html>
