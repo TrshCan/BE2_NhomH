@@ -16,9 +16,39 @@ class CartController extends Controller
             return redirect()->route('products.home')->with('error_auth', 'Bạn cần đăng nhập để tiếp tục.');
         }
 
-        $cart = Auth::user()->cart()->with('items.product')->first();
+        try {
+            $cart = Auth::user()->cart()->with('items.product')->first();
 
-        return view('cart.cart', compact('cart'));
+            if ($cart) {
+                $removedItems = 0;
+                // Check each cart item and remove those with missing products
+                $cart->items()->each(function ($item) use (&$removedItems) {
+                    if (!$item->product) {
+                        $item->delete();
+                        $removedItems++;
+                    }
+                });
+
+                // If items were removed, add a session message
+                if ($removedItems > 0) {
+                    $request->session()->flash('info', "Đã xóa $removedItems sản phẩm không còn tồn tại khỏi giỏ hàng.");
+                }
+
+                // Refresh the cart to ensure we have the updated items
+                $cart->load('items.product');
+
+                // If no valid items remain, set cart to null
+                if ($cart->items->isEmpty()) {
+                    $cart = null;
+                }
+            }
+
+            return view('cart.cart', compact('cart'));
+        } catch (\Exception $e) {
+            Log::error('Error loading cart: ' . $e->getMessage());
+            return view('cart.cart', ['cart' => null])
+                ->with('error', 'Có lỗi xảy ra khi tải giỏ hàng. Vui lòng thử lại.');
+        }
     }
 
     public function add(Request $request, $id)
