@@ -18,6 +18,11 @@ class Order extends Model
     protected $casts = [
         'order_date' => 'datetime',
     ];
+
+    public static function findOrFail($id)
+    {
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

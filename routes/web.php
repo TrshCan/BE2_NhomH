@@ -64,10 +64,11 @@ Route::get('admin/adminpanel', [CrudUserController::class, 'adminpanel'])->name(
 Route::get('/admin/products', [AdminController::class, 'productIndex'])->name('products.index');
 // QUẢN LÝ ĐƠN HÀNG
 Route::get('/orders', [OrderManagementController::class, 'index'])->name('admin.orders.index');
-Route::get('/orders/{id}', [OrderManagementController::class, 'show'])->name('admin.orders.show');
+Route::post('/orders/{id}', [OrderManagementController::class, 'show'])->name('admin.orders.show');
+Route::get('/orders/{id}', [OrderManagementController::class, 'show'])->name('admin.orders.show2');
 Route::post('/orders', [OrderManagementController::class, 'store'])->name('admin.orders.store');
 Route::post('/orders/{id}/update', [OrderManagementController::class, 'update'])->name('admin.orders.update');
-Route::get('/orders/{id}/delete', [OrderManagementController::class, 'destroy'])->name('admin.orders.destroy');
+Route::post('/orders/{id}/delete', [OrderManagementController::class, 'destroy'])->name('admin.orders.destroy');
 
 // GIỎ HÀNG & THANH TOÁN
 Route::get('cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
