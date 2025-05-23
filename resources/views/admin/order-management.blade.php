@@ -339,12 +339,12 @@
 
                     const order = await response.json();
                     modalTitle.textContent = 'Chỉnh sửa đơn hàng';
-                    orderForm.querySelector('[name="order_id"]').value = order.order_id;
-                    orderForm.querySelector('[name="user_id"]').value = order.user_id;
-                    orderForm.querySelector('[name="status"]').value = order.status;
+                    orderForm.querySelector('[name="order_id"]').value = order.order.order_id;
+                    orderForm.querySelector('[name="user_id"]').value = order.order.user_id;
+                    orderForm.querySelector('[name="status"]').value = order.order.status;
                     orderForm.querySelector('[name="updated_at"]').value = updatedAt;
 
-                    const [houseAddress, wardCode, districtCode, provinceCode] = (order.shipping_address || '').split(', ').map(str => str.trim());
+                    const [houseAddress, wardCode, districtCode, provinceCode] = (order.order.shipping_address || '').split(', ').map(str => str.trim());
                     orderForm.querySelector('[name="house_address"]').value = houseAddress || '';
                     await loadLocationData();
                     populateProvinces(provinceCode);
@@ -354,7 +354,7 @@
                     ensureDetailsContainer();
                     detailsContainer.innerHTML = '';
 
-                    if (!order.orderdetails || order.orderdetails.length == 0) {
+                    if (!order.order.orderdetails || order.order.orderdetails.length == 0) {
                         console.warn('No order details found, initializing with one empty detail');
                         detailsContainer.innerHTML = `
                     <div class="detail-item mb-2 flex space-x-2">
@@ -364,7 +364,7 @@
                 `;
                         detailCount = 1;
                     } else {
-                        order.orderdetails.forEach((detail, index) => {
+                        order.order.orderdetails.forEach((detail, index) => {
                             const detailItem = document.createElement('div');
                             detailItem.className = 'detail-item mb-2 flex space-x-2';
                             detailItem.innerHTML = `
@@ -374,7 +374,7 @@
                     `;
                             detailsContainer.appendChild(detailItem);
                         });
-                        detailCount = order.orderdetails.length;
+                        detailCount = order.order.orderdetails.length;
                     }
 
                     updateSubmitButtonState();
@@ -580,16 +580,16 @@
                         throw new Error('Server returned non-JSON response');
                     }
                     const order = await response.json();
-                    const formattedAddress = convertAddressCodesToNames(order.shipping_address || '');
+                    const formattedAddress = convertAddressCodesToNames(order.order.shipping_address || '');
                     orderDetailsContent.innerHTML = `
-                <p><strong>Mã đơn hàng:</strong> ${order.order_id}</p>
-                <p><strong>Khách hàng:</strong> ${order.user?.name || 'N/A'}</p>
-                <p><strong>Ngày đặt:</strong> ${new Date(order.order_date).toLocaleString('vi-VN')}</p>
+                <p><strong>Mã đơn hàng:</strong> ${order.order.order_id}</p>
+                <p><strong>Khách hàng:</strong> ${order.order.user?.name || 'N/A'}</p>
+                <p><strong>Ngày đặt:</strong> ${new Date(order.order.order_date).toLocaleString('vi-VN')}</p>
                 <p><strong>Tổng tiền:</strong> ${new Intl.NumberFormat('vi-VN', {
                         style: 'currency',
                         currency: 'VND'
-                    }).format(order.total_amount)}</p>
-                <p><strong>Trạng thái:</strong> ${order.status}</p>
+                    }).format(order.order.total_amount)}</p>
+                <p><strong>Trạng thái:</strong> ${order.order.status}</p>
                 <p><strong>Địa chỉ giao:</strong> ${formattedAddress || 'N/A'}</p>
                 <h4 class="font-semibold mt-4">Chi tiết sản phẩm:</h4>
                 <table class="min-w-full divide-y divide-gray-200">
@@ -601,7 +601,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        ${(order.orderdetails && order.orderdetails.length > 0) ? order.orderdetails.map(detail => `
+                        ${(order.order.orderdetails && order.order.orderdetails.length > 0) ? order.order.orderdetails.map(detail => `
                             <tr>
                                 <td class="px-4 py-2 text-sm text-gray-800">${detail.product?.product_name || 'N/A'}</td>
                                 <td class="px-4 py-2 text-sm text-gray-800">${detail.quantity}</td>
