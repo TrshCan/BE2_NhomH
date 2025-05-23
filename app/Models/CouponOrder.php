@@ -3,18 +3,24 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
+
 class CouponOrder extends Model
 {
-    //
-    public function up() {
-        Schema::create('coupon_orders', function (Blueprint $table) {
-            $table->id();
-            $table->string('user');
-            $table->string('coupon_code');
-            $table->decimal('total', 10, 2);
-            $table->timestamps();
-        });
+    protected $table = 'coupon_order';
+    protected $fillable = ['coupon_id', 'order_id', 'user_id', 'total'];
+
+    public function coupon()
+    {
+        return $this->belongsTo(Coupon::class, 'id');
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'order_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

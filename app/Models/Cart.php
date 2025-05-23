@@ -32,13 +32,13 @@ class Cart extends Model
             ->withTimestamps();
     }
 
-    // 🟢 NEW: Find item by product ID
+
     public function getItemByProductId($productId)
     {
         return $this->items()->where('product_id', $productId)->first();
     }
 
-    // 🟢 NEW: Add or increase product quantity
+
     public function addProduct($productId, $quantity = 1)
     {
         $item = $this->getItemByProductId($productId);
@@ -53,7 +53,6 @@ class Cart extends Model
         }
     }
 
-    // 🟢 NEW: Update quantity
     public function updateQuantity(Request $request, $product_id)
     {
         if ($request->qty < 1) {
@@ -90,8 +89,6 @@ class Cart extends Model
     }
 
 
-    // 🟢 NEW: Remove or decrement product
-    // In Cart.php
     public function removeProduct($product_id)
     {
         $item = $this->items()->where('product_id', $product_id)->first();
@@ -142,7 +139,6 @@ class Cart extends Model
         }
     }
 
-    // In Cart.php
     public function updateProductQuantityIfUnchanged($product_id, $quantity, $updated_at)
     {
         $item = $this->items()->where('product_id', $product_id)->first();
