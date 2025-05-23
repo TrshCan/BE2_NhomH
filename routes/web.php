@@ -80,6 +80,7 @@ Route::get('/cart/update_quantity/{product_id}', [CartController::class, 'update
 
 Route::get('/checkout', [OrderController::class, 'show'])->name('checkout.show');
 Route::post('/checkout/process', [OrderController::class, 'process'])->name('checkout.process');
+Route::post('/checkout/validate', [OrderController::class, 'validate'])->name('checkout.validate');
 
 // CHAT
 Route::get('/chat/users', [ChatController::class, 'getUsers'])->name('chat.users');

@@ -164,6 +164,64 @@
 </div>
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 <script>
+    document.getElementById('checkout-form').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent immediate form submission
+
+        const couponError = document.getElementById('coupon-error');
+        const subtotalSpan = document.getElementById('subtotal');
+        const discountSpan = document.getElementById('coupon-discount');
+        const totalSpan = document.getElementById('total');
+        const discountInput = document.getElementById('discount-amount');
+        const totalInput = document.getElementById('total-amount');
+
+        try {
+            // Validate cart and coupons
+            const response = await fetch("{{ route('checkout.validate') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                // Update totals if necessary
+                subtotalSpan.textContent = new Intl.NumberFormat('vi-VN').format(result.subtotal) + 'đ';
+                discountSpan.textContent = new Intl.NumberFormat('vi-VN').format(result.total_discount) + 'đ';
+                totalSpan.textContent = new Intl.NumberFormat('vi-VN').format(result.total) + 'đ';
+                discountInput.value = result.total_discount;
+                totalInput.value = result.total;
+
+                // Update applied coupons in UI
+                const appliedCouponsDiv = document.getElementById('applied-coupons');
+                appliedCouponsDiv.innerHTML = '';
+                result.applied_coupons.forEach(coupon => {
+                    const couponDiv = document.createElement('div');
+                    couponDiv.className = 'applied-coupon d-flex justify-content-between align-items-center mb-2';
+                    couponDiv.dataset.code = coupon.code;
+                    couponDiv.innerHTML = `
+                    <span>Mã: <strong>${coupon.code}</strong></span>
+                    <span>${new Intl.NumberFormat('vi-VN').format(coupon.discount)}đ</span>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeCoupon('${coupon.code}')">Xóa</button>
+                `;
+                    appliedCouponsDiv.appendChild(couponDiv);
+                });
+
+                // Submit the form if everything is valid
+                this.submit();
+            } else {
+                couponError.textContent = result.message || 'Giỏ hàng hoặc mã giảm giá không hợp lệ. Vui lòng kiểm tra lại.';
+                couponError.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error validating checkout:', error);
+            couponError.textContent = 'Lỗi khi kiểm tra giỏ hàng. Vui lòng thử lại.';
+            couponError.style.display = 'block';
+        }
+    });
     document.addEventListener("DOMContentLoaded", function() {
         const paymentRadioButtons = document.querySelectorAll('input[name="payment"]');
         const qrCodeContainer = document.getElementById("qr-code-container");
