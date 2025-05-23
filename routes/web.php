@@ -20,6 +20,7 @@ use App\Http\Controllers\CouponManagementController;
 use App\Http\Controllers\BrandController; // Added to use BrandController
 use App\Http\Controllers\ContactController; // Added to use BrandController
 use App\Http\Controllers\ImageController; // Added to use BrandController
+use App\Http\Controllers\DealProductController;
 
 // Trang chủ
 Route::get('/', [ProductController::class, 'index'])->name('products.home');
@@ -141,4 +142,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/images/{id}/edit', [ImageController::class, 'edit'])->name('admin.images.edit');
     Route::put('/images/{id}', [ImageController::class, 'update'])->name('admin.images.update');
     Route::delete('/images/{id}', [ImageController::class, 'destroy'])->name('admin.images.destroy');
+
+    Route::get('deals', [DealProductController::class, 'index'])->name('admin.deals.index');
+    Route::get('deals/{id}', [DealProductController::class, 'show'])->name('admin.deals.show');
+    Route::put('deals/{id}', [DealProductController::class, 'update'])->name('admin.deals.update');
 });

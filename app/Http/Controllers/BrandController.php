@@ -5,124 +5,161 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Brand;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Str;
+use App\Exceptions\FilesystemException;
 
 class BrandController extends Controller
 {
+
+
     public function index()
     {
         try {
-            $brands = Brand::paginate(10);
-            Log::info('Fetching brands list', ['count' => $brands->count()]);
+            $brands = Brand::latest()->paginate(10);
             return view('admin.quanlybrand', compact('brands'));
+        } catch (QueryException $e) {
+            Log::error('Database error fetching brands: ' . $e->getMessage());
+            return back()->with('error', 'Lỗi khi tải danh sách thương hiệu!');
         } catch (\Exception $e) {
-            Log::error('Error fetching brands list: ' . $e->getMessage());
-            return back()->withErrors(['error' => 'Không thể tải danh sách thương hiệu: ' . $e->getMessage()]);
+            Log::error('Error fetching brands: ' . $e->getMessage());
+            return back()->with('error', 'Có lỗi xảy ra, vui lòng thử lại!');
         }
     }
 
     public function show($id)
     {
         try {
-            Log::info('Fetching brand with ID: ' . $id);
             $brand = Brand::findOrFail($id);
-            Log::info('Brand found', $brand->toArray());
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'name' => $brand->name ?? '',
-                    'slug' => $brand->slug ?? '',
-                    'logo_url' => $brand->logo_url ?? ''
-                ]
-            ], 200);
+            return response()->json(['success' => true, 'data' => $brand]);
         } catch (ModelNotFoundException $e) {
-            Log::error('Brand not found: ' . $id);
-            return response()->json(['success' => false, 'message' => 'Không tìm thấy thương hiệu'], 404);
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy thương hiệu!'], 404);
         } catch (\Exception $e) {
             Log::error('Error fetching brand: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Lỗi hệ thống: ' . $e->getMessage()], 500);
+            return response()->json(['success' => false, 'message' => 'Có lỗi xảy ra khi lấy thông tin thương hiệu!'], 500);
         }
     }
 
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|min:2|max:255|unique:brands,name|regex:/^[a-zA-Z0-9\s]+$/',
+            'slug' => 'required|string|max:255|unique:brands,slug',
+            'logo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'name.required' => 'Không được để trống tên thương hiệu!',
+            'name.min' => 'Tên thương hiệu phải ít nhất 2 ký tự!',
+            'name.max' => 'Tên thương hiệu không được vượt quá 255 ký tự!',
+            'name.unique' => 'Tên thương hiệu đã tồn tại. Vui lòng nhập tên khác!',
+            'name.regex' => 'Tên thương hiệu không được chứa ký tự đặc biệt!',
+            'slug.required' => 'Không được để trống slug!',
+            'slug.max' => 'Slug không được vượt quá 255 ký tự!',
+            'slug.unique' => 'Slug đã tồn tại. Vui lòng nhập slug khác!',
+            'logo.required' => 'Vui lòng chọn ảnh cho danh mục!',
+            'logo.image' => 'Hình ảnh phải có định dạng .jpg, .png, .jpeg!',
+            'logo.mimes' => 'Hình ảnh phải có định dạng .jpg, .png, .jpeg!',
+            'logo.max' => 'Hình ảnh không được vượt quá 2MB!',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
         try {
-            $validated = $request->validate($this->brandRules());
-            Log::info('Store brand request data', $request->all());
+            $data = $request->only(['name', 'slug']);
+            if ($request->hasFile('logo')) {
+                $destinationPath = public_path('assets/images');
+                // Kiểm tra thư mục tồn tại, nếu không thì tạo
+                if (!File::isDirectory($destinationPath)) {
+                    File::makeDirectory($destinationPath, 0755, true);
+                }
+                // Kiểm tra quyền ghi
+                if (!is_writable($destinationPath)) {
+                    throw new FilesystemException('Thư mục đích không có quyền ghi!');
+                }
 
-            $data = [
-                'name' => $validated['name'],
-                'slug' => Str::slug($validated['slug']),
-                'logo_url' => $this->handleLogoUpload($request)
-            ];
+                $file = $request->file('logo');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move($destinationPath, $filename);
+                $data['logo_url'] = $filename;
+            }
 
-            $brand = Brand::create($data);
-            Log::info('Brand created successfully', $brand->toArray());
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Thương hiệu đã được thêm thành công'
-            ], 201);
-        } catch (ValidationException $e) {
-            Log::error('Validation errors in store', ['errors' => $e->errors()]);
-            return response()->json([
-                'success' => false,
-                'errors' => $e->errors(),
-                'message' => 'Dữ liệu không hợp lệ'
-            ], 422);
+            Brand::create($data);
+            return response()->json(['success' => true, 'message' => 'Thêm thương hiệu thành công!']);
+        } catch (QueryException $e) {
+            Log::error('Database error creating brand: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Lỗi cơ sở dữ liệu khi thêm thương hiệu!'], 500);
+        } catch (FilesystemException $e) {
+            Log::error('File error creating brand: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Lỗi khi lưu file logo: ' . $e->getMessage()], 500);
         } catch (\Exception $e) {
-            Log::error('Error storing brand: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Lỗi hệ thống: ' . $e->getMessage()
-            ], 500);
+            Log::error('Error creating brand: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Có lỗi xảy ra khi thêm thương hiệu!'], 500);
         }
     }
 
     public function update(Request $request, $id)
     {
         try {
-            $validated = $request->validate($this->brandRules(true, $id));
-            Log::info('Update brand request data for ID: ' . $id, $request->all());
-
             $brand = Brand::findOrFail($id);
 
-            $data = [
-                'name' => $validated['name'] ?? $brand->name,
-                'slug' => Str::slug($validated['slug'] ?? $brand->slug),
-                'logo_url' => $request->hasFile('logo')
-                    ? $this->handleLogoUpload($request, $brand->logo_url)
-                    : ($request->input('logo_url') ?: $brand->logo_url)
-            ];
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|min:2|max:255|unique:brands,name,' . $id . '|regex:/^[a-zA-Z0-9\s]+$/', // Không chứa ký tự đặc biệt
+                'slug' => 'required|string|max:255|unique:brands,slug,' . $id,
+                'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Logo không bắt buộc khi cập nhật
+            ], [
+                'name.required' => 'Không được để trống tên thương hiệu!',
+                'name.min' => 'Tên thương hiệu phải ít nhất 2 ký tự!',
+                'name.max' => 'Tên thương hiệu không được vượt quá 255 ký tự!',
+                'name.unique' => 'Tên thương hiệu đã tồn tại. Vui lòng nhập tên khác!',
+                'name.regex' => 'Tên thương hiệu không được chứa ký tự đặc biệt!',
+                'slug.required' => 'Không được để trống slug!',
+                'slug.max' => 'Slug không được vượt quá 255 ký tự!',
+                'slug.unique' => 'Slug đã tồn tại. Vui lòng nhập slug khác!',
+                'logo.image' => 'Hình ảnh phải có định dạng .jpg, .png, .jpeg!',
+                'logo.mimes' => 'Hình ảnh phải có định dạng .jpg, .png, .jpeg!',
+                'logo.max' => 'Hình ảnh không được vượt quá 2MB!',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+            }
+
+            $data = $request->only(['name', 'slug']);
+            if ($request->hasFile('logo')) {
+                $destinationPath = public_path('assets/images');
+                if (!is_writable($destinationPath)) {
+                    return response()->json(['success' => false, 'message' => 'Không thể ghi file vào thư mục!'], 500);
+                }
+
+                // Xóa logo cũ
+                if ($brand->logo_url && File::exists(public_path('assets/images/' . $brand->logo_url))) {
+                    File::delete(public_path('assets/images/' . $brand->logo_url));
+                }
+
+                $file = $request->file('logo');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move($destinationPath, $filename);
+                $data['logo_url'] = $filename;
+            } elseif ($request->input('logo_url')) {
+                $data['logo_url'] = $request->input('logo_url');
+            }
 
             $brand->update($data);
-            Log::info('Brand updated successfully', $brand->toArray());
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Thương hiệu đã được cập nhật thành công'
-            ], 200);
+            return response()->json(['success' => true, 'message' => 'Cập nhật thương hiệu thành công!']);
         } catch (ModelNotFoundException $e) {
-            Log::error('Brand not found for update: ' . $id);
-            return response()->json([
-                'success' => false,
-                'message' => 'Không tìm thấy thương hiệu'
-            ], 404);
-        } catch (ValidationException $e) {
-            Log::error('Validation errors in update', ['errors' => $e->errors()]);
-            return response()->json([
-                'success' => false,
-                'errors' => $e->errors(),
-                'message' => 'Dữ liệu không hợp lệ'
-            ], 422);
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy thương hiệu!'], 404);
+        } catch (QueryException $e) {
+            Log::error('Database error updating brand: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Lỗi cơ sở dữ liệu khi cập nhật!'], 500);
+        } catch (FilesystemException $e) {
+            Log::error('File error updating brand: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Lỗi khi xử lý file logo!'], 500);
         } catch (\Exception $e) {
             Log::error('Error updating brand: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Lỗi hệ thống: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Có lỗi xảy ra khi cập nhật thương hiệu!'], 500);
         }
     }
 
@@ -130,71 +167,24 @@ class BrandController extends Controller
     {
         try {
             $brand = Brand::findOrFail($id);
-            Log::info('Deleting brand with ID: ' . $id);
 
-            if ($brand->logo_url) {
-                $path = public_path('assets/images/' . $brand->logo_url);
-                if (file_exists($path)) {
-                    unlink($path);
-                    Log::info('Deleted logo file from public path: ' . $path);
-                }
+            if ($brand->logo_url && File::exists(public_path('assets/images/' . $brand->logo_url))) {
+                File::delete(public_path('assets/images/' . $brand->logo_url));
             }
 
             $brand->delete();
-            Log::info('Brand deleted successfully', ['id' => $id]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Thương hiệu đã được xóa thành công'
-            ], 200);
+            return response()->json(['success' => true, 'message' => 'Xóa thương hiệu thành công!']);
         } catch (ModelNotFoundException $e) {
-            Log::error('Brand not found for delete: ' . $id);
-            return response()->json(['success' => false, 'message' => 'Không tìm thấy thương hiệu'], 404);
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy thương hiệu!'], 404);
+        } catch (QueryException $e) {
+            Log::error('Database error deleting brand: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Lỗi cơ sở dữ liệu khi xóa!'], 500);
+        } catch (FilesystemException $e) {
+            Log::error('File error deleting brand: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Lỗi khi xóa file logo!'], 500);
         } catch (\Exception $e) {
             Log::error('Error deleting brand: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Lỗi hệ thống: ' . $e->getMessage()], 500);
+            return response()->json(['success' => false, 'message' => 'Có lỗi xảy ra khi xóa thương hiệu!'], 500);
         }
-    }
-
-    private function brandRules($isUpdate = false, $id = null)
-    {
-        return [
-            'name' => $isUpdate
-                ? ['sometimes', 'string', 'max:255', 'unique:brands,name,' . $id]
-                : ['required', 'string', 'max:255', 'unique:brands,name'],
-            'slug' => $isUpdate
-                ? ['sometimes', 'string', 'max:255', 'unique:brands,slug,' . $id]
-                : ['required', 'string', 'max:255', 'unique:brands,slug'],
-            'logo' => $isUpdate ? ['nullable', 'file', 'image', 'max:2048'] : ['required', 'file', 'image', 'max:2048'],
-            'logo_url' => ['sometimes', 'string', 'max:255']
-        ];
-    }
-
-    private function handleLogoUpload(Request $request, $existingLogo = null)
-    {
-        if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
-            if ($existingLogo) {
-                $oldPath = public_path('assets/images/' . $existingLogo);
-                if (file_exists($oldPath)) {
-                    unlink($oldPath);
-                    Log::info('Deleted existing logo from public path: ' . $oldPath);
-                }
-            }
-
-            $file = $request->file('logo');
-            $filename = Str::random(10) . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $destination = public_path('assets/images');
-
-            if (!file_exists($destination)) {
-                mkdir($destination, 0755, true);
-            }
-
-            $file->move($destination, $filename);
-            Log::info('Uploaded new logo to public path: ' . $filename);
-
-            return $filename;
-        }
-
-        return $existingLogo;
     }
 }

@@ -156,8 +156,14 @@ class CategoryController extends Controller
     private function categoryRules($isUpdate = false, $id = null)
     {
         $rules = [
-            'category_name' => $isUpdate ? 'sometimes|required|string|max:255' : 'required|string|max:255',
-            'description' => 'nullable|string',
+            'category_name' => [
+                $isUpdate ? 'sometimes' : 'required',
+                'string',
+                'min:2',
+                'max:255',
+                $isUpdate ? \Illuminate\Validation\Rule::unique('categories')->ignore($id) : 'unique:categories,category_name'
+            ],
+            'description' => 'nullable|string|min:10|max:255',
         ];
 
         return $rules;
