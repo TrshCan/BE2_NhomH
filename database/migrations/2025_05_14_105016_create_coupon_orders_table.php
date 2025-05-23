@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('coupon_order', function (Blueprint $table) {
             $table->id();
-            $table->integer('order_id');
-            $table->integer('coupon_id');
+            $table->foreignId('coupon_id')->constrained('coupons')->onDelete('cascade');
+            $table->foreignId('order_id')->constrained('orders', 'order_id')->onDelete('cascade');
             $table->timestamps();
         });
     }

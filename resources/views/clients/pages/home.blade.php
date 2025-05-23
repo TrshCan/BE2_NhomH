@@ -137,7 +137,7 @@
                                         class="text-decoration-line-through">{{ number_format($product->original_price) }}
                                         VNĐ</span></p>
                                 <p class="card-text text-danger fw-bold mb-3">{{ number_format($product->price) }} VNĐ</p>
-                                <a href="{{ url('public/includes/cart_crud.php?action=add&id=' . $product->id) }}"
+                                <a href="{{ route('cart.add', ['id' => $product->product_id]) }}"
                                     class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
                             </div>
                         </div>
@@ -271,8 +271,9 @@
                                                     <div class="product_price">{{ number_format($product['price'], 0) }}
                                                         VND</div>
                                                 </div>
-                                                <div class="add_to_cart_button text-center"><a href="#">Add to
-                                                        Cart</a></div>
+                                                <div class="add_to_cart_button text-center"><a
+                                                        href="{{ route('cart.add', ['id' => $product['product_id']]) }}">Add
+                                                        to Cart</a></div>
                                                 <div class="favorite favorite_right"></div>
                                             </div>
                                         </div>

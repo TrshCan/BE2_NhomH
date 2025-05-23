@@ -28,16 +28,16 @@
                         <div class="single_product_thumbnails">
                             <ul class="list-unstyled">
                                 @foreach($product->images as $index => $image)
-                                    <li>
-                                        <img src="{{ asset('assets/images/' . $image->image_url) }}" alt="" class="{{ $index === 0 ? 'active' : '' }}" data-image="{{ asset('assets/images/' . $image->image_url) }}">
-                                    </li>
+                                <li>
+                                    <img src="{{ asset('assets/images/' . $image->image_url) }}" alt="" class="{{ $index === 0 ? 'active' : '' }}" data-image="{{ asset('assets/images/' . $image->image_url) }}">
+                                </li>
                                 @endforeach
                             </ul>
                         </div>
                     </div>
                     <!-- Main Image -->
                     <div class="col-lg-10 image_col">
-                        <div class="single_product_image" style="background-image: url('{{ asset('assets/images/' . $product->image_url) }}');"></div>
+                        <div class="single_product_image" style="background-image: url('{{ asset(`assets/images/` . $product->image_url) }}');"></div>
                     </div>
                 </div>
             </div>
@@ -71,7 +71,7 @@
                         <span id="quantity_value">1</span>
                         <span class="plus"><i class="fa fa-plus" aria-hidden="true"></i></span>
                     </div>
-                    <a href="{{ url('/cart/add/' . $product->product_id) }}" class="btn btn-outline-danger">Add to Cart</a>
+                    <a href="{{ route('cart.add', ['id' => $product->product_id]) }}" class="add_to_cart_button">Add to Cart</a>
                 </div>
             </div>
         </div>
@@ -82,83 +82,83 @@
         <div class="container">
             <div class="row">
                 <div class="col">
-                   <!-- Tabs Navigation -->
-<div class="container my-3">
-    <div class="tabs_container d-flex justify-content-center">
-        <ul class="tabs nav">
-            <li class="tab active mx-2" data-active-tab="tab_1"><span>Description</span></li>
-            <li class="tab mx-2" data-active-tab="tab_2"><span>Additional Information</span></li>
-            <li class="tab mx-2" data-active-tab="tab_3"><span>Reviews (2)</span></li>
-        </ul>
-    </div>
-</div>
+                    <!-- Tabs Navigation -->
+                    <div class="container my-3">
+                        <div class="tabs_container d-flex justify-content-center">
+                            <ul class="tabs nav">
+                                <li class="tab active mx-2" data-active-tab="tab_1"><span>Description</span></li>
+                                <li class="tab mx-2" data-active-tab="tab_2"><span>Additional Information</span></li>
+                                <li class="tab mx-2" data-active-tab="tab_3"><span>Reviews (2)</span></li>
+                            </ul>
+                        </div>
+                    </div>
 
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                   <!-- Tab Description -->
-<div id="tab_1" class="tab_container active">
-    <div class="row">
-        <div class="col-lg-5 desc_col">
-            <div class="tab_title">
-                <h4>Description</h4>
-            </div>
-            <div class="tab_text_block">
-                <h2>{{ $product->product_name }}</h2>
-                <p>{{ $product->description ?? 'No description available.' }}</p>
-            </div>
-            @if ($product->images->isNotEmpty())
-                <div class="tab_image">
-                    <img src="{{ asset('assets/images/' . $product->images[0]->image_url) }}" alt="{{ $product->product_name }}">
-                </div>
-            @endif
-            @if ($product->features && isset($product->features['Gaming']))
-                <div class="tab_text_block">
-                    <h2>Enhanced Gaming Experience</h2>
-                    <p>{{ $product->features['Gaming'] }}</p>
-                </div>
-            @endif
-        </div>
-        <div class="col-lg-5 offset-lg-2 desc_col">
-            @if ($product->images->count() > 1)
-                <div class="tab_image">
-                    <img src="{{ asset('assets/images/' . $product->images[1]->image_url) }}" alt="{{ $product->product_name }}">
-                </div>
-            @endif
-            @if ($product->features && isset($product->features['Comfort']))
-                <div class="tab_text_block">
-                    <h2>Comfort and Durability</h2>
-                    <p>{{ $product->features['Comfort'] }}</p>
-                </div>
-            @endif
-            @if ($product->images->count() > 2)
-                <div class="tab_image desc_last">
-                    <img src="{{ asset('assets/images/' . $product->images[2]->image_url) }}" alt="{{ $product->product_name }}">
-                </div>
-            @endif
-        </div>
-    </div>
-</div>
+                    <!-- Tab Description -->
+                    <div id="tab_1" class="tab_container active">
+                        <div class="row">
+                            <div class="col-lg-5 desc_col">
+                                <div class="tab_title">
+                                    <h4>Description</h4>
+                                </div>
+                                <div class="tab_text_block">
+                                    <h2>{{ $product->product_name }}</h2>
+                                    <p>{{ $product->description ?? 'No description available.' }}</p>
+                                </div>
+                                @if ($product->images->isNotEmpty())
+                                <div class="tab_image">
+                                    <img src="{{ asset('assets/images/' . $product->images[0]->image_url) }}" alt="{{ $product->product_name }}">
+                                </div>
+                                @endif
+                                @if ($product->features && isset($product->features['Gaming']))
+                                <div class="tab_text_block">
+                                    <h2>Enhanced Gaming Experience</h2>
+                                    <p>{{ $product->features['Gaming'] }}</p>
+                                </div>
+                                @endif
+                            </div>
+                            <div class="col-lg-5 offset-lg-2 desc_col">
+                                @if ($product->images->count() > 1)
+                                <div class="tab_image">
+                                    <img src="{{ asset('assets/images/' . $product->images[1]->image_url) }}" alt="{{ $product->product_name }}">
+                                </div>
+                                @endif
+                                @if ($product->features && isset($product->features['Comfort']))
+                                <div class="tab_text_block">
+                                    <h2>Comfort and Durability</h2>
+                                    <p>{{ $product->features['Comfort'] }}</p>
+                                </div>
+                                @endif
+                                @if ($product->images->count() > 2)
+                                <div class="tab_image desc_last">
+                                    <img src="{{ asset('assets/images/' . $product->images[2]->image_url) }}" alt="{{ $product->product_name }}">
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
 
-                   <!-- Tab Additional Info -->
-<div id="tab_2" class="tab_container">
-    <div class="row">
-        <div class="col additional_info_col">
-            <div class="tab_title additional_info_title">
-                <h4>Additional Information</h4>
-            </div>
-            @if($product->details)
-                <p>MODEL: <span>{{ $product->details->model ?? 'N/A' }}</span></p>
-                <p>CONNECTIVITY: <span>{{ $product->details->connectivity ?? 'N/A' }}</span></p>
-                <p>COMPATIBILITY: <span>{{ $product->details->compatibility ?? 'N/A' }}</span></p>
-                <p>WEIGHT: <span>{{ $product->details->weight ?? 'N/A' }}</span></p>
-            @else
-                <p>No additional information available.</p>
-            @endif
-        </div>
-    </div>
-</div>
+                    <!-- Tab Additional Info -->
+                    <div id="tab_2" class="tab_container">
+                        <div class="row">
+                            <div class="col additional_info_col">
+                                <div class="tab_title additional_info_title">
+                                    <h4>Additional Information</h4>
+                                </div>
+                                @if($product->details)
+                                <p>MODEL: <span>{{ $product->details->model ?? 'N/A' }}</span></p>
+                                <p>CONNECTIVITY: <span>{{ $product->details->connectivity ?? 'N/A' }}</span></p>
+                                <p>COMPATIBILITY: <span>{{ $product->details->compatibility ?? 'N/A' }}</span></p>
+                                <p>WEIGHT: <span>{{ $product->details->weight ?? 'N/A' }}</span></p>
+                                @else
+                                <p>No additional information available.</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Tab Reviews -->
                     <div id="tab_3" class="tab_container">
@@ -246,131 +246,132 @@
     </div>
 
     <!-- Benefit -->
-   @include('clients.partials.benefit')
+    @include('clients.partials.benefit')
 
 </div>
 
 <!-- CSS for Description Toggle -->
 <style>
-.description-text {
-    display: -webkit-box;
-    -webkit-line-clamp: 3; /* Limit to 3 lines by default */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: all 0.3s ease;
-}
+    .description-text {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        /* Limit to 3 lines by default */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: all 0.3s ease;
+    }
 
-.description-text.expanded {
-    -webkit-line-clamp: unset;
-    overflow: visible;
-}
+    .description-text.expanded {
+        -webkit-line-clamp: unset;
+        overflow: visible;
+    }
 </style>
 
 <!-- Consolidated JavaScript -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Hamburger Menu Toggle
-    const hamburgerContainer = document.querySelector('.hamburger_container');
-    const hamburgerMenu = document.querySelector('.hamburger_menu');
-    const hamburgerClose = document.querySelector('.hamburger_close');
-    const fsMenuOverlay = document.querySelector('.fs_menu_overlay');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hamburger Menu Toggle
+        const hamburgerContainer = document.querySelector('.hamburger_container');
+        const hamburgerMenu = document.querySelector('.hamburger_menu');
+        const hamburgerClose = document.querySelector('.hamburger_close');
+        const fsMenuOverlay = document.querySelector('.fs_menu_overlay');
 
-    if (hamburgerContainer && hamburgerMenu && fsMenuOverlay) {
-        hamburgerContainer.addEventListener('click', function() {
-            hamburgerMenu.classList.add('active');
-            fsMenuOverlay.classList.add('active');
-        });
-    }
-
-    if (hamburgerClose && hamburgerMenu && fsMenuOverlay) {
-        hamburgerClose.addEventListener('click', function() {
-            hamburgerMenu.classList.remove('active');
-            fsMenuOverlay.classList.remove('active');
-        });
-    }
-
-    if (fsMenuOverlay && hamburgerMenu) {
-        fsMenuOverlay.addEventListener('click', function() {
-            hamburgerMenu.classList.remove('active');
-            fsMenuOverlay.classList.remove('active');
-        });
-    }
-
-    // Thumbnail Image Switch
-    const thumbnails = document.querySelectorAll('.single_product_thumbnails img');
-    const mainImage = document.querySelector('.single_product_image');
-
-    if (thumbnails && mainImage) {
-        thumbnails.forEach(thumbnail => {
-            thumbnail.addEventListener('click', function() {
-                thumbnails.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                const newImage = this.getAttribute('data-image');
-                mainImage.style.backgroundImage = `url('${newImage}')`;
+        if (hamburgerContainer && hamburgerMenu && fsMenuOverlay) {
+            hamburgerContainer.addEventListener('click', function() {
+                hamburgerMenu.classList.add('active');
+                fsMenuOverlay.classList.add('active');
             });
-        });
-    }
+        }
 
-    // Quantity Selector
-    const quantityValue = document.getElementById('quantity_value');
-    const minusBtn = document.querySelector('.quantity_selector .minus');
-    const plusBtn = document.querySelector('.quantity_selector .plus');
-
-    if (quantityValue && minusBtn && plusBtn) {
-        minusBtn.addEventListener('click', function() {
-            let value = parseInt(quantityValue.textContent);
-            if (value > 1) {
-                quantityValue.textContent = value - 1;
-            }
-        });
-
-        plusBtn.addEventListener('click', function() {
-            let value = parseInt(quantityValue.textContent);
-            quantityValue.textContent = value + 1;
-        });
-    }
-
-    // Tabs Functionality
-    const tabs = document.querySelectorAll('.tabs .tab');
-    const tabContents = document.querySelectorAll('.tab_container');
-
-    if (tabs && tabContents) {
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                const targetTab = this.getAttribute('data-active-tab');
-
-                // Remove active class from all tabs and contents
-                tabs.forEach(t => t.classList.remove('active'));
-                tabContents.forEach(content => content.classList.remove('active'));
-
-                // Add active class to clicked tab and corresponding content
-                this.classList.add('active');
-                document.getElementById(targetTab).classList.add('active');
+        if (hamburgerClose && hamburgerMenu && fsMenuOverlay) {
+            hamburgerClose.addEventListener('click', function() {
+                hamburgerMenu.classList.remove('active');
+                fsMenuOverlay.classList.remove('active');
             });
-        });
-    }
+        }
 
-    // Description Toggle
-    const toggles = document.querySelectorAll('.description-toggle');
-
-    if (toggles) {
-        toggles.forEach(button => {
-            const desc = button.previousElementSibling;
-
-            // Hide button if content is short
-            if (desc.scrollHeight <= desc.clientHeight) {
-                button.style.display = 'none';
-            }
-
-            button.addEventListener('click', function() {
-                const isExpanded = desc.classList.contains('expanded');
-                desc.classList.toggle('expanded');
-                this.textContent = isExpanded ? 'Xem thêm' : 'Thu gọn';
+        if (fsMenuOverlay && hamburgerMenu) {
+            fsMenuOverlay.addEventListener('click', function() {
+                hamburgerMenu.classList.remove('active');
+                fsMenuOverlay.classList.remove('active');
             });
-        });
-    }
-});
+        }
+
+        // Thumbnail Image Switch
+        const thumbnails = document.querySelectorAll('.single_product_thumbnails img');
+        const mainImage = document.querySelector('.single_product_image');
+
+        if (thumbnails && mainImage) {
+            thumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', function() {
+                    thumbnails.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    const newImage = this.getAttribute('data-image');
+                    mainImage.style.backgroundImage = `url('${newImage}')`;
+                });
+            });
+        }
+
+        // Quantity Selector
+        const quantityValue = document.getElementById('quantity_value');
+        const minusBtn = document.querySelector('.quantity_selector .minus');
+        const plusBtn = document.querySelector('.quantity_selector .plus');
+
+        if (quantityValue && minusBtn && plusBtn) {
+            minusBtn.addEventListener('click', function() {
+                let value = parseInt(quantityValue.textContent);
+                if (value > 1) {
+                    quantityValue.textContent = value - 1;
+                }
+            });
+
+            plusBtn.addEventListener('click', function() {
+                let value = parseInt(quantityValue.textContent);
+                quantityValue.textContent = value + 1;
+            });
+        }
+
+        // Tabs Functionality
+        const tabs = document.querySelectorAll('.tabs .tab');
+        const tabContents = document.querySelectorAll('.tab_container');
+
+        if (tabs && tabContents) {
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-active-tab');
+
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add active class to clicked tab and corresponding content
+                    this.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+        }
+
+        // Description Toggle
+        const toggles = document.querySelectorAll('.description-toggle');
+
+        if (toggles) {
+            toggles.forEach(button => {
+                const desc = button.previousElementSibling;
+
+                // Hide button if content is short
+                if (desc.scrollHeight <= desc.clientHeight) {
+                    button.style.display = 'none';
+                }
+
+                button.addEventListener('click', function() {
+                    const isExpanded = desc.classList.contains('expanded');
+                    desc.classList.toggle('expanded');
+                    this.textContent = isExpanded ? 'Xem thêm' : 'Thu gọn';
+                });
+            });
+        }
+    });
 </script>
 
 @endsection

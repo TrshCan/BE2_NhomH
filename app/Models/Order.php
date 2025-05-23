@@ -18,6 +18,11 @@ class Order extends Model
     protected $casts = [
         'order_date' => 'datetime',
     ];
+
+    public static function findOrFail($id)
+    {
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -30,6 +35,19 @@ class Order extends Model
 
     public function coupons()
     {
-        return $this->belongsToMany(Coupon::class, 'coupon_order');
+        return $this->belongsToMany(Coupon::class, 'coupon_order', 'order_id', 'coupon_id');
+    }
+
+    public function scopeFilter($query, array $filters)
+    {
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('order_id', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
     }
 }

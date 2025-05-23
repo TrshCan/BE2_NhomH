@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Category; // Adjusted to singular 'Category' per Laravel convention
-use App\Models\Promotion; // Assuming you have a Promotion model
-use App\Models\Product;   // Assuming you have a Product model
-use App\Models\Coupon;   // Assuming you have a Product model
+use App\Models\Category; 
+use App\Models\Promotion;
+use App\Models\Product;   
+use App\Models\Coupon;  
 
 class CouponController extends Controller
 {

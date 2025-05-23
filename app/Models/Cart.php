@@ -28,7 +28,135 @@ class Cart extends Model
     public function products()
     {
         return $this->belongsToMany(Product::class, 'cart_product', 'cart_id', 'product_id')
-                    ->withPivot('quantity')
-                    ->withTimestamps();
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
+
+
+    public function getItemByProductId($productId)
+    {
+        return $this->items()->where('product_id', $productId)->first();
+    }
+
+
+    public function addProduct($productId, $quantity = 1)
+    {
+        $item = $this->getItemByProductId($productId);
+
+        if ($item) {
+            $item->increment('quantity', $quantity);
+        } else {
+            $this->items()->create([
+                'product_id' => $productId,
+                'quantity' => $quantity,
+            ]);
+        }
+    }
+
+    public function updateQuantity(Request $request, $product_id)
+    {
+        if ($request->qty < 1) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Số lượng không hợp lệ.'
+            ]);
+        }
+
+        $cart = Auth::user()->cart;
+
+        $item = $cart?->items()->where('product_id', $product_id)->first();
+
+        if (!$item) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Sản phẩm không tồn tại trong giỏ hàng.'
+            ]);
+        }
+
+        if ($item->updated_at != $request->updated_at) {
+            return response()->json([
+                'status' => 'conflict',
+                'message' => 'Số lượng sản phẩm đã bị thay đổi. Vui lòng tải lại trang.'
+            ]);
+        }
+
+        $item->update(['quantity' => $request->qty]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Cập nhật số lượng thành công.'
+        ]);
+    }
+
+
+    public function removeProduct($product_id)
+    {
+        $item = $this->items()->where('product_id', $product_id)->first();
+
+        if (!$item) {
+            return 'error';
+        }
+
+        if ($item->quantity > 1) {
+            $item->decrement('quantity');
+            return 'decremented';
+        }
+
+        $item->delete();
+        return 'deleted';
+    }
+
+    public static function getOrCreateForUser($user)
+    {
+        return $user->cart ?? $user->cart()->create();
+    }
+
+
+    public function loadAndCleanItems()
+    {
+        try {
+            $this->load('items.product');
+            $removedItems = 0;
+
+            // Remove items with missing products
+            $this->items()->each(function ($item) use (&$removedItems) {
+                if (!$item->product) {
+                    $item->delete();
+                    $removedItems++;
+                }
+            });
+
+            // Refresh the cart to ensure updated items
+            $this->load('items.product');
+
+            return [
+                'cart' => $this->items->isEmpty() ? null : $this,
+                'removedItems' => $removedItems
+            ];
+        } catch (\Exception $e) {
+            \Log::error('Error loading cart: ' . $e->getMessage());
+            return ['cart' => null, 'removedItems' => 0];
+        }
+    }
+
+    public function updateProductQuantityIfUnchanged($product_id, $quantity, $updated_at)
+    {
+        $item = $this->items()->where('product_id', $product_id)->first();
+
+        if (!$item) {
+            return ['status' => 'error', 'message' => 'Sản phẩm không tồn tại trong giỏ hàng.'];
+        }
+
+        if ($item->updated_at->toDateTimeString() !== $updated_at) {
+            return [
+                'status' => 'error',
+                'message' => 'Số lượng sản phẩm đã bị thay đổi bởi phiên làm việc khác. Vui lòng tải lại trang.',
+                'latest_updated_at' => $item->updated_at->toDateTimeString()
+            ];
+        }
+
+        $item->update(['quantity' => $quantity, 'updated_at' => now()]);
+
+        return ['status' => 'success', 'message' => 'Cập nhật số lượng thành công.'];
     }
 }

@@ -124,16 +124,17 @@
 
                 <div class="coupon-section mt-3">
                     <div class="input-group">
-                        <input type="text" class="form-control" id="coupon-code" name="coupon_code"
-                            placeholder="Nhập mã giảm giá" value="{{ session('applied_coupon', '') }}">
+                        <input type="text" class="form-control" id="coupon-code" name="coupon_code" placeholder="Nhập mã giảm giá">
                         <button type="button" class="btn btn-coupon btn-primary btn-sm text-white" onclick="applyCoupon()">Áp Dụng</button>
                     </div>
-                    <div id="applied-coupon" class="mt-2{{ session('applied_coupon') ? '' : ' d-none' }}">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span>Mã: <strong id="applied-coupon-code">{{ session('applied_coupon', '') }}</strong></span>
-                            <span id="applied-coupon-discount">{{ number_format(session('coupon_discount', 0), 0, ',', '.') }}đ</span>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="removeCoupon()">Xóa</button>
+                    <div id="applied-coupons" class="mt-2">
+                        @foreach (session('applied_coupons', []) as $code => $discount)
+                        <div class="applied-coupon d-flex justify-content-between align-items-center mb-2" data-code="{{ $code }}">
+                            <span>Mã: <strong>{{ $code }}</strong></span>
+                            <span>{{ number_format($discount, 0, ',', '.') }}đ</span>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeCoupon('{{ $code }}')">Xóa</button>
                         </div>
+                        @endforeach
                     </div>
                     <div id="coupon-error" class="text-danger mt-2" style="display: none;"></div>
                 </div>
@@ -145,8 +146,8 @@
                 </div>
                 <div class="summary-item d-flex justify-content-between">
                     <span>Giảm Giá Mã Coupon</span>
-                    <span id="coupon-discount">{{ number_format($discount, 0, ',', '.') }}đ</span>
-                    <input type="hidden" id="discount-amount" name="discount" value="{{ $discount }}">
+                    <span id="coupon-discount">{{ number_format($couponDiscount ?? 0, 0, ',', '.') }}đ</span>
+                    <input type="hidden" id="discount-amount" name="discount" value="{{ $couponDiscount ?? 0 }}">
                 </div>
                 <div class="summary-item d-flex justify-content-between fw-bold">
                     <span>Tổng Cộng</span>
@@ -163,6 +164,64 @@
 </div>
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 <script>
+    document.getElementById('checkout-form').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent immediate form submission
+
+        const couponError = document.getElementById('coupon-error');
+        const subtotalSpan = document.getElementById('subtotal');
+        const discountSpan = document.getElementById('coupon-discount');
+        const totalSpan = document.getElementById('total');
+        const discountInput = document.getElementById('discount-amount');
+        const totalInput = document.getElementById('total-amount');
+
+        try {
+            // Validate cart and coupons
+            const response = await fetch("{{ route('checkout.validate') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                // Update totals if necessary
+                subtotalSpan.textContent = new Intl.NumberFormat('vi-VN').format(result.subtotal) + 'đ';
+                discountSpan.textContent = new Intl.NumberFormat('vi-VN').format(result.total_discount) + 'đ';
+                totalSpan.textContent = new Intl.NumberFormat('vi-VN').format(result.total) + 'đ';
+                discountInput.value = result.total_discount;
+                totalInput.value = result.total;
+
+                // Update applied coupons in UI
+                const appliedCouponsDiv = document.getElementById('applied-coupons');
+                appliedCouponsDiv.innerHTML = '';
+                result.applied_coupons.forEach(coupon => {
+                    const couponDiv = document.createElement('div');
+                    couponDiv.className = 'applied-coupon d-flex justify-content-between align-items-center mb-2';
+                    couponDiv.dataset.code = coupon.code;
+                    couponDiv.innerHTML = `
+                    <span>Mã: <strong>${coupon.code}</strong></span>
+                    <span>${new Intl.NumberFormat('vi-VN').format(coupon.discount)}đ</span>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeCoupon('${coupon.code}')">Xóa</button>
+                `;
+                    appliedCouponsDiv.appendChild(couponDiv);
+                });
+
+                // Submit the form if everything is valid
+                this.submit();
+            } else {
+                couponError.textContent = result.message || 'Giỏ hàng hoặc mã giảm giá không hợp lệ. Vui lòng kiểm tra lại.';
+                couponError.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error validating checkout:', error);
+            couponError.textContent = 'Lỗi khi kiểm tra giỏ hàng. Vui lòng thử lại.';
+            couponError.style.display = 'block';
+        }
+    });
     document.addEventListener("DOMContentLoaded", function() {
         const paymentRadioButtons = document.querySelectorAll('input[name="payment"]');
         const qrCodeContainer = document.getElementById("qr-code-container");
@@ -264,9 +323,10 @@
         loadLocationData();
 
         // Coupon handling
+        // Coupon handling
         window.applyCoupon = async function() {
             const couponCode = document.getElementById('coupon-code').value.trim();
-            const appliedCouponDiv = document.getElementById('applied-coupon');
+            const appliedCouponsDiv = document.getElementById('applied-coupons');
             const couponError = document.getElementById('coupon-error');
             const subtotalSpan = document.getElementById('subtotal');
             const discountSpan = document.getElementById('coupon-discount');
@@ -277,7 +337,6 @@
             if (!couponCode) {
                 couponError.textContent = 'Vui lòng nhập mã giảm giá.';
                 couponError.style.display = 'block';
-                appliedCouponDiv.style.display = 'none';
                 return;
             }
 
@@ -290,46 +349,54 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json',
                     },
-                    body: JSON.stringify({ coupon_code: couponCode }),
+                    body: JSON.stringify({
+                        coupon_code: couponCode
+                    }),
                 });
 
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    document.getElementById('applied-coupon-code').textContent = result.coupon.code;
-                    document.getElementById('applied-coupon-discount').textContent = new Intl.NumberFormat('vi-VN').format(result.coupon.discount) + 'đ';
-                    appliedCouponDiv.style.display = 'block';
+                    // Add new coupon to the UI
+                    const couponDiv = document.createElement('div');
+                    couponDiv.className = 'applied-coupon d-flex justify-content-between align-items-center mb-2';
+                    couponDiv.dataset.code = result.coupon.code;
+                    couponDiv.innerHTML = `
+                <span>Mã: <strong>${result.coupon.code}</strong></span>
+                <span>${new Intl.NumberFormat('vi-VN').format(result.coupon.discount)}đ</span>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeCoupon('${result.coupon.code}')">Xóa</button>
+            `;
+                    appliedCouponsDiv.appendChild(couponDiv);
                     couponError.style.display = 'none';
+                    document.getElementById('coupon-code').value = '';
 
+                    // Update totals
                     subtotalSpan.textContent = new Intl.NumberFormat('vi-VN').format(result.subtotal) + 'đ';
-                    discountSpan.textContent = new Intl.NumberFormat('vi-VN').format(result.coupon.discount) + 'đ';
+                    discountSpan.textContent = new Intl.NumberFormat('vi-VN').format(result.total_discount) + 'đ';
                     totalSpan.textContent = new Intl.NumberFormat('vi-VN').format(result.total) + 'đ';
-                    discountInput.value = result.coupon.discount;
+                    discountInput.value = result.total_discount;
                     totalInput.value = result.total;
 
                     alert(result.message);
                 } else {
                     couponError.textContent = result.message || 'Lỗi khi áp dụng mã giảm giá.';
                     couponError.style.display = 'block';
-                    appliedCouponDiv.style.display = 'none';
                 }
             } catch (error) {
                 console.error('Error applying coupon:', error);
                 couponError.textContent = 'Lỗi khi áp dụng mã giảm giá.';
                 couponError.style.display = 'block';
-                appliedCouponDiv.style.display = 'none';
             }
         };
 
-        window.removeCoupon = async function() {
-            const appliedCouponDiv = document.getElementById('applied-coupon');
+        window.removeCoupon = async function(couponCode) {
+            const appliedCouponsDiv = document.getElementById('applied-coupons');
             const couponError = document.getElementById('coupon-error');
             const subtotalSpan = document.getElementById('subtotal');
             const discountSpan = document.getElementById('coupon-discount');
             const totalSpan = document.getElementById('total');
             const discountInput = document.getElementById('discount-amount');
             const totalInput = document.getElementById('total-amount');
-            const couponInput = document.getElementById('coupon-code');
 
             try {
                 const response = await fetch("{{ route('checkout.removeCoupon') }}", {
@@ -339,19 +406,26 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json',
                     },
+                    body: JSON.stringify({
+                        coupon_code: couponCode
+                    }),
                 });
 
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    appliedCouponDiv.style.display = 'none';
+                    // Remove coupon from UI
+                    const couponDiv = appliedCouponsDiv.querySelector(`.applied-coupon[data-code="${couponCode}"]`);
+                    if (couponDiv) {
+                        couponDiv.remove();
+                    }
                     couponError.style.display = 'none';
-                    couponInput.value = '';
 
+                    // Update totals
                     subtotalSpan.textContent = new Intl.NumberFormat('vi-VN').format(result.subtotal) + 'đ';
-                    discountSpan.textContent = new Intl.NumberFormat('vi-VN').format(result.discount) + 'đ';
+                    discountSpan.textContent = new Intl.NumberFormat('vi-VN').format(result.total_discount) + 'đ';
                     totalSpan.textContent = new Intl.NumberFormat('vi-VN').format(result.total) + 'đ';
-                    discountInput.value = result.discount;
+                    discountInput.value = result.total_discount;
                     totalInput.value = result.total;
 
                     alert(result.message);

@@ -66,20 +66,23 @@ Route::post('password/email/submit', [ForgotPassword::class, 'resetPassword'])->
 
 // QUẢN LÝ ĐƠN HÀNG
 Route::get('/orders', [OrderManagementController::class, 'index'])->name('admin.orders.index');
-Route::get('/orders/{id}', [OrderManagementController::class, 'show'])->name('admin.orders.show');
+Route::post('/orders/{id}', [OrderManagementController::class, 'show'])->name('admin.orders.show');
+Route::get('/orders/{id}', [OrderManagementController::class, 'show'])->name('admin.orders.show2');
 Route::post('/orders', [OrderManagementController::class, 'store'])->name('admin.orders.store');
 Route::post('/orders/{id}/update', [OrderManagementController::class, 'update'])->name('admin.orders.update');
-Route::get('/orders/{id}/delete', [OrderManagementController::class, 'destroy'])->name('admin.orders.destroy');
+Route::post('/orders/{id}/delete', [OrderManagementController::class, 'destroy'])->name('admin.orders.destroy');
 
 // GIỎ HÀNG & THANH TOÁN
 Route::get('cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::get('cart', [CartController::class, 'viewCart'])->name('cart.cart');
 Route::get('/cart/delete/{product_id}', [CartController::class, 'remove']);
 Route::get('/cart/deleteall', [CartController::class, 'clear']);
-Route::get('/cart/update_quantity/{product_id}/{qty}', [CartController::class, 'updateQuantity']);
+Route::post('/cart/update_quantity/{product_id}', [CartController::class, 'updateQuantity']);
+Route::get('/cart/update_quantity/{product_id}', [CartController::class, 'updateQuantity']);
 
 Route::get('/checkout', [OrderController::class, 'show'])->name('checkout.show');
 Route::post('/checkout/process', [OrderController::class, 'process'])->name('checkout.process');
+Route::post('/checkout/validate', [OrderController::class, 'validate'])->name('checkout.validate');
 
 // CHAT
 Route::get('/chat/users', [ChatController::class, 'getUsers'])->name('chat.users');
