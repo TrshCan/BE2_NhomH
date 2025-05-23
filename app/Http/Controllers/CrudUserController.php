@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class CrudUserController extends Controller
 {
@@ -38,7 +39,7 @@ class CrudUserController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        $user = User::with('status')->where('email', $request->email)->first();
+       $user = User::findByEmailWithStatus($request->email);
 
         Log::info('User login attempt', [
             'email' => $request->email,
@@ -133,24 +134,58 @@ class CrudUserController extends Controller
     public function postUser(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|regex:/^[\S]+$/|',
-            'phone' => 'unique:users,phone|min:10',
-            'address' => 'required',
+            'name' => [
+                'required',
+                'min:4',
+                'max:30',
+                'regex:/^[\pL]+(?: [\pL]+)*$/u'
+            ],
+            'email' => [
+                'required',
+                'email',
+                'max:100',
+                'unique:users,email'
+            ],
+            'password' => [
+                'required',
+                'min:6',
+                'max:64',
+                'regex:/^\S+$/'
+            ],
+            'phone' => [
+                'nullable',
+                'numeric',
+                'digits_between:10,11',
+                'unique:users,phone'
+            ],
+            'address' => [
+                'required',
+                'string',
+                'max:255'
+            ],
         ], [
             'name.required' => 'Tên người dùng là bắt buộc.',
+            'name.min' => 'Tên người dùng phải có ít nhất 4 ký tự.',
+            'name.max' => 'Tên người dùng không được vượt quá 30 ký tự.',
+            'name.regex' => 'Tên chỉ được chứa chữ cái,khoảng trắng (không có 2 khoảng trắng liên tiếp, không bắt đầu/kết thúc bằng khoảng trắng.',
+
             'email.required' => 'Email là bắt buộc.',
             'email.email' => 'Email phải có định dạng hợp lệ.',
+            'email.max' => 'Email không được dài quá 100 ký tự.',
             'email.unique' => 'Email này đã được đăng ký.',
+
             'password.required' => 'Mật khẩu là bắt buộc.',
             'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+            'password.max' => 'Mật khẩu không được vượt quá 64 ký tự.',
             'password.regex' => 'Mật khẩu không được chứa khoảng trắng.',
-            'phone.unique' => 'Số điện thoại này đã được đăng ký.',
-            'phone.min' => 'Số điện thoại phải có ít nhất 10 ký tự.',
-            'address.required' => 'Địa chỉ là bắt buộc.',
-        ]);
 
+            'phone.numeric' => 'Số điện thoại chỉ được chứa số.',
+            'phone.digits_between' => 'Số điện thoại phải có từ 10 đến 11 chữ số.',
+            'phone.unique' => 'Số điện thoại này đã được đăng ký.',
+
+            'address.required' => 'Địa chỉ là bắt buộc.',
+            'address.max' => 'Địa chỉ không được dài quá 255 ký tự.',
+        ]);
 
         try {
             User::create([
@@ -190,63 +225,82 @@ class CrudUserController extends Controller
 
         return redirect('list')->with('success', 'Xóa người dùng thành công.');
     }
-
     public function updateUser($id)
     {
         $user = User::findOrFail($id);
         $statuses = Status::all();
         return view('admin.update', compact('user', 'statuses'));
     }
-
     public function postUpdateUser(Request $request)
     {
+        $user = User::findOrFail($request->id);
+
+        $rules = [
+            'id' => 'required|exists:users,id',
+            'name' => 'required|min:4|max:30|regex:/^[\pL]+(?: [\pL]+)*$/u',
+            'email' => [
+                'required',
+                'email',
+                'max:100',
+                Rule::unique('users', 'email')->ignore($request->id),
+            ],
+            'phone' => [
+                'nullable',
+                'numeric',
+                'digits_between:10,11',
+                Rule::unique('users', 'phone')->ignore($request->id),
+            ],
+            'status_id' => 'required|exists:statuses,id',
+            'ban_reason' => 'nullable|string|max:255',
+        ];
+
+        if (!$user->google_id) {
+            $rules['address'] = 'required|string|max:255';
+        } else {
+            $rules['address'] = 'nullable|string|max:255';
+        }
+        if ($request->status_id == 2 && empty($request->ban_reason)) {
+            return redirect()->route('admin.updateUser', $request->id)
+                ->withErrors(['ban_reason' => 'Vui lòng nhập lý do khóa tài khoản.'])
+                ->withInput();
+        }
+
+        $validated = $request->validate($rules, [
+            'name.required' => 'Tên người dùng là bắt buộc.',
+            'name.min' => 'Tên phải có ít nhất 4 ký tự.',
+            'name.max' => 'Tên không vượt quá 30 ký tự.',
+            'name.regex' => 'Tên chỉ được chứa chữ cái,khoảng trắng (không có 2 khoảng trắng liên tiếp, không bắt đầu/kết thúc bằng khoảng trắng).',
+            'email.required' => 'Email là bắt buộc.',
+            'email.email' => 'Email không đúng định dạng.',
+            'email.unique' => 'Email đã tồn tại.',
+            'phone.numeric' => 'Số điện thoại phải là số.',
+            'phone.digits_between' => 'Số điện thoại phải từ 10 đến 11 số.',
+            'phone.unique' => 'Số điện thoại đã được sử dụng.',
+            'status_id.required' => 'Trạng thái là bắt buộc.',
+            'status_id.exists' => 'Trạng thái không hợp lệ.',
+            'address.required' => 'Địa chỉ là bắt buộc.',
+            'address.max' => 'Độ dài địa chỉ không được vuợt quá 255 kí tự!',
+            'ban_reason.max' => 'Độ dài quy định không được vượt quá 255 kí tự!'
+        ]);
         try {
-            $user = User::findOrFail($request->id);
 
-            // Xây dựng rules xác thực tùy theo loại người dùng
-            $rules = [
-                'id' => 'required|exists:users,id',
-                'name' => 'required',
-                'email' => 'required|email|unique:users,email,' . $request->id,
-                'phone' => 'nullable|unique:users,phone,' . $request->id . '|min:10',
-                'status_id' => 'required|exists:statuses,id',
-                'ban_reason' => 'nullable|string',
-            ];
-
-            // Nếu không phải tài khoản Google thì bắt buộc có địa chỉ
-            if (!$user->google_id) {
-                $rules['address'] = 'required';
-            } else {
-                $rules['address'] = 'nullable|string';
-            }
-
-            $request->validate($rules);
-
-            // Cập nhật thông tin
+            // Cập nhật dữ liệu
             $user->name = $request->name;
             $user->email = $request->email;
             $user->phone = $request->phone;
             $user->address = $request->address;
             $user->status_id = $request->status_id;
-
-            if ($request->status_id == 2) {
-                if (empty($request->ban_reason)) {
-                    return redirect()->route('admin.updateUser', $request->id)
-                        ->withErrors(['ban_reason' => 'Vui lòng nhập lý do khóa tài khoản.'])
-                        ->withInput();
-                }
-                $user->ban_reason = $request->ban_reason;
-            } else {
-                $user->ban_reason = null;
-            }
+            $user->ban_reason = $request->status_id == 2 ? $request->ban_reason : null;
 
             $user->save();
-            Log::info('User update', ['user' => $user, 'request' => $request->all()]);
+
+            Log::info('User updated', ['user_id' => $user->id]);
 
             return redirect()->route('admin.indexUser')->with('success', 'Cập nhật người dùng thành công.');
         } catch (\Exception $e) {
-            Log::error('Error updating user: ' . $e->getMessage(), ['user_id' => $request->id]);
-            return redirect()->route('user.update', $request->id)
+            Log::error('Lỗi cập nhật user: ' . $e->getMessage(), ['user_id' => $request->id]);
+
+            return redirect()->route('admin.updateUser', $request->id)
                 ->withErrors(['error' => 'Lỗi cập nhật. Vui lòng thử lại.'])
                 ->withInput();
         }
@@ -258,25 +312,15 @@ class CrudUserController extends Controller
     {
         // Nếu chưa đăng nhập
         if (!Auth::check()) {
-            return redirect('login')->with('error_admin', 'Bạn cần đăng nhập và có quyền admin để truy cập.');
+            return redirect('login')->with('withoutLogin', 'Bạn cần đăng nhập và có quyền admin để truy cập.');
         }
-
-        // Nếu đã đăng nhập nhưng không phải admin
-        if (Auth::user()->role !== 'admin') {
+        $user = Auth::user();
+        if (!$user||$user->role !== 'admin') {
             Auth::logout();
-            return redirect('login')->with('error_admin', 'Bạn không có quyền truy cập trang quản trị. Đã đăng xuất.');
+            return redirect('login')->with('withoutAdmin', 'Bạn không có quyền truy cập trang quản trị. Đã đăng xuất.');
         }
 
-        // Nếu là admin
-        $query = User::with('status');
-
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where('name', 'like', "%$search%")
-                ->orWhere('email', 'like', "%$search%");
-        }
-
-        $users = $query->paginate(10);
+     $users = User::getUsersWithStatus($request->search);
         return view('admin.list', ['users' => $users]);
     }
 
