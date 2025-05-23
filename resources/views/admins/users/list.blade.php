@@ -47,10 +47,10 @@
                 <td>{{ $user->role ?? 'user' }}</td>
                 <td>
                     <a href="{{ url('update/' . $user->id) }}" class="btn btn-warning btn-sm">Sửa</a>
-                    <form action="{{ url('delete') }}" method="POST" style="display:inline-block;">
+                    <form action="{{ url('user/delete') }}" method="POST" style="display:inline-block;">
                         @csrf
                         <input type="hidden" name="id" value="{{ $user->id }}">
-                        <button onclick="return confirm('Bạn có chắc chắn muốn xóa?')" class="btn btn-danger btn-sm">Xóa</button>
+                        <button onclick="return confirm('Bạn có chắc chắn muốn xóa?')" class="btn btn-danger btn-sm">Xóa< kkk/button>
                     </form>
                 </td>
             </tr>

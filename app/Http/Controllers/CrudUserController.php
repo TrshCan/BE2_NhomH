@@ -209,7 +209,7 @@ class CrudUserController extends Controller
         $user = User::find($request->id);
 
         if (!$user) {
-            return redirect('list')->with('error', 'Người dùng không tồn tại.');
+            return redirect('admin/quanlynguoidung')->with('error', 'Người dùng không tồn tại.');
         }
 
         return view('admin.show', compact('user'));
@@ -220,12 +220,12 @@ class CrudUserController extends Controller
         $user = User::find($request->id);
 
         if (!$user) {
-            return redirect('list')->with('error', 'Người dùng không tồn tại.');
+            return redirect('admin/quanlynguoidung')->with('error', 'Người dùng không tồn tại.');
         }
 
         $user->delete();
 
-        return redirect('list')->with('success', 'Xóa người dùng thành công.');
+        return redirect('admin/quanlynguoidung')->with('success', 'Xóa người dùng thành công.');
     }
     public function updateUser($id)
     {

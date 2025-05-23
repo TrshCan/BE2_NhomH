@@ -48,7 +48,7 @@
                         <td>
                             <div class="d-flex flex-column flex-md-row gap-2 justify-content-center">
                                 <a href="{{ route('admin.postUpdateUser', $user->id) }}" class="btn btn-warning btn-sm w-100">Sửa</a>
-                                <form action="{{ url('delete') }}" method="POST" class="d-inline-block w-100">
+                                <form action="{{ route('admin.deleteUser') }}" method="POST" class="d-inline-block w-100">
                                     @csrf
                                     <input type="hidden" name="id" value="{{ $user->id }}">
                                     <button onclick="return confirm('Bạn có chắc chắn muốn xóa?')" class="btn btn-danger btn-sm w-100">Xóa</button>
