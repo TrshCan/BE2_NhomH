@@ -1,0 +1,75 @@
+body {
+  background-color: #f8f9fa;
+}
+
+.checkout-container {
+  max-width: 1200px;
+  /* Increased width */
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.card-custom {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.product-img {
+  max-width: 100px;
+  height: auto;
+  margin-right: 15px;
+}
+
+.summary-item {
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+  align-items: center;
+}
+
+.summary-item-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.summary-item-price {
+  font-weight: 500;
+  margin-left: 10px;
+}
+
+.coupon-section {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.coupon-section input {
+  flex-grow: 1;
+}
+
+.btn-coupon {
+  background-color: #28a745;
+  border: none;
+  transition: background-color 0.3s;
+}
+
+.btn-coupon:hover {
+  background-color: #218838;
+}
+
+.btn-custom {
+  background-color: #007bff;
+  border: none;
+  transition: background-color 0.3s;
+}
+
+.btn-custom:hover {
+  background-color: #0056b3;
+}
+
+.alert-custom {
+  font-size: 0.9rem;
+  padding: 10px;
+}
