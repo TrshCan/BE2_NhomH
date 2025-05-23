@@ -7,22 +7,19 @@ if (isset($_GET['to_date'])) {
     $toDate = $_GET['to_date'];
 }
 ?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thống Kê Nâng Cao - Admin</title>
-    <link rel="stylesheet" href="{{ asset('assets/styles/statistical.css') }}">
+@extends('admin.admin')
+
+@section('styles')
+<link rel="stylesheet" href="{{ asset('assets/styles/statistical.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Date picker library -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
+@endsection
+@section('content')
+<div class="container-s">
+        <div class="header-s">
             <h1>Thống Kê Nâng Cao - Admin</h1>
         </div>
 
@@ -30,7 +27,7 @@ if (isset($_GET['to_date'])) {
             <div class="filter-panel">
                 <div class="filter-group">
                     <label>Từ Ngày</label>
-                    <div class="date-input-container">
+                    <div class="date-input-container-s">
                         <input type="text" class="date-input flatpickr" name="from_date" value="{{ $fromDate ?? date('d/m/Y', strtotime('-30 days')) }}" id="fromDate" placeholder="DD/MM/YYYY">
                         <svg class="calendar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -43,7 +40,7 @@ if (isset($_GET['to_date'])) {
 
                 <div class="filter-group">
                     <label>Đến Ngày</label>
-                    <div class="date-input-container">
+                    <div class="date-input-container-s">
                         <input type="text" class="date-input flatpickr" name="to_date" value="{{ $toDate ?? date('d/m/Y') }}" id="toDate" placeholder="DD/MM/YYYY">
                         <svg class="calendar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -54,9 +51,9 @@ if (isset($_GET['to_date'])) {
                     </div>
                 </div>
 
-                <div class="filter-group select-container">
+                <div class="filter-group select-container-s">
                     <label>Danh Mục Sản Phẩm</label>
-                    <select id="categorySelect" name="category_id">
+                    <select id="categorySelect" name="category_id" style="height: 40px;">
                         <option value="0" {{ $selectedCategory == 0 ? 'selected' : '' }}>Tất Cả</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->category_id }}" {{ $selectedCategory == $category->category_id ? 'selected' : '' }}>
@@ -70,7 +67,7 @@ if (isset($_GET['to_date'])) {
             </div>
         </form>
 
-        <div class="stats-container">
+        <div class="stats-container-s">
             <div class="stats-card">
                 <h3>Tổng Doanh Thu</h3>
                 <p>{{ number_format($totalRevenue, 0, ',', '.') }}đ</p>
@@ -92,40 +89,43 @@ if (isset($_GET['to_date'])) {
             </div>
         </div>
 
-        <div class="charts-container">
+        <div class="charts-container-s">
             <div class="chart-card">
                 <h3>Doanh Thu Theo Thời Gian</h3>
-                <div class="chart-container">
+                <div class="chart-container-s">
                     <canvas id="monthlyRevenueChart"></canvas>
                 </div>
             </div>
 
             <div class="chart-card">
                 <h3>Doanh Thu Theo Danh Mục</h3>
-                <div class="chart-container">
+                <div class="chart-container-s">
                     <canvas id="categoryRevenueChart"></canvas>
                 </div>
             </div>
         </div>
         
-        <div class="charts-container">
+        <div class="charts-container-s">
             <div class="chart-card">
                 <h3>Top 5 Sản Phẩm Bán Chạy</h3>
-                <div class="chart-container">
+                <div class="chart-container-s">
                     <canvas id="topProductsChart"></canvas>
                 </div>
             </div>
             
             <div class="chart-card">
                 <h3>Trạng Thái Đơn Hàng</h3>
-                <div class="chart-container">
+                <div class="chart-container-s">
                     <canvas id="orderStatusChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
+@endsection
+    
 
-    <script>
+@section('scripts')
+<script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize Flatpickr date pickers with Vietnamese locale
             flatpickr(".flatpickr", {
@@ -304,5 +304,5 @@ if (isset($_GET['to_date'])) {
             }
         });
     </script>
-</body>
-</html>
+@endsection
+    
