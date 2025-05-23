@@ -104,7 +104,7 @@
     <div id="orderModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white rounded-xl p-6 w-full max-w-md">
             <h3 id="modalTitle" class="text-lg font-semibold text-gray-800 mb-4">Thêm đơn hàng</h3>
-            <form id="orderForm" method="POST">
+            <form id="orderForm">
                 <input type="hidden" name="order_id">
                 <input type="hidden" name="updated_at">
                 <div class="mb-4">

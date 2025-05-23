@@ -156,7 +156,7 @@ class OrderController extends Controller
             if ($user->status_id === 2) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Tài khoản bị khóa không thể thanh toán.',
+                    'message' => 'Tài khoản bị khóa không thể thanh toán',
                 ], 401);
             }
 
@@ -276,7 +276,7 @@ class OrderController extends Controller
 
             // Verify the total matches the request to prevent tampering
             if (abs($request->total - $total) > 0.01) {
-                return redirect()->route('cart.checkout')
+                return redirect()->route('cart.cart')
                     ->with('error', 'Tổng số tiền không hợp lệ do thay đổi trong giỏ hàng hoặc mã giảm giá. Vui lòng kiểm tra lại.');
             }
 
@@ -322,7 +322,7 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error processing order: ' . $e->getMessage(), ['user_id' => $user->id ?? null]);
-            return redirect()->route('cart.checkout')->with('error', 'Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.');
+            return redirect()->route('cart.cart')->with('error', 'Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.' . $e->getMessage());
         }
     }
 

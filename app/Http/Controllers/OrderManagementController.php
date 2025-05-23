@@ -67,14 +67,18 @@ class OrderManagementController extends Controller
             $order->details()->create($detail);
         }
 
-        return redirect()->back()->with('success', 'Order created successfully.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Order created successfully.',
+            'order' => $order,
+        ]);
     }
 
     public function update(Request $request, $id)
     {
         $order = Order::with('user', 'details.product')->find($id);
         if (!$order) {
-            return response()->json(['message' => 'Order not found'], 404);
+            return response()->json(['success' => true, 'message' => 'Đơn hàng đã bị chỉnh sửa hoặc xóa ở phiên làm việc khác. Vui lòng tải lại trang.'], 404);
         }
 
         // Validate the request, including the updated_at timestamp
