@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
             $this->call(CouponSeeder::class);
             $this->call(OrderDetailSeeder::class, );
         
+            $this->call(FaqSeeder::class);
         } catch (\Exception $e) {
             $this->command->error("Error seeding database: " . $e->getMessage());
         }
