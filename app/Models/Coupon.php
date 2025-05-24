@@ -54,7 +54,17 @@ class Coupon extends Model
         try {
             // Define validation rules
             $validator = Validator::make($data, [
-                'code' => 'required|string|unique:coupons,code|max:50',
+                'code' => [
+                    'required',
+                    'string',
+                    'max:50',
+                    function ($attribute, $value, $fail) {
+                        if (preg_match('/[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}]/u', $value)) {
+                            $fail('Mã giảm giá không được chứa emoji.');
+                        }
+                    },
+                    'unique:coupons,code',
+                ],
                 'type' => 'required|in:percent,fixed',
                 'value' => [
                     'required',
@@ -144,7 +154,16 @@ class Coupon extends Model
 
             // Define validation rules
             $validator = Validator::make($data, [
-                'code' => 'required|string|max:50' . $this->coupon_id . ',id',
+                'code' => [
+                    'required',
+                    'string',
+                    'max:50',
+                    function ($attribute, $value, $fail) {
+                        if (preg_match('/[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}]/u', $value)) {
+                            $fail('Mã giảm giá không được chứa emoji.');
+                        }
+                    }
+                ],
                 'type' => 'required|in:percent,fixed',
                 'value' => [
                     'required',

@@ -53,7 +53,16 @@ class OrderManagementController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'status' => 'required|string|max:50',
-            'shipping_address' => 'nullable|string|max:255',
+            'shipping_address' => [
+                'nullable',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    if ($value !== null && preg_match('/[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}]/u', $value)) {
+                        $fail('Địa chỉ không được chứa emoji.');
+                    }
+                }
+            ],
             'details' => 'required|array',
             'details.*.product_id' => 'required|exists:products,product_id',
             'details.*.quantity' => 'required|integer|min:1',
@@ -104,7 +113,16 @@ class OrderManagementController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'status' => 'required|string|max:50',
-            'shipping_address' => 'nullable|string|max:255',
+            'shipping_address' => [
+                'nullable',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    if ($value !== null && preg_match('/[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}]/u', $value)) {
+                        $fail('Địa chỉ không được chứa emoji.');
+                    }
+                }
+            ],
             'details' => 'required|array',
             'details.*.product_id' => 'required|exists:products,product_id',
             'details.*.quantity' => 'required|integer|min:1',
