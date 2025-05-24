@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    @yield('styles')
     <style>
         .sidebar-hidden {
             transform: translateX(-100%);
@@ -162,7 +163,7 @@
                     class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-tags mr-3 mr-3"></i> Mã giảm giá
                 </a>
-                <a href="#"
+                <a href="{{ route('admin.statistical') }}"
                     class="block py-2.5 px-4 rounded hover:bg-yellow-500 transition duration-200 flex items-center transform hover:scale-105"style="text-decoration: none">
                     <i class="fas fa-chart-bar mr-3"></i> Báo cáo
                 </a>
@@ -180,7 +181,7 @@
             </div>
         </div>
     </div>
-
+@yield('scripts')
     <script>
         const toggleSidebar = document.getElementById('toggleSidebar');
         const sidebar = document.getElementById('sidebar');

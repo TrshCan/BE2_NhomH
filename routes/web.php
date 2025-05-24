@@ -97,9 +97,7 @@ Route::get('/chat/users', [ChatController::class, 'getUsers'])->name('chat.users
 Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat.messages.get');
 Route::post('/chat/messages', [ChatController::class, 'storeMessage'])->name('chat.messages');
 
-Route::get('/chat', function () {
-    return view('chat.livechat');
-})->name('chat.admin');
+
 
 Route::get('/chatuser', function () {
     return view('chat.livechatuser');
@@ -109,12 +107,7 @@ Route::get('/chatuser', function () {
 Route::get('/hotline', function () {
     return view('hotline');
 })->name('hotline');
-//Thong ke
-Route::get('/admin/statistical', [AdminController::class, 'index'])->name('admin.statistical');
 
-    
-// Statistics filter
-Route::get('/statistics/filter', [AdminController::class, 'filter'])->name('admin.statistics.filter');
 
 //FAQ
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
@@ -122,15 +115,13 @@ Route::get('/faq/{id}', [FaqController::class, 'show'])->name('faq.show');
 
 //review
 Route::middleware(['auth'])->group(function () {
-    Route::get('/review/{product_id}', [ReviewController::class, 'index'])->name('reviews.form');   
+    Route::get('/review/{product_id}', [ReviewController::class, 'index'])->name('reviews.form');
 });
 
 Route::get('/products/{product_id}/review', [ReviewController::class, 'create'])->name('reviews.create');
 Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
-Route::post('/checkout/apply-coupon', [OrderController::class, 'applyCoupon'])->name('checkout.applyCoupon');
-Route::post('/checkout/remove-coupon', [OrderController::class, 'removeCoupon'])->name('checkout.removeCoupon');
-Route::get('/product/get/{id}', [ProductController::class, 'get'])->name('products.get');
+
 
 Route::get('/coupons', [CouponManagementController::class, 'index'])->name('admin.coupons.index');
 Route::get('/coupons/{id}', [CouponManagementController::class, 'show']);
@@ -183,4 +174,18 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/blogs/{id}', [BlogController::class, 'show'])->name('admin.blogs.show');
     Route::put('/blogs/{id}', [BlogController::class, 'update'])->name('admin.blogs.update');
     Route::delete('/blogs/{id}', [BlogController::class, 'destroy'])->name('admin.blogs.destroy');
+
+    Route::get('/chat', function () {
+        return view('chat.livechat');
+    })->name('chat.admin');
+
+    //Thong ke
+    Route::get('/admin/statistical', [AdminController::class, 'statisticalindex'])->name('admin.statistical');
+
+
+    // Statistics filter
+    Route::get('/statistics/filter', [AdminController::class, 'filter'])->name('admin.statistics.filter');
+    Route::post('/checkout/apply-coupon', [OrderController::class, 'applyCoupon'])->name('checkout.applyCoupon');
+    Route::post('/checkout/remove-coupon', [OrderController::class, 'removeCoupon'])->name('checkout.removeCoupon');
+    Route::get('/product/get/{id}', [ProductController::class, 'get'])->name('products.get');
 });

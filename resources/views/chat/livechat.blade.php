@@ -24,7 +24,7 @@
     .chat-input {
         position: absolute;
         bottom: 0;
-        width: 80%;
+        width: 76%;
         background-color: #fff;
         padding: 10px;
         box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
@@ -111,7 +111,7 @@
                     chatList.appendChild(chatItem);
                 });
             } catch (error) {
-                showError('Lỗi khi tải danh sách người dùng');
+                showError('không có người dùng nào chat cho bạn');
             }
         };
 

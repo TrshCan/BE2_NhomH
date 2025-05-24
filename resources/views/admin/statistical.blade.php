@@ -7,7 +7,7 @@ if (isset($_GET['to_date'])) {
     $toDate = $_GET['to_date'];
 }
 ?>
-@extends('admin.admin')
+@extends('layouts.admin')
 
 @section('styles')
 <link rel="stylesheet" href="{{ asset('assets/styles/statistical.css') }}">

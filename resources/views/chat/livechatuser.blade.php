@@ -102,6 +102,14 @@ $user_id = session('user_id');
             cursor: pointer;
             font-size: 14px;
         }
+
+        .close-chat {
+            cursor: pointer;
+            font-size: 20px;
+            color: white;
+            margin-left: auto;
+            padding: 5px;
+        }
     </style>
 </head>
 
@@ -109,7 +117,8 @@ $user_id = session('user_id');
     <div class="chat-widget" id="chat-widget">
         <div class="chat-header">
             <span class="chat-title" id="chat-title">Live Chat</span>
-            <!-- <span class="close-chat" onclick="document.getElementById('chatWidget').style.display='none'">✕</span> -->
+            <!-- <span class="close-chat" id="closeChat">✕</span> -->
+          
         </div>
         <div class="chat-body" id="chat-body">
 
@@ -202,6 +211,10 @@ $user_id = session('user_id');
         loadMessages();
         document.addEventListener('DOMContentLoaded', () => {
             setInterval(loadMessages, 5000);
+        });
+        document.getElementById('closeChat').addEventListener('click', function() {
+            const chatWidget = document.getElementById('chat-widget');
+            chatWidget.style.display = 'none';
         });
     </script>
 </body>

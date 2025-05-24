@@ -24,11 +24,13 @@ $user_id = session('user_id');
 
     </a>
 </div>
-
+<div style="position: fixed">
 <iframe id="chatWidget"
     src="{{ route('chat.widget') }}"
-    style="display: none; position: fixed; bottom: 90px; right: 20px; width: 350px; height: 500px; border: none; z-index: 9999; border-radius: 12px;">
+    style="display: none; bottom: 90px; right: 20px; width: 350px; height: 500px; border: none; z-index: 9999; border-radius: 12px;">
 </iframe>
+</div>
+
 <script>
     const role = "{{ session('user_role') }}";
     const toggleBtn = document.getElementById('toggleChat');
