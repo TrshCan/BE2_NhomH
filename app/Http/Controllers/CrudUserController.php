@@ -23,12 +23,19 @@ class CrudUserController extends Controller
 
     public function login()
     {
+
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role == 'admin') {
+                return redirect('admin/adminPanel');
+            } elseif ($user->role == 'user') {
+                return redirect('/');
+            }
+        }
+
         return view('login');
     }
-//    public function adminpanel()
-//    {
-//        return view('admin.admin');
-//    }
+
 
     public function authUser(Request $request)
     {
