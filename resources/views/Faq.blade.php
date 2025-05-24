@@ -177,6 +177,12 @@
     </style>
 </head>
 <body>
+@if(Session::has('error'))
+    <script>
+        // Hiển thị alert với thông báo lỗi
+        alert("{{ Session::get('error') }}");
+    </script>
+@endif
     <div class="faq-container">
         <div class="faq-header">
             <h1>Câu hỏi thường gặp</h1>

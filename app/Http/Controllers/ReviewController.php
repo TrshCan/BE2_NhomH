@@ -6,13 +6,23 @@ use App\Models\Product;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
 {
     public function index(string $id)
     {
-        $product = Product::findOrFail($id); // Fetch the product by ID
+        try {
+            $product = Product::findOrFail($id); // Fetch the product by ID
+        } catch (\Exception $ex) {
+           
+            Session::flash('error', 'Không tìm thấy sản phẩm.');
+    
+           
+            return redirect()->route('products.home');
+        }
+    
         return view('clients.pages.reviews', compact('product')); // Pass product to the view
     }
     public function create($product_id)
@@ -35,7 +45,15 @@ class ReviewController extends Controller
             'comment' => 'required|string|min:8|max:255',
             'image' => 'required|image|max:2048', // Max 2MB
         ]);
-
+        try {
+            $product = Product::findOrFail($request->product_id); // Fetch the product by ID
+        } catch (\Exception $ex) {
+           
+            Session::flash('error', 'Không tìm thấy sản phẩm.');
+    
+           
+            return redirect()->route('products.home');
+        }
         // Xử lý upload ảnh
         $image_path = null;
 

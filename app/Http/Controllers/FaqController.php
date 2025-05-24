@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Faq;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+
 
 class FaqController extends Controller
 {
@@ -15,7 +17,16 @@ class FaqController extends Controller
 
     public function show($id)
     {
-        $faq = Faq::findOrFail($id);
+        try {
+            $faq = Faq::findOrFail($id);
+        } catch (\Exception $ex) {
+           
+            Session::flash('error', 'Không ID của câu hỏi thường gặp.');
+    
+           
+            return redirect()->route('faq.index');
+        }
+      
         return view('Faq_details', compact('faq'));
     }
 }
