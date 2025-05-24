@@ -77,6 +77,10 @@ class Product extends Model
         return $query;
     }
 
+    public static function getProductWithDetails($id)
+    {
+        return self::with('details', 'images')->findOrFail($id);
+    }
 
     public function images()
     {

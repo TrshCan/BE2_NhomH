@@ -48,13 +48,14 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        // Lấy sản phẩm theo ID và kèm theo danh sách ảnh phụ
-        $product = Product::with('details', 'images')->findOrFail($id);
-        $count = Review::where('product_id', $id)->get()->count();
-        // lấy các đánh giá
-        $reviews = Review::where('product_id', $id)->paginate(3);
+        // Lấy sản phẩm theo ID kèm chi tiết và ảnh phụ
+    $product = Product::getProductWithDetails($id);
 
+    // Đếm số lượng đánh giá của sản phẩm
+    $count = Review::countByProductId($id);
 
+    // Lấy các đánh giá với phân trang
+    $reviews = Review::getReviewsByProductId($id);
         return view('clients.pages.product_detail',  compact('product', 'reviews', 'count'));
     }
     public function get($id)

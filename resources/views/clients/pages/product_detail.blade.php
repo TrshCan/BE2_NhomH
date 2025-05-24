@@ -177,30 +177,10 @@
                                 <!-- User Reviews -->
                                 <div class="col-lg-6 reviews_col">
                                     <div class="tab_title reviews_title">
-                                        <h4>Reviews (2)</h4>
+                                        <h4>Reviews ({{ $count }})</h4>
                                     </div>
                                     <!-- User Review -->
-                                    <div class="user_review_container d-flex flex-column flex-sm-row gap-3 mb-4">
-                                        <div class="user">
-                                            <div class="user_pic"></div>
-                                            <div class="user_rating">
-                                                <ul class="star_rating list-unstyled d-flex gap-1">
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                                                    <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="review">
-                                            <div class="review_date">15 Mar 2025</div>
-                                            <div class="user_name">Alex Gamer</div>
-                                            <p>The sound quality is amazing for the price! The surround sound really
-                                                enhances my gaming experience, though the microphone could be a bit clearer.
-                                            </p>
-                                        </div>
-                                    </div>
+                                    
                                     @if ($reviews->isNotEmpty())
                                         @foreach ($reviews as $review)
                                             <div class="user_review_container d-flex flex-column flex-sm-row gap-3">

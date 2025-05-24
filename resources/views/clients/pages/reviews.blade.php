@@ -20,7 +20,7 @@
         <div class="container">
     <h1>Đánh Giá Sản Phẩm</h1>
     <div class="product-info">
-        <img src="{{ asset($product->image_url) }}" alt="{{ $product->product_name }}" class="product-image">
+        <img src="{{ asset( 'assets/images/' . $product->image_url) }}" alt="{{ $product->product_name }}" class="product-image">
         <p>{{ $product->product_name }}<br>
             <span class="type">{{ $product->description }}</span>
         </p>
