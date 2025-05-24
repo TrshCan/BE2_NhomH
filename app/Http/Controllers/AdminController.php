@@ -32,7 +32,8 @@ class AdminController extends Controller
         $brands = Brand::all();
         return view('admin.quanlysanpham', compact('products', 'categories', 'brands'));
     }
-    public function adminPanel(){
+    public function adminPanel()
+    {
         return view('layouts.admin');
     }
 
@@ -228,7 +229,7 @@ class AdminController extends Controller
             $totalRevenue = $ordersQuery->sum('total_amount');
             $orderCount = $ordersQuery->count();
         }
-        
+
         $monthlyRevenue = Order::getMonthlyRevenue($fromDate, $toDate, $categoryId);
         $categoryRevenue = OrderDetail::getCategoryRevenue($fromDate, $toDate, $categoryId);
         $topProducts = OrderDetail::getTopProducts($fromDate, $toDate, $categoryId);

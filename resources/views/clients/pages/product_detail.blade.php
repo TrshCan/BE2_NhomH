@@ -42,7 +42,7 @@
                         <!-- Main Image -->
                         <div class="col-lg-10 image_col">
                             <div class="single_product_image"
-                                style="background-image: url('{{ asset(`assets/images/` . $product->image_url) }}');"></div>
+                                style="background-image: url('{{ asset('assets/images/' . $product->image_url) }}');"></div>
                         </div>
                     </div>
                 </div>
