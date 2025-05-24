@@ -203,6 +203,16 @@ class AdminController extends Controller
         $fromDate = Carbon::createFromFormat('d/m/Y', $fromDateStr)->startOfDay();
         $toDate = Carbon::createFromFormat('d/m/Y', $toDateStr)->endOfDay();
 
+         // Nếu một trong hai ngày không hợp lệ
+    if (!$fromDate || !$toDate) {
+        return redirect()->back()->withErrors(['message' => 'Vui lòng nhập đúng định dạng ngày (DD/MM/YYYY).']);
+    }
+
+    // Kiểm tra ngày bắt đầu có lớn hơn ngày kết thúc
+    if ($fromDate > $toDate) {
+        return redirect()->back()->withErrors(['message' => 'Ngày bắt đầu không được lớn hơn ngày kết thúc.']);
+    }
+
         return $this->getStatistics($fromDate, $toDate, $categoryId);
     }
 
