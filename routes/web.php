@@ -49,7 +49,7 @@ Route::get('/welcome', function () {
 })->name('welcome');
 
 // QUẢN LÝ NGƯỜI DÙNG
-Route::get('/login', [CrudUserController::class, 'login'])->name('login');
+Route::get('/login', [CrudUserController::class, 'login'])->middleware('guest')->name('login');
 Route::post('/login', [CrudUserController::class, 'authUser'])->name('user.authUser');
 Route::post('/signOut', [CrudUserController::class, 'signOut'])->name('signOut');
 
