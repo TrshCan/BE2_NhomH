@@ -37,15 +37,14 @@ class CouponManagementController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            // Use the model's findForUpdate method
             $result = Coupon::findForUpdate($id);
 
-            // If result is an array, it's an error response
+            // Nếu là mảng, tức là có lỗi từ findForUpdate
             if (is_array($result)) {
-                return $this->jsonResponse($result, isset($result['success']) && !$result['success'] ? 400 : 200);
+                return $this->jsonResponse($result, 404);
             }
 
-            // Proceed with update if a coupon instance is returned
+            // Nếu là object, thực hiện cập nhật
             return $this->jsonResponse($result->updateWithValidation($request->all()));
         } catch (\Exception $e) {
             Log::error('Unexpected error in update coupon: ' . $e->getMessage(), [
@@ -55,10 +54,11 @@ class CouponManagementController extends Controller
             ]);
             return $this->jsonResponse([
                 'success' => false,
-                'message' => 'Lỗi hệ thống khi cập nhật mã giảm giá: Mã không tồn tại hoặc đã bị xóa.',
+                'message' => 'Lỗi hệ thống khi cập nhật mã giảm giá.',
             ], 500);
         }
     }
+
 
     public function destroy(Request $request, $id)
     {

@@ -178,12 +178,12 @@
                 // Handle conflict due to updated_at mismatch
                 alert(result.message || 'Mã giảm giá đã được chỉnh sửa bởi người khác. Vui lòng tải lại dữ liệu.');
             } else {
-                console.error('Server error:', result);
+                console.error('Server error:', result.message);
                 let errorMessage = result.message || 'Có lỗi xảy ra khi lưu mã giảm giá';
                 if (result.errors) {
                     errorMessage += '\n' + Object.values(result.errors).flat().join('\n');
                 }
-                throw new Error(errorMessage);
+                alert(errorMessage);
             }
         } catch (error) {
             console.error('Lỗi khi lưu mã giảm giá:', error);
