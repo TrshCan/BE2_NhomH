@@ -264,8 +264,8 @@
                                                 </div>
                                                 <div class="product_info text-center">
                                                     <h6 class="product_name mt-3">
-                                                        <a
-                                                            href="{{ route('products.home', $product['product_id']) }}">{{ $product['product_name'] }}</a>
+                                                        <a href="{{ route('products.show', $product['product_id']) }}"
+                                                            class="text-decoration-none text-dark">{{ $product['product_name'] }}</a>
                                                     </h6>
                                                     <p class="card-text text-muted mb-1">
                                                         Original Price: <span

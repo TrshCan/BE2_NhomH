@@ -57,6 +57,7 @@ class ProductController extends Controller
 
         return view('clients.pages.product_detail',  compact('product', 'reviews', 'count'));
     }
+
     public function get($id)
     {
         try {
