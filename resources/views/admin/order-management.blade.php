@@ -415,7 +415,7 @@
         async function fetchProductPrice(productId, detailIndex) {
             try {
                 await loadLocationData();
-                const response = await fetch(`${baseUrl}/product/get/${productId}`);
+                const response = await fetch(`${baseUrl}/admin/product/get/${productId}`);
                 if (!response.ok) {
                     if (response.status === 404) {
                         throw new Error(`Sản phẩm không tồn tại. Vui lòng nhập ID hợp lệ.`);

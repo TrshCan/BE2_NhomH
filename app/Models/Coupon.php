@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Validator;
 class Coupon extends Model
 {
     protected $fillable = ['code', 'type', 'value', 'is_active'];
+    protected $casts = [
+        'updated_at' => 'datetime',
+    ];
 
     public function orders()
     {
@@ -107,11 +110,10 @@ class Coupon extends Model
     {
         try {
             // Retrieve the coupon, including soft-deleted ones
-            $coupon = static::withTrashed()->findOrFail($id);
+            $coupon = static::findOrFail($id);
 
             // Check if the coupon is soft-deleted
-            if ($coupon->trashed()) {
-                Log::info('Attempt to update a deleted coupon.', ['coupon_id' => $id]);
+            if (!$coupon) {
                 return [
                     'success' => false,
                     'message' => 'Không thể cập nhật mã giảm giá vì mã này đã bị xóa.',
@@ -133,7 +135,7 @@ class Coupon extends Model
         try {
             // Ensure the model is loaded
             if (!$this->exists) {
-                Log::error('Coupon model not loaded or does not exist.', ['coupon_id' => $this->coupon_id ?? 'unknown']);
+                Log::error('Coupon model not loaded or does not exist.', ['id' => $this->id ?? 'unknown']);
                 return [
                     'success' => false,
                     'message' => 'Mã giảm giá không tồn tại.',
@@ -142,7 +144,7 @@ class Coupon extends Model
 
             // Define validation rules
             $validator = Validator::make($data, [
-                'code' => 'required|string|max:50|unique:coupons,code,' . $this->coupon_id . ',coupon_id',
+                'code' => 'required|string|max:50' . $this->coupon_id . ',id',
                 'type' => 'required|in:percent,fixed',
                 'value' => [
                     'required',
@@ -156,7 +158,6 @@ class Coupon extends Model
                 'updated_at' => 'required|date',
             ], [
                 'code.required' => 'Mã giảm giá là bắt buộc.',
-                'code.unique' => 'Mã giảm giá đã tồn tại.',
                 'code.max' => 'Mã giảm giá không được vượt quá 50 ký tự.',
                 'type.required' => 'Loại mã giảm giá là bắt buộc.',
                 'type.in' => 'Loại mã giảm giá không hợp lệ.',
@@ -177,13 +178,21 @@ class Coupon extends Model
             }
 
             // Check if updated_at is a valid Carbon instance
-            if (is_null($this->updated_at)) {
-                Log::error('Coupon updated_at timestamp is null.', ['coupon_id' => $this->coupon_id]);
-                return [
-                    'success' => false,
-                    'message' => 'Mã giảm giá không có timestamp cập nhật.',
-                ];
+            if (!$this->updated_at instanceof \Carbon\Carbon) {
+                try {
+                    $this->updated_at = \Carbon\Carbon::parse($this->updated_at);
+                } catch (\Exception $e) {
+                    Log::error('Cannot parse updated_at timestamp.', [
+                        'coupon_id' => $this->coupon_id,
+                        'value' => $this->updated_at,
+                    ]);
+                    return [
+                        'success' => false,
+                        'message' => 'Timestamp không hợp lệ.',
+                    ];
+                }
             }
+
 
             // Compare timestamps
             if ($this->updated_at->toIso8601String() !== $data['updated_at']) {

@@ -111,7 +111,7 @@
                 <div class="summary-item d-flex justify-content-between align-items-center row">
                     <div class="summary-item-content col-8">
                         <div class="row">
-                            <img src="{{ asset('images/' . $cartItem->product->image) }}"
+                            <img src="{{ asset('assets/images/' . $cartItem->product->image_url) }}"
                                 alt="{{ $cartItem->product->product_name }}" class="product-img img-fluid col-6">
                             <div class="col-6">
                                 <span>{{ $cartItem->product->product_name }}</span>

@@ -58,6 +58,7 @@ class ProductController extends Controller
     $reviews = Review::getReviewsByProductId($id);
         return view('clients.pages.product_detail',  compact('product', 'reviews', 'count'));
     }
+
     public function get($id)
     {
         try {
