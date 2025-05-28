@@ -36,19 +36,19 @@ class UserSeeder extends Seeder
         ]);
         $faker = \Faker\Factory::create();
 
-        for ($i=0; $i < 10; $i++) { 
+        for ($i=0; $i < 10; $i++) {
             DB::table('users')->insert([
                 [
                     'name' => $faker->name,
                     'email' => $faker->email,
                     'password'=> Hash::make('123456'),
-                    'phone' => $faker->phoneNumber,
+                    'phone' => '0' . $faker->numberBetween(300000000, 999999999),
                     'address' => $faker->address,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ],
             ]);
         }
-        
+
     }
 }

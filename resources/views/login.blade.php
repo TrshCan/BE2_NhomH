@@ -5,9 +5,9 @@
     <div class="card" style="width: 100%; max-width: 400px;">
         <div class="card-body">
             <h5 class="card-title text-center mb-4">{{ __('Login') }}</h5>
-            @if (session('error_admin'))
+            @if (session('error'))
             <div class="alert alert-danger">
-                {{ session('error_admin') }}
+                {{ session('error') }}
             </div>
             @endif
             @if ($errors->any())

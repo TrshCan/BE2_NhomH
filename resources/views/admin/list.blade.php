@@ -9,7 +9,6 @@
         @elseif(session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
-
         <!-- Search Form -->
         <form method="GET" action="{{ route('admin.indexUser') }}" class="mb-3 d-flex flex-column flex-md-row gap-2">
             <input type="text" name="search" class="form-control w-100 w-md-25" placeholder="Tìm theo tên hoặc email..." value="{{ request('search') }}">
