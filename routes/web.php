@@ -81,12 +81,22 @@ Route::post('/orders/{id}/update', [OrderManagementController::class, 'update'])
 Route::post('/orders/{id}/delete', [OrderManagementController::class, 'destroy'])->name('admin.orders.destroy');
 
 // GIỎ HÀNG & THANH TOÁN
-Route::get('cart/add/{id}', [CartController::class, 'add'])->name('cart.add')->middleware(ThrottleRequestsMiddleware::class);
+Route::post('cart/add/{id}', [CartController::class, 'add'])->name('cart.add')->middleware(ThrottleRequestsMiddleware::class);
 Route::get('cart', [CartController::class, 'viewCart'])->name('cart.cart');
-Route::get('/cart/delete/{product_id}', [CartController::class, 'remove']);
-Route::get('/cart/deleteall', [CartController::class, 'clear']);
+Route::post('/cart/delete/{product_id}', [CartController::class, 'remove']);
+Route::post('/cart/deleteall', [CartController::class, 'clear']);
 Route::post('/cart/update_quantity/{product_id}', [CartController::class, 'updateQuantity']);
 Route::get('/cart/update_quantity/{product_id}', [CartController::class, 'updateQuantity']);
+Route::get('cart/add/{id}', function () {
+    return redirect()->route('products.home')->with('error', 'Không được truy cập trái phép.');
+});
+Route::get('cart/delete/{id}', function () {
+    return redirect()->route('cart.cart')->with('error', 'Không được truy cập trái phép.');
+});
+Route::get('cart/deleteall', function () {
+    return redirect()->route('cart.cart')->with('error', 'Không được truy cập trái phép.');
+});
+
 
 Route::get('/checkout', [OrderController::class, 'show'])->name('checkout.show');
 Route::post('/checkout/process', [OrderController::class, 'process'])->name('checkout.process')->middleware(ThrottleRequestsMiddleware::class);;

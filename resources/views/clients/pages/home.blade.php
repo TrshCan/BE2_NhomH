@@ -146,8 +146,16 @@
                                 class="text-decoration-line-through">{{ number_format($product->original_price) }}
                                 VNĐ</span></p>
                         <p class="card-text text-danger fw-bold mb-3">{{ number_format($product->price) }} VNĐ</p>
-                        <a href="{{ route('cart.add', ['id' => $product->product_id]) }}"
-                            data-id="{{ $product->product_id }}" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
+                        <form method="POST"
+                            action="{{ route('cart.add', ['id' => $product->product_id]) }}"
+                            onsubmit="return addToCart(event, this)">
+                            @csrf
+                            <button type="submit" class="btn btn-primary">
+                                Add to Cart
+                            </button>
+                        </form>
+
+
                     </div>
                 </div>
             </div>
@@ -280,9 +288,15 @@
                                         <div class="product_price">{{ number_format($product['price'], 0) }}
                                             VND</div>
                                     </div>
-                                    <div class="add-to-cart-btn add_to_cart_button text-center"><a data-id="{{ $product['product_id'] }}"
-                                            href="{{ route('cart.add', ['id' => $product['product_id']]) }}">Add
-                                            to Cart</a></div>
+                                    <form method="POST"
+                                        action="{{ route('cart.add', ['id' => $product['product_id']]) }}"
+                                        onsubmit="return addToCart(event, this)">
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary">
+                                            Add to Cart
+                                        </button>
+                                    </form>
+
                                     <div class="favorite favorite_right"></div>
                                 </div>
                             </div>
@@ -558,52 +572,46 @@
     document.addEventListener('DOMContentLoaded', function() {
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-
         // Add to Cart click
-        document.querySelectorAll('button.add-to-cart-btn, a.add-to-cart-btn').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('Button clicked'); // Debug check
+        function addToCart(event, form) {
+            event.preventDefault(); // Prevent default form submission
 
-                if (button.disabled) {
-                    console.log('Button already disabled');
-                    return;
-                }
+            const button = form.querySelector('button[type="submit"]');
+            if (button.disabled) return;
 
-                button.disabled = true;
-                const originalText = button.textContent;
-                button.textContent = 'Adding...';
+            button.disabled = true;
+            const originalText = button.textContent;
+            button.textContent = 'Adding...';
 
-                const url = this.getAttribute('data-url');
-                console.log('Making request to:', url); // Debug check
+            fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(async response => {
+                    const data = await response.json();
+                    if (response.status === 401 && data.modal) {
+                        document.getElementById('loginModalMessage').textContent = data.message;
+                        new bootstrap.Modal(document.getElementById('loginModal')).show();
+                    } else if (data.success) {
+                        alert(data.message || 'Đã thêm vào giỏ hàng.');
+                    } else {
+                        alert(data.message || 'Đã xảy ra lỗi.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                })
+                .finally(() => {
+                    button.disabled = false;
+                    button.textContent = originalText;
+                });
 
-                fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': token,
-                            'Accept': 'application/json',
-                        },
-                    })
-                    .then(async response => {
-                        const data = await response.json();
-                        console.log('Response received:', data); // Debug check
-                        if (response.status === 401 && data.modal) {
-                            document.getElementById('loginModalMessage').textContent = data.message;
-                            new bootstrap.Modal(document.getElementById('loginModal')).show();
-                        } else {
-                            alert(data.message || 'Đã thêm vào giỏ hàng.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Lỗi:', error);
-                    })
-                    .finally(() => {
-                        console.log('Request completed'); // Debug check
-                        button.disabled = false;
-                        button.textContent = originalText;
-                    });
-            });
-        });
+            return false; // Prevent default behavior
+        }
+
 
 
         // Intercept View Cart
