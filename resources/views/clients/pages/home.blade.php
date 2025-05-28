@@ -9,10 +9,10 @@
 @include('hotline')
 <!-- Header -->
 @if(Session::has('error'))
-    <script>
-        // Hiển thị alert với thông báo lỗi
-        alert("{{ Session::get('error') }}");
-    </script>
+<script>
+    // Hiển thị alert với thông báo lỗi
+    alert("{{ Session::get('error') }}");
+</script>
 @endif
 
 <!-- Carousel -->
@@ -147,7 +147,7 @@
                                 VNĐ</span></p>
                         <p class="card-text text-danger fw-bold mb-3">{{ number_format($product->price) }} VNĐ</p>
                         <a href="{{ route('cart.add', ['id' => $product->product_id]) }}"
-                            class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
+                            data-id="{{ $product->product_id }}" class="btn btn-primary mt-auto add-to-cart-btn">Add to Cart</a>
                     </div>
                 </div>
             </div>
@@ -280,7 +280,7 @@
                                         <div class="product_price">{{ number_format($product['price'], 0) }}
                                             VND</div>
                                     </div>
-                                    <div class="add_to_cart_button text-center"><a
+                                    <div class="add-to-cart-btn add_to_cart_button text-center"><a data-id="{{ $product['product_id'] }}"
                                             href="{{ route('cart.add', ['id' => $product['product_id']]) }}">Add
                                             to Cart</a></div>
                                     <div class="favorite favorite_right"></div>
@@ -552,10 +552,18 @@
     document.addEventListener('DOMContentLoaded', function() {
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+
         // Add to Cart click
         document.querySelectorAll('.add-to-cart-btn').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
+
+                if (button.disabled) return; // Prevent if already disabled
+
+                button.disabled = true; // Disable button immediately
+                const originalText = button.textContent;
+                button.textContent = 'Adding...'; // Optional: show feedback
+
                 const url = this.getAttribute('data-url');
 
                 fetch(url, {
@@ -568,10 +576,8 @@
                     .then(async response => {
                         const data = await response.json();
                         if (response.status === 401 && data.modal) {
-                            document.getElementById('loginModalMessage').textContent =
-                                data.message;
-                            new bootstrap.Modal(document.getElementById('loginModal'))
-                                .show();
+                            document.getElementById('loginModalMessage').textContent = data.message;
+                            new bootstrap.Modal(document.getElementById('loginModal')).show();
                         } else {
                             alert(data.message || 'Đã thêm vào giỏ hàng.');
                             // Optional: Update cart count here
@@ -579,9 +585,14 @@
                     })
                     .catch(error => {
                         console.error('Lỗi:', error);
+                    })
+                    .finally(() => {
+                        button.disabled = false; // Re-enable button when done
+                        button.textContent = originalText; // Restore original text
                     });
             });
         });
+
 
         // Intercept View Cart
         const cartLink = document.querySelector('#cart-link');

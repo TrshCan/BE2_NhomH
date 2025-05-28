@@ -1,4 +1,3 @@
-
 @extends('layouts.clients_home')
 
 @section('content')
@@ -20,7 +19,7 @@
     $appliedCoupons = session('applied_coupons', []);
     // Safely calculate total discount
     $couponDiscount = array_sum(array_map(function ($coupon) {
-        return is_array($coupon) && isset($coupon['discount']) ? $coupon['discount'] : (is_numeric($coupon) ? $coupon : 0);
+    return is_array($coupon) && isset($coupon['discount']) ? $coupon['discount'] : (is_numeric($coupon) ? $coupon : 0);
     }, $appliedCoupons));
     $total = max(0, $subtotal - $couponDiscount);
     @endphp
@@ -134,9 +133,9 @@
                     </div>
                     <div id="applied-coupons" class="mt-2">
                         @foreach (session('applied_coupons', []) as $code => $coupon)
-                        <div class="applied-coupon d-flex justify-content-between align-items-center mb-2" 
-                             data-code="{{ $code }}" 
-                             data-updated-at="{{ is_array($coupon) && isset($coupon['updated_at']) ? $coupon['updated_at'] : '' }}">
+                        <div class="applied-coupon d-flex justify-content-between align-items-center mb-2"
+                            data-code="{{ $code }}"
+                            data-updated-at="{{ is_array($coupon) && isset($coupon['updated_at']) ? $coupon['updated_at'] : '' }}">
                             <span>Mã: <strong>{{ $code }}</strong></span>
                             <span class="coupon-amount">
                                 {{ number_format(is_array($coupon) && isset($coupon['discount']) ? $coupon['discount'] : (is_numeric($coupon) ? $coupon : 0), 0, ',', '.') }}đ
@@ -172,7 +171,21 @@
     @endif
 </div>
 <script src="https://cdn.rawgit.com/davidshimjs/qrcode.min.js"></script>
+
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const submitButton = document.querySelector("#checkout-form button[type='submit']");
+        if (submitButton) {
+            submitButton.addEventListener("click", function() {
+                submitButton.disabled = true; // Disable button
+                submitButton.innerText = "Processing...";
+                setTimeout(() => {
+                    submitButton.disabled = false; // Re-enable button after a delay (optional)
+                }, 3000);
+            });
+        }
+    });
+
     document.getElementById('checkout-form').addEventListener('submit', async function(event) {
         event.preventDefault();
 

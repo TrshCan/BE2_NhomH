@@ -29,7 +29,7 @@ use App\Http\Controllers\ContactController; // Added to use BrandController
 use App\Http\Controllers\ImageController; // Added to use BrandController
 use App\Http\Controllers\DealProductController;
 use App\Http\Controllers\ReviewController;
-
+use App\Http\Middleware\ThrottleRequestsMiddleware;
 
 // Trang chủ
 Route::get('/', [ProductController::class, 'index'])->name('products.home');
@@ -76,12 +76,12 @@ Route::post('password/email/submit', [ForgotPassword::class, 'resetPassword'])->
 Route::get('/orders', [OrderManagementController::class, 'index'])->name('admin.orders.index');
 Route::post('/orders/{id}', [OrderManagementController::class, 'show'])->name('admin.orders.show');
 Route::get('/orders/{id}', [OrderManagementController::class, 'show'])->name('admin.orders.show2');
-Route::post('/orders', [OrderManagementController::class, 'store'])->name('admin.orders.store');
+Route::post('/orders', [OrderManagementController::class, 'store'])->name('admin.orders.store')->middleware(ThrottleRequestsMiddleware::class);
 Route::post('/orders/{id}/update', [OrderManagementController::class, 'update'])->name('admin.orders.update');
 Route::post('/orders/{id}/delete', [OrderManagementController::class, 'destroy'])->name('admin.orders.destroy');
 
 // GIỎ HÀNG & THANH TOÁN
-Route::get('cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+Route::get('cart/add/{id}', [CartController::class, 'add'])->name('cart.add')->middleware(ThrottleRequestsMiddleware::class);
 Route::get('cart', [CartController::class, 'viewCart'])->name('cart.cart');
 Route::get('/cart/delete/{product_id}', [CartController::class, 'remove']);
 Route::get('/cart/deleteall', [CartController::class, 'clear']);
@@ -89,7 +89,7 @@ Route::post('/cart/update_quantity/{product_id}', [CartController::class, 'updat
 Route::get('/cart/update_quantity/{product_id}', [CartController::class, 'updateQuantity']);
 
 Route::get('/checkout', [OrderController::class, 'show'])->name('checkout.show');
-Route::post('/checkout/process', [OrderController::class, 'process'])->name('checkout.process');
+Route::post('/checkout/process', [OrderController::class, 'process'])->name('checkout.process')->middleware(ThrottleRequestsMiddleware::class);;
 Route::post('/checkout/validate', [OrderController::class, 'validate'])->name('checkout.validate');
 
 // CHAT
@@ -125,7 +125,7 @@ Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store
 
 Route::get('/coupons', [CouponManagementController::class, 'index'])->name('admin.coupons.index');
 Route::get('/coupons/{id}', [CouponManagementController::class, 'show']);
-Route::post('/coupons', [CouponManagementController::class, 'store'])->name('admin.coupons.store');
+Route::post('/coupons', [CouponManagementController::class, 'store'])->name('admin.coupons.store')->middleware(ThrottleRequestsMiddleware::class);
 Route::post('/coupons/{id}/update', [CouponManagementController::class, 'update']);
 Route::get('/coupons/{id}/delete', [CouponManagementController::class, 'destroy']);
 
