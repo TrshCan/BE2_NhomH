@@ -20,7 +20,7 @@
         <div class="container">
     <h1>Đánh Giá Sản Phẩm</h1>
     <div class="product-info">
-        <img src="{{ asset( 'assets/images/' . $product->image_url) }}" alt="{{ $product->product_name }}" class="product-image">
+        <img src="{{ asset( 'assets/images/' . ($product->image_url ?? 'default.jpg')) }}" alt="{{ $product->product_name }}" class="product-image">
         <p>{{ $product->product_name }}<br>
             <span class="type">{{ $product->description }}</span>
         </p>
@@ -237,11 +237,14 @@
 
     // --- XỬ LÝ NÚT HOÀN THÀNH ---
     document.getElementById('submit-review').addEventListener('click', function() {
+        const submitButton = this; // Lưu tham chiếu nút hiện tại
+    submitButton.disabled = true; // Vô hiệu hóa nút để chặn nhấp nhiều lần
+        
         const reviewText = document.getElementById('review').value;
         const productId = document.getElementById('product-id').value;
         const csrfToken = document.getElementById('csrf-token').value;
         const notification = document.getElementById('notification');
-
+console.log(1);
         // Kiểm tra bắt buộc chọn ít nhất 1 ảnh
         if (selectedFiles.length === 0) {
             notification.textContent = 'Vui lòng chọn ít nhất 1 hình ảnh!';
@@ -312,6 +315,7 @@
                 setTimeout(() => {
                     notification.style.display = 'none';
                 }, 3000);
+                submitButton.disabled = false; // Kích hoạt lại nút sau khi xử lý xong
             }
         })
         .catch(error => {
@@ -324,6 +328,7 @@
             setTimeout(() => {
                 notification.style.display = 'none';
             }, 3000);
+            submitButton.disabled = false; // Kích hoạt lại nút sau khi xử lý xong
         });
     });
 });

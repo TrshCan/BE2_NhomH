@@ -210,7 +210,7 @@
                                                     <p>
                                                         {{ strlen($review->comment) > 55 ? substr($review->comment, 0, 35) . '...' : $review->comment }}
                                                     </p>
-                                                    <img src="{{ asset($review->image) }}" alt="review Image"
+                                                    <img src="{{ file_exists(public_path('assets/images/' . $review->image)) ? asset('assets/images/' . $review->image) : asset('assets/images/default.jpg') }}" alt="review Image"
                                                         style="width: 50px; height: 50px; border-radius: 50%;">
                                                 </div>
                                             </div>
