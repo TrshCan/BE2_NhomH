@@ -109,10 +109,8 @@ class Coupon extends Model
     public static function findForUpdate($id)
     {
         try {
-            // Retrieve the coupon, including soft-deleted ones
             $coupon = static::findOrFail($id);
 
-            // Check if the coupon is soft-deleted
             if (!$coupon) {
                 return [
                     'success' => false,
@@ -125,7 +123,7 @@ class Coupon extends Model
             Log::error('Coupon not found: ' . $e->getMessage(), ['coupon_id' => $id]);
             return [
                 'success' => false,
-                'message' => 'Mã giảm giá không tồn tại.',
+                'message' => 'Mã giảm giá không tồn tại. Vui lòng tải lại trang.',
             ];
         }
     }

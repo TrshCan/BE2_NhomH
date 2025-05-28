@@ -20,7 +20,14 @@ class OrderController extends Controller
         $cart = $user->cart()->with('items.product')->first();
         $cartItems = $cart ? $cart->items : collect();
 
-        $subtotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
+        $subtotal = $cartItems->reduce(function ($carry, $item) {
+            return $item->product ? $carry + ($item->product->price * $item->quantity) : $carry;
+        }, 0);
+
+        if ($subtotal === 0) {
+            return redirect()->route('cart.cart')->with('error', 'Một hoặc nhiều sản phẩm trong giỏ hàng của bạn đã bị xóa hoặc không còn tồn tại.');
+        }
+
         $appliedCoupons = Session::get('applied_coupons', []);
         $couponDiscount = array_sum($appliedCoupons); // Sum of all coupon discounts
         $total = $subtotal - $couponDiscount;
@@ -56,7 +63,13 @@ class OrderController extends Controller
             $user = Auth::user();
             $cart = $user->cart()->with('items.product')->first();
             $cartItems = $cart ? $cart->items : collect();
-            $subtotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
+            $subtotal = $cartItems->reduce(function ($carry, $item) {
+                return $item->product ? $carry + ($item->product->price * $item->quantity) : $carry;
+            }, 0);
+
+            if ($subtotal === 0) {
+                return redirect()->route('cart.cart')->with('error', 'Một hoặc nhiều sản phẩm trong giỏ hàng của bạn đã bị xóa hoặc không còn tồn tại.');
+            }
 
             $discount = $coupon->type === 'percent'
                 ? ($subtotal * $coupon->value) / 100
@@ -124,7 +137,14 @@ class OrderController extends Controller
             $user = Auth::user();
             $cart = $user->cart()->with('items.product')->first();
             $cartItems = $cart ? $cart->items : collect();
-            $subtotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
+            $subtotal = $cartItems->reduce(function ($carry, $item) {
+                return $item->product ? $carry + ($item->product->price * $item->quantity) : $carry;
+            }, 0);
+
+            if ($subtotal === 0) {
+                return redirect()->route('cart.cart')->with('error', 'Một hoặc nhiều sản phẩm trong giỏ hàng của bạn đã bị xóa hoặc không còn tồn tại.');
+            }
+
             $totalDiscount = array_sum($appliedCoupons);
             $total = $subtotal - $totalDiscount;
 
@@ -281,19 +301,22 @@ class OrderController extends Controller
 
     public function process(Request $request)
     {
-        // Validate request data
         $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email',
-            'address' => 'required|string',
-            'phone' => 'required|string',
-            'province' => 'required|string',
-            'district' => 'required|string',
-            'ward' => 'required|string',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'address' => 'required|string|max:255',
+            'phone' => ['required', 'string', 'regex:/^(\+84|0)[0-9]{9,10}$/'],
+            'province' => 'required|string|max:255',
+            'district' => 'required|string|max:255',
+            'ward' => 'required|string|max:255',
             'payment' => 'required|string',
             'total' => 'required|numeric|min:0',
             'discount' => 'nullable|numeric|min:0',
+        ], [
+            'phone.regex' => 'Số điện thoại không hợp lệ. Vui lòng nhập đúng định dạng (+84 hoặc 0, theo sau là 9-10 chữ số).',
+            'payment.in' => 'Phương thức thanh toán không hợp lệ. Vui lòng chọn một trong các lựa chọn: tiền mặt, thẻ tín dụng, chuyển khoản.',
         ]);
+
 
         $user = Auth::user();
         if (!$user) {

@@ -53,12 +53,15 @@ class OrderManagementController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
-            'status' => 'required|string|max:50',
+            'status' => 'required|string|in:pending,processing,shipped,delivered,canceled|max:50', // Restrict to valid statuses
             'shipping_address' => 'nullable|string|max:255',
-            'details' => 'required|array',
+            'details' => 'required|array|min:1',
             'details.*.product_id' => 'required|exists:products,product_id',
             'details.*.quantity' => 'required|integer|min:1',
-            'details.*.price' => 'required|numeric|min:0',
+            'details.*.price' => 'required|numeric|min:0', 
+        ], [
+            'status.in' => 'Trạng thái đơn hàng không hợp lệ. Vui lòng chọn: pending, processing, shipped, delivered, canceled.',
+            'details.min' => 'Đơn hàng phải có ít nhất một sản phẩm.',
         ]);
 
         $mergedDetails = collect($validated['details'])
