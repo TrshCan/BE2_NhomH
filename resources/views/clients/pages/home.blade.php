@@ -366,6 +366,12 @@
 
 
 <style>
+    .add-to-cart-btn[disabled] {
+        opacity: 0.7;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
     .carousel-image-wrapper {
         min-height: 800px;
     }
@@ -554,17 +560,22 @@
 
 
         // Add to Cart click
-        document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        document.querySelectorAll('button.add-to-cart-btn, a.add-to-cart-btn').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
+                console.log('Button clicked'); // Debug check
 
-                if (button.disabled) return; // Prevent if already disabled
+                if (button.disabled) {
+                    console.log('Button already disabled');
+                    return;
+                }
 
-                button.disabled = true; // Disable button immediately
+                button.disabled = true;
                 const originalText = button.textContent;
-                button.textContent = 'Adding...'; // Optional: show feedback
+                button.textContent = 'Adding...';
 
                 const url = this.getAttribute('data-url');
+                console.log('Making request to:', url); // Debug check
 
                 fetch(url, {
                         method: 'POST',
@@ -575,20 +586,21 @@
                     })
                     .then(async response => {
                         const data = await response.json();
+                        console.log('Response received:', data); // Debug check
                         if (response.status === 401 && data.modal) {
                             document.getElementById('loginModalMessage').textContent = data.message;
                             new bootstrap.Modal(document.getElementById('loginModal')).show();
                         } else {
                             alert(data.message || 'Đã thêm vào giỏ hàng.');
-                            // Optional: Update cart count here
                         }
                     })
                     .catch(error => {
                         console.error('Lỗi:', error);
                     })
                     .finally(() => {
-                        button.disabled = false; // Re-enable button when done
-                        button.textContent = originalText; // Restore original text
+                        console.log('Request completed'); // Debug check
+                        button.disabled = false;
+                        button.textContent = originalText;
                     });
             });
         });
