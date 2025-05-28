@@ -62,17 +62,24 @@ class OrderController extends Controller
                 ? ($subtotal * $coupon->value) / 100
                 : min($coupon->value, $subtotal);
 
-            // Add coupon to session
-            $appliedCoupons[$coupon->code] = $discount;
+            // Add coupon to session with updated_at
+            $appliedCoupons[$coupon->code] = [
+                'discount' => $discount,
+                'updated_at' => $coupon->updated_at->toDateTimeString(),
+            ];
             Session::put('applied_coupons', $appliedCoupons);
 
-            $totalDiscount = array_sum($appliedCoupons);
+            $totalDiscount = array_sum(array_column($appliedCoupons, 'discount'));
             $total = $subtotal - $totalDiscount;
 
             return response()->json([
                 'success' => true,
                 'message' => 'Mã giảm giá được áp dụng thành công.',
-                'coupon' => ['code' => $coupon->code, 'discount' => $discount],
+                'coupon' => [
+                    'code' => $coupon->code,
+                    'discount' => $discount,
+                    'updated_at' => $coupon->updated_at->toDateTimeString(),
+                ],
                 'subtotal' => $subtotal,
                 'total_discount' => $totalDiscount,
                 'total' => $total,
@@ -91,6 +98,7 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
 
     public function removeCoupon(Request $request)
     {
@@ -153,6 +161,7 @@ class OrderController extends Controller
                     'message' => 'Phiên đăng nhập đã hết hạn hoặc tài khoản không còn tồn tại. Vui lòng đăng nhập lại.',
                 ], 401);
             }
+
             if ($user->status_id === 2) {
                 return response()->json([
                     'success' => false,
@@ -162,18 +171,9 @@ class OrderController extends Controller
 
             $cart = $user->cart()->with('items.product')->first();
             if (!$cart || $cart->items->isEmpty()) {
-
                 return response()->json([
                     'success' => false,
                     'message' => 'Giỏ hàng của bạn đang trống nhaaaaa.',
-                    'debug' => [
-                        'cart_exists' => $cart ? true : false,
-                        'cart_id' => $cart?->cart_id,
-                        'items_count' => $cart?->items()->count(),
-                        'items' => $cart?->items,
-                        'user' => $user?->id,
-                        'user_status' => $user?->status_id,
-                    ]
                 ], 422);
             }
 
@@ -182,28 +182,84 @@ class OrderController extends Controller
             $validCoupons = [];
             $totalDiscount = 0;
 
-            // Validate applied coupons
-            foreach ($appliedCoupons as $couponCode => $discount) {
-                $coupon = Coupon::isActive($couponCode);
-                if ($coupon) {
-                    $couponDiscount = $coupon->type === 'percent'
-                        ? ($subtotal * $coupon->value) / 100
-                        : min($coupon->value, $subtotal);
-                    $validCoupons[] = ['code' => $couponCode, 'discount' => $couponDiscount];
-                    $totalDiscount += $couponDiscount;
-                }
-            }
+            // ✅ Validate coupons in separate try-catch
+            try {
+                foreach ($appliedCoupons as $couponCode => $stored) {
+                    $coupon = Coupon::where('code', $couponCode)->where('is_active', true)->first();
 
-            // Update session if any coupons are invalid
-            if (count($appliedCoupons) != count($validCoupons)) {
+                    if (
+                        $coupon &&
+                        (!isset($stored['updated_at']) || $stored['updated_at'] === $coupon->updated_at->toDateTimeString())
+                    ) {
+                        $couponDiscount = $coupon->type === 'percent'
+                            ? ($subtotal * $coupon->value) / 100
+                            : min($coupon->value, $subtotal);
+
+                        $validCoupons[] = [
+                            'code' => $couponCode,
+                            'discount' => $couponDiscount,
+                            'updated_at' => $coupon->updated_at->toDateTimeString(),
+                        ];
+
+                        $totalDiscount += $couponDiscount;
+                    }
+                }
+
+                // Update session coupons if changed
                 $newCoupons = [];
                 foreach ($validCoupons as $coupon) {
-                    $newCoupons[$coupon['code']] = $coupon['discount'];
+                    $newCoupons[$coupon['code']] = [
+                        'discount' => $coupon['discount'],
+                        'updated_at' => $coupon['updated_at'],
+                    ];
                 }
                 Session::put('applied_coupons', $newCoupons);
+            } catch (\Exception $e) {
+                Log::error('Error validating coupons: ' . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra khi kiểm tra mã giảm giá.',
+                ], 500);
             }
 
             $total = $subtotal - $totalDiscount;
+
+            // ✅ Check stock availability in separate try-catch
+            try {
+                foreach ($cart->items as $item) {
+                    $product = $item->product;
+                    $cartQuantity = $item->quantity;
+
+                    $pendingOrdersQuantity = DB::table('order_details')
+                        ->join('orders', 'order_details.order_id', '=', 'orders.order_id')
+                        ->where('orders.status', 'pending')
+                        ->where('order_details.product_id', $product->id)
+                        ->sum('order_details.quantity');
+
+                    $totalRequested = $cartQuantity + $pendingOrdersQuantity;
+
+                    if ($totalRequested > $product->stock_quantity) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Sản phẩm '{$product->name}' không đủ số lượng trong kho.",
+                            'details' => [
+                                'product_id' => $product->id,
+                                'name' => $product->name,
+                                'stock_quantity' => $product->stock_quantity,
+                                'cart_quantity' => $cartQuantity,
+                                'pending_orders_quantity' => $pendingOrdersQuantity,
+                                'total_requested' => $totalRequested,
+                            ],
+                        ], 422);
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error('Error checking stock: ' . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra khi kiểm tra số lượng tồn kho.',
+                ], 500);
+            }
 
             return response()->json([
                 'success' => true,
@@ -221,6 +277,8 @@ class OrderController extends Controller
         }
     }
 
+
+
     public function process(Request $request)
     {
         // Validate request data
@@ -237,62 +295,70 @@ class OrderController extends Controller
             'discount' => 'nullable|numeric|min:0',
         ]);
 
-        // Check if user is still authenticated
         $user = Auth::user();
         if (!$user) {
-            return redirect()->route('login')->with('error', 'Phiên đăng nhập đã hết hạn hoặc tài khoản của bạn không còn tồn tại. Vui lòng đăng nhập lại.');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Phiên đăng nhập đã hết hạn hoặc tài khoản của bạn không còn tồn tại. Vui lòng đăng nhập lại.',
+            ], 401);
         }
 
-        // Check if cart exists and is not empty
         $cart = $user->cart()->with('products')->first();
         if (!$cart || $cart->products->isEmpty()) {
-            return redirect()->route('cart.cart')->with('error', 'Giỏ hàng của bạn đang trống đấy nha.');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Giỏ hàng của bạn đang trống đấy nha.',
+            ], 400);
         }
 
         DB::beginTransaction();
 
         try {
-            // Calculate subtotal from cart
             $subtotal = $cart->products->sum(fn($product) => $product->price * $product->pivot->quantity);
             $appliedCoupons = Session::get('applied_coupons', []);
             $validCoupons = [];
             $totalDiscount = 0;
 
-            // Validate applied coupons
-            foreach ($appliedCoupons as $couponCode => $discount) {
-                $coupon = Coupon::isActive($couponCode);
-                if ($coupon) {
-                    // Recalculate discount to ensure it matches current coupon rules
+            foreach ($appliedCoupons as $couponCode => $stored) {
+                $coupon = Coupon::where('code', $couponCode)->where('is_active', true)->first();
+                if ($coupon && (!isset($stored['updated_at']) || $stored['updated_at'] === $coupon->updated_at->toDateTimeString())) {
                     $couponDiscount = $coupon->type === 'percent'
                         ? ($subtotal * $coupon->value) / 100
                         : min($coupon->value, $subtotal);
-                    $validCoupons[$couponCode] = $couponDiscount;
+                    $validCoupons[$couponCode] = [
+                        'discount' => $couponDiscount,
+                        'updated_at' => $coupon->updated_at->toDateTimeString(),
+                    ];
                     $totalDiscount += $couponDiscount;
                 } else {
-                    // Log invalid coupon and notify user later
                     Log::warning("Coupon {$couponCode} is no longer valid during checkout for user {$user->id}");
                 }
             }
 
-            // Update session with valid coupons only
             if ($appliedCoupons != $validCoupons) {
                 Session::put('applied_coupons', $validCoupons);
-                Session::flash('warning', 'Một hoặc nhiều mã giảm giá đã hết hiệu lực và đã được xóa.');
             }
 
-            // Calculate final total
-            $total = $subtotal - $totalDiscount;
+            $total = max(0, round($subtotal - $totalDiscount, 2));
 
-            // Verify the total matches the request to prevent tampering
-            if (abs($request->total - $total) > 0.01) {
-                return redirect()->route('cart.cart')
-                    ->with('error', 'Tổng số tiền không hợp lệ do thay đổi trong giỏ hàng hoặc mã giảm giá. Vui lòng kiểm tra lại.');
+            if (abs(round($request->total, 2) - $total) > 0.1) {
+                Log::error('Total mismatch during checkout', [
+                    'user_id' => $user->id,
+                    'request_total' => $request->total,
+                    'calculated_total' => $total,
+                    'subtotal' => $subtotal,
+                    'total_discount' => $totalDiscount,
+                    'applied_coupons' => $appliedCoupons,
+                    'validCoupons' => $validCoupons,
+                ]);
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Tổng số tiền không hợp lệ do thay đổi trong giỏ hàng hoặc mã giảm giá. Vui lòng kiểm tra lại.',
+                ], 400);
             }
 
-            // Create shipping address
             $shippingAddress = "{$request->address}, {$request->ward}, {$request->district}, {$request->province}";
 
-            // Create order
             $order = $user->orders()->create([
                 'order_date' => now(),
                 'total_amount' => $total,
@@ -300,7 +366,6 @@ class OrderController extends Controller
                 'shipping_address' => $shippingAddress,
             ]);
 
-            // Create order details
             foreach ($cart->products as $product) {
                 $order->orderdetails()->create([
                     'product_id' => $product->product_id,
@@ -309,7 +374,6 @@ class OrderController extends Controller
                 ]);
             }
 
-            // Attach valid coupons to the order
             foreach (array_keys($validCoupons) as $couponCode) {
                 $coupon = Coupon::where('code', $couponCode)->first();
                 if ($coupon) {
@@ -320,25 +384,33 @@ class OrderController extends Controller
                 }
             }
 
-            // Clear cart and session
             $cart->items()->delete();
             $cart->delete();
             Session::forget('applied_coupons');
 
             DB::commit();
 
-            return redirect()->route('products.home')->with('success', 'Đặt hàng thành công!');
-        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Đặt hàng thành công!',
+                'data' => [
+                    'order_id' => $order->id,
+                    'total_amount' => $total,
+                ],
+            ], 200);
+        } catch (Exception $e) {
             DB::rollBack();
             Log::error('Error processing order: ' . $e->getMessage(), ['user_id' => $user->id ?? null]);
-            return redirect()->route('cart.cart')->with('error', 'Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.',
+            ], 500);
         }
     }
 
     public function getOrderDetails($orderId)
     {
         try {
-            // Fetch the order with its details and related products, ensuring it belongs to the authenticated user
             $order = Order::with('orderdetails.product')
                 ->where('user_id', Auth::id())
                 ->where('order_id', $orderId)

@@ -12,7 +12,7 @@ use App\Models\Product;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\CartItem;
-
+use Illuminate\Pagination\Paginator;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
-   
+
 
     public function boot()
     {
@@ -40,5 +40,6 @@ class AppServiceProvider extends ServiceProvider
             $view->with('cartItemCount', $count);
         });
 
+        Paginator::useBootstrapFive();
     }
 }

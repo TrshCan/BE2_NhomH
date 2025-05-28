@@ -21,17 +21,21 @@ class OrderDetailSeeder extends Seeder
 
         // Lấy danh sách order_id và product_id từ các bảng liên quan
         $orderIds = DB::table('orders')->pluck('order_id')->toArray();
-        $productIds = DB::table('products')->pluck('product_id')->toArray();
+        $products = DB::table('products')->select('product_id', 'price')->get();
 
         // Tạo dữ liệu cho bảng order_details
-        for ($i = 0; $i < 50; $i++) { // Tạo 50 dòng dữ liệu ngẫu nhiên
+        for ($i = 0; $i < 500; $i++) { // Tạo 5000 dòng dữ liệu ngẫu nhiên
+            $selectedProduct = $faker->randomElement($products); // Chọn ngẫu nhiên một sản phẩm
+
             DB::table('order_details')->insert([
                 'order_id' => $faker->randomElement($orderIds), // Chọn ngẫu nhiên một order_id
-                'product_id' => $faker->randomElement($productIds), // Chọn ngẫu nhiên một product_id
+                'product_id' => $selectedProduct->product_id, // Lấy product_id từ danh sách
                 'quantity' => $faker->numberBetween(1, 10), // Số lượng sản phẩm
-                'price' => $faker->randomFloat(2, 10, 500), // Giá của sản phẩm
+                'price' => $selectedProduct->price, // Lấy giá của sản phẩm từ bảng products
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
         }
-}}
+    }
+}
+

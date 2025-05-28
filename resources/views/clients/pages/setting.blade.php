@@ -131,6 +131,7 @@
                 </tbody>
             </table>
             @endif
+            {{ $orders->withQueryString()->fragment('orders')->links() }}
         </div>
 
         {{-- Đổi mật khẩu --}}
@@ -177,6 +178,18 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const hash = window.location.hash;
+        if (hash) {
+            const tabTrigger = document.querySelector(`a.nav-link[href="${hash}"]`);
+            if (tabTrigger) {
+                const tab = new bootstrap.Tab(tabTrigger);
+                tab.show();
+            }
+        }
+    });
+</script>
 
 <script>
     const viewOrderModal = document.getElementById('viewOrderModal');

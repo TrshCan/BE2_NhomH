@@ -21,8 +21,9 @@ class OrderManagementController extends Controller
         Order::doesntHave('user')->delete();
         $orders = Order::with('user')
             ->filter($request->only('search'))
-            ->latest()
+            ->orderBy('order_date', 'desc') // Sorts by order date (newest first)
             ->paginate(10);
+
 
         return view('admin.order-management', compact('orders'));
     }
