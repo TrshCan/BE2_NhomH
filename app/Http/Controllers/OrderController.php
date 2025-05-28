@@ -241,10 +241,10 @@ class OrderController extends Controller
                     if ($totalRequested > $product->stock_quantity) {
                         return response()->json([
                             'success' => false,
-                            'message' => "Sản phẩm '{$product->name}' không đủ số lượng trong kho.",
+                            'message' => "Sản phẩm '{$product->product_name}' không đủ số lượng trong kho.",
                             'details' => [
-                                'product_id' => $product->id,
-                                'name' => $product->name,
+                                'product_id' => $product->product_id,
+                                'name' => $product->product_name,
                                 'stock_quantity' => $product->stock_quantity,
                                 'cart_quantity' => $cartQuantity,
                                 'pending_orders_quantity' => $pendingOrdersQuantity,
