@@ -236,7 +236,12 @@ class CrudUserController extends Controller
     }
     public function updateUser($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+        if (!$user) {
+            return redirect()->route('admin.indexUser')
+                ->with('error','Người dùng không tồn tại');
+
+        }
         $statuses = Status::all();
         return view('admin.update', compact('user', 'statuses'));
     }
@@ -244,6 +249,12 @@ class CrudUserController extends Controller
     {
         $user = User::findOrFail($request->id);
 
+        if($request->updated_at!==$user->updated_at->toISOString()){
+            return redirect()->route('admin.updateUser', $request->id)
+                ->withErrors(['error' => 'Thông tin người dùng đã bị thay đổi ở nơi khác. Vui lòng tải lại trang.'])
+                ->withInput();
+
+        }
         $rules = [
             'id' => 'required|exists:users,id',
             'name' => 'required|min:4|max:30|regex:/^[\pL]+(?: [\pL]+)*$/u',
@@ -312,6 +323,7 @@ class CrudUserController extends Controller
             return redirect()->route('admin.updateUser', $request->id)
                 ->withErrors(['error' => 'Lỗi cập nhật. Vui lòng thử lại.'])
                 ->withInput();
+
         }
     }
 
@@ -319,7 +331,6 @@ class CrudUserController extends Controller
 
     public function index(Request $request)
     {
-        // Nếu chưa đăng nhập
         if (!Auth::check()) {
             return redirect('login')->with('withoutLogin', 'Bạn cần đăng nhập và có quyền admin để truy cập.');
         }

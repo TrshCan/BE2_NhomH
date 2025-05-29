@@ -29,6 +29,7 @@ use App\Http\Controllers\ContactController; // Added to use BrandController
 use App\Http\Controllers\ImageController; // Added to use BrandController
 use App\Http\Controllers\DealProductController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Middleware\CheckAdminRole;
 
 
 // Trang chủ
@@ -129,7 +130,7 @@ Route::post('/coupons', [CouponManagementController::class, 'store'])->name('adm
 Route::post('/coupons/{id}/update', [CouponManagementController::class, 'update']);
 Route::get('/coupons/{id}/delete', [CouponManagementController::class, 'destroy']);
 
-Route::prefix('admin')->middleware('auth')->group(function () {
+Route::prefix('admin')->middleware('auth',CheckAdminRole::class)->group(function () {
 
     Route::get('/adminPanel', [AdminController::class, 'adminPanel'])->name('admin.adminPanel');
 

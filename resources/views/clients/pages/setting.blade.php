@@ -46,7 +46,6 @@
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
-                @if (!$user->google_id)
                 <div class="mb-3">
                     <label for="phone" class="form-label">Số điện thoại</label>
                     <input type="text" class="form-control" id="phone" name="phone"
@@ -55,8 +54,8 @@
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
-                @endif
-                @if (!$user->google_id)
+
+
                 <div class="mb-3">
                     <label for="address" class="form-label">Địa chỉ</label>
                     <input type="text" class="form-control" id="address" name="address"
@@ -65,7 +64,7 @@
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
-                @endif
+
                 <button type="submit" class="btn btn-primary">Cập nhật</button>
             </form>
         </div>
