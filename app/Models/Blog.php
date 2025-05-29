@@ -19,6 +19,7 @@ class Blog extends Model
         'author',
         'published_at',
     ];
+    public $timestamps = true;
 
     protected $casts = [
         'published_at' => 'datetime',

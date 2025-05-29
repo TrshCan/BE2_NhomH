@@ -19,7 +19,11 @@
                 </div>
             </div>
         </div>
-
+        @if (session('error'))
+            <div class="alert alert-danger mt-3" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
         <div class="row">
             <!-- Product Images -->
             <div class="col-lg-7">
@@ -180,7 +184,7 @@
                                         <h4>Reviews ({{ $count }})</h4>
                                     </div>
                                     <!-- User Review -->
-                                    
+
                                     @if ($reviews->isNotEmpty())
                                         @foreach ($reviews as $review)
                                             <div class="user_review_container d-flex flex-column flex-sm-row gap-3">
@@ -210,7 +214,8 @@
                                                     <p>
                                                         {{ strlen($review->comment) > 55 ? substr($review->comment, 0, 35) . '...' : $review->comment }}
                                                     </p>
-                                                    <img src="{{ file_exists(public_path('assets/images/' . $review->image)) ? asset('assets/images/' . $review->image) : asset('assets/images/default.jpg') }}" alt="review Image"
+                                                    <img src="{{ file_exists(public_path('assets/images/' . $review->image)) ? asset('assets/images/' . $review->image) : asset('assets/images/default.jpg') }}"
+                                                        alt="review Image"
                                                         style="width: 50px; height: 50px; border-radius: 50%;">
                                                 </div>
                                             </div>

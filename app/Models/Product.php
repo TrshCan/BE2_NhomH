@@ -13,6 +13,7 @@ class Product extends Model
 
     protected $primaryKey = 'product_id';
 
+
     protected $fillable = [
         'product_name',
         'description',
@@ -101,7 +102,7 @@ class Product extends Model
     {
         return $this->belongsTo(Brand::class);
     }
-    
+
     public function deal()
     {
         return $this->hasOne(DealProduct::class, 'product_id');
@@ -111,5 +112,4 @@ class Product extends Model
     {
         return $this->hasMany(OrderDetail::class, 'product_id', 'product_id');
     }
-
 }

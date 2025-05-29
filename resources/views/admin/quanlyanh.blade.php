@@ -14,6 +14,11 @@
                 <i class="fas fa-plus mr-2"></i> Thêm ảnh
             </button>
         </div>
+        @if (session('error'))
+            <div class="alert alert-danger mt-3" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
 
         <!-- Images Table -->
         <div class="bg-white rounded-xl shadow-md overflow-x-auto animate-slide-in">
@@ -39,9 +44,11 @@
                             <td class="px-6 py-4 text-sm text-gray-800">{{ $item->id }}</td>
                             <td class="px-6 py-4 text-sm text-gray-800">
                                 <img src="{{ asset('assets/images/' . $item->image_url) }}" alt="Image"
-                                    class="h-10 w-10 rounded object-cover">
+                                    class="h-10 w-10 rounded object-cover"
+                                    onerror="this.src='{{ asset('assets/images/camera.png') }}'; this.alt='Hình ảnh không khả dụng';">
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-800">{{ $item->product_id }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-800">
+                                {{ $item->product->product_name ?? $item->product_id }}</td>
                             <td class="px-6 py-4 text-sm text-gray-800">{{ $item->created_at }}</td>
                             <td class="px-6 py-4 text-sm text-gray-800">{{ $item->updated_at }}</td>
                             <td class="px-6 py-4 text-sm">
@@ -76,6 +83,7 @@
                 @csrf
                 <input type="hidden" name="_method" id="formMethod" value="POST">
                 <input type="hidden" name="id" id="image_id">
+                <input type="hidden" name="updated_at" id="image_updated_at">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Sản phẩm</label>
                     <select name="product_id"
@@ -151,6 +159,8 @@
             const confirmDelete = document.getElementById('confirmDelete');
             let currentImageId = null;
             let shouldReload = false;
+            let isSubmitting = false; // Biến để kiểm soát trạng thái gửi form
+            let abortController = null; // Để hủy yêu cầu AJAX trước đó
 
             // Close all modals
             function closeAllModals() {
@@ -179,6 +189,20 @@
                 shouldReload = false;
             }
 
+            // Hàm để cập nhật trạng thái nút Lưu
+            function updateSubmitButtonState(disable = true) {
+                const submitButton = imageForm.querySelector('button[type="submit"]');
+                if (disable) {
+                    submitButton.disabled = true;
+                    submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+                    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang lưu...';
+                } else {
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    submitButton.innerHTML = 'Lưu';
+                }
+            }
+
             // Open add modal
             openAddModal.addEventListener('click', () => {
                 closeAllModals();
@@ -186,6 +210,7 @@
                 imageForm.reset();
                 document.getElementById('formMethod').value = 'POST';
                 document.getElementById('image_url').value = '';
+                document.getElementById('image_updated_at').value = '';
                 currentImageId = null;
                 imageModal.classList.remove('hidden');
             });
@@ -193,10 +218,12 @@
             // Close add/edit modal
             closeModal.addEventListener('click', () => {
                 closeAllModals();
+                updateSubmitButtonState(false); // Reset trạng thái nút khi đóng modal
             });
             imageModal.addEventListener('click', (e) => {
                 if (e.target === imageModal) {
                     closeAllModals();
+                    updateSubmitButtonState(false); // Reset trạng thái nút khi đóng modal
                 }
             });
 
@@ -210,15 +237,26 @@
             imageForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                const submitButton = imageForm.querySelector('button[type="submit"]');
-                submitButton.disabled = true;
-                submitButton.textContent = 'Đang lưu...';
+                // Nếu đang gửi yêu cầu, không cho phép gửi thêm
+                if (isSubmitting) {
+                    return;
+                }
 
                 const formData = new FormData(imageForm);
                 const url = currentImageId ?
                     `{{ route('admin.images.update', ['id' => ':id']) }}`.replace(':id',
                         currentImageId) :
                     `{{ route('admin.images.store') }}`;
+
+                // Vô hiệu hóa nút Lưu và hiển thị trạng thái xử lý
+                isSubmitting = true;
+                updateSubmitButtonState(true);
+
+                // Hủy yêu cầu trước đó nếu có
+                if (abortController) {
+                    abortController.abort();
+                }
+                abortController = new AbortController();
 
                 try {
                     const response = await fetch(url, {
@@ -228,7 +266,8 @@
                                 .content,
                             'Accept': 'application/json'
                         },
-                        body: formData
+                        body: formData,
+                        signal: abortController.signal
                     });
 
                     const result = await response.json();
@@ -236,7 +275,11 @@
                     if (response.ok && result.success) {
                         showAlert(result.message, 'success', true);
                     } else {
-                        if (response.status === 422 && result.errors) {
+                        if (response.status === 409) {
+                            showAlert(result.message ||
+                                'Hình ảnh đã được chỉnh sửa bởi người khác. Vui lòng tải lại trang.',
+                                'error');
+                        } else if (response.status === 422 && result.errors) {
                             const errorMessages = Object.values(result.errors).flat().join('\n');
                             showAlert(errorMessages, 'error');
                         } else {
@@ -244,11 +287,17 @@
                         }
                     }
                 } catch (error) {
-                    console.error('Submit error:', error);
-                    showAlert('Đã xảy ra lỗi: ' + error.message, 'error');
+                    if (error.name === 'AbortError') {
+                        console.log('Yêu cầu trước đó đã bị hủy');
+                    } else {
+                        console.error('Submit error:', error);
+                        showAlert('Đã xảy ra lỗi: ' + error.message, 'error');
+                    }
                 } finally {
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Lưu';
+                    // Kích hoạt lại nút Lưu và reset trạng thái
+                    isSubmitting = false;
+                    updateSubmitButtonState(false);
+                    abortController = null;
                 }
             });
 
@@ -281,7 +330,9 @@
                             form.querySelector('[name="product_id"]').value = result.data.product_id ||
                                 '';
                             form.querySelector('[name="image_url"]').value = result.data.image_url ||
-                            '';
+                                '';
+                            form.querySelector('[name="updated_at"]').value = result.data.updated_at ||
+                                '';
                             document.getElementById('formMethod').value = 'PUT';
                             imageModal.classList.remove('hidden');
                         } else {

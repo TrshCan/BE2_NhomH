@@ -13,12 +13,22 @@ use App\Exceptions\FilesystemException;
 
 class BrandController extends Controller
 {
-
-
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $brands = Brand::latest()->paginate(10);
+            $page = $request->query('page', 1);
+            if (!is_numeric($page) || $page <= 0 || floor($page) != $page) {
+                return redirect()->route('admin.brands')->with('error', 'Tham số trang không hợp lệ!');
+            }
+
+            $perPage = 3;
+            $brands = Brand::latest()->paginate($perPage);
+
+            if ($page > $brands->lastPage()) {
+                return redirect()->route('admin.brands', ['page' => $brands->lastPage()])
+                    ->with('error', 'Trang yêu cầu không tồn tại! Đã chuyển đến trang cuối cùng.');
+            }
+
             return view('admin.quanlybrand', compact('brands'));
         } catch (QueryException $e) {
             Log::error('Database error fetching brands: ' . $e->getMessage());
@@ -33,7 +43,11 @@ class BrandController extends Controller
     {
         try {
             $brand = Brand::findOrFail($id);
-            return response()->json(['success' => true, 'data' => $brand]);
+            return response()->json([
+                'success' => true,
+                'data' => $brand,
+                'updated_at' => $brand->updated_at->toDateTimeString()
+            ]);
         } catch (ModelNotFoundException $e) {
             return response()->json(['success' => false, 'message' => 'Không tìm thấy thương hiệu!'], 404);
         } catch (\Exception $e) {
@@ -68,14 +82,17 @@ class BrandController extends Controller
         }
 
         try {
+            // Kiểm tra trùng lặp trước khi lưu
+            if (Brand::where('name', $request->input('name'))->orWhere('slug', $request->input('slug'))->exists()) {
+                return response()->json(['success' => false, 'message' => 'Thương hiệu hoặc slug đã tồn tại!'], 422);
+            }
+
             $data = $request->only(['name', 'slug']);
             if ($request->hasFile('logo')) {
                 $destinationPath = public_path('assets/images');
-                // Kiểm tra thư mục tồn tại, nếu không thì tạo
                 if (!File::isDirectory($destinationPath)) {
                     File::makeDirectory($destinationPath, 0755, true);
                 }
-                // Kiểm tra quyền ghi
                 if (!is_writable($destinationPath)) {
                     throw new FilesystemException('Thư mục đích không có quyền ghi!');
                 }
@@ -105,10 +122,23 @@ class BrandController extends Controller
         try {
             $brand = Brand::findOrFail($id);
 
+            Log::info('Update request for brand ID: ' . $id, [
+                'request_updated_at' => $request->input('updated_at'),
+                'database_updated_at' => $brand->updated_at->toDateTimeString()
+            ]);
+
+            if ($request->input('updated_at') && $brand->updated_at->toDateTimeString() !== $request->input('updated_at')) {
+                Log::warning('Edit conflict on brand ID ' . $id . ': updated_at mismatch');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Thương hiệu đã được chỉnh sửa bởi người khác. Vui lòng tải lại dữ liệu!'
+                ], 409);
+            }
+
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string|min:2|max:255|unique:brands,name,' . $id . '|regex:/^[a-zA-Z0-9\s]+$/', // Không chứa ký tự đặc biệt
+                'name' => 'required|string|min:2|max:255|unique:brands,name,' . $id . '|regex:/^[a-zA-Z0-9\s]+$/',
                 'slug' => 'required|string|max:255|unique:brands,slug,' . $id,
-                'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Logo không bắt buộc khi cập nhật
+                'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ], [
                 'name.required' => 'Không được để trống tên thương hiệu!',
                 'name.min' => 'Tên thương hiệu phải ít nhất 2 ký tự!',
@@ -134,7 +164,6 @@ class BrandController extends Controller
                     return response()->json(['success' => false, 'message' => 'Không thể ghi file vào thư mục!'], 500);
                 }
 
-                // Xóa logo cũ
                 if ($brand->logo_url && File::exists(public_path('assets/images/' . $brand->logo_url))) {
                     File::delete(public_path('assets/images/' . $brand->logo_url));
                 }

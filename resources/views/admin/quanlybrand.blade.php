@@ -13,7 +13,16 @@
                 <i class="fas fa-plus mr-2"></i> Thêm thương hiệu
             </button>
         </div>
-
+        @if (session('error'))
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+        @if (session('success'))
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                {{ session('success') }}
+            </div>
+        @endif
         <!-- Brands Table -->
         <div class="bg-white rounded-xl shadow-md overflow-x-auto animate-slide-in">
             <table class="min-w-full divide-y divide-gray-200">
@@ -77,6 +86,7 @@
             <form id="brandForm" enctype="multipart/form-data" method="POST">
                 @csrf
                 <input type="hidden" name="_method" id="formMethod" value="POST">
+                <input type="hidden" name="updated_at" id="updated_at">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Tên thương hiệu</label>
                     <input type="text" name="name"
@@ -149,6 +159,7 @@
             const confirmDelete = document.getElementById('confirmDelete');
             let currentBrandId = null;
             let shouldReload = false;
+            let isSubmitting = false; // Biến cờ để kiểm soát trạng thái gửi form
 
             // Kiểm tra CSRF token
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
@@ -163,7 +174,6 @@
                 notificationMessage.className =
                     `text-sm mb-4 ${type === 'success' ? 'text-green-600' : 'text-red-600'}`;
                 notificationModal.classList.remove('hidden');
-                // Đóng confirmDeleteModal nếu được yêu cầu
                 if (closeConfirmModal) {
                     confirmDeleteModal.classList.add('hidden');
                 }
@@ -182,6 +192,7 @@
                 currentBrandId = null;
                 document.getElementById('formMethod').value = 'POST';
                 document.getElementById('logo_url').value = '';
+                document.getElementById('updated_at').value = '';
                 brandModal.classList.remove('hidden');
             });
 
@@ -206,6 +217,16 @@
             brandForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
+                // Ngăn gửi form nếu đang xử lý yêu cầu trước đó
+                if (isSubmitting) {
+                    return;
+                }
+
+                isSubmitting = true; // Đặt cờ là đang gửi
+                const submitButton = brandForm.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Đang lưu...';
+
                 const nameInput = brandForm.querySelector('[name="name"]').value.trim();
                 const logoInput = brandForm.querySelector('[name="logo"]');
                 const isEditMode = currentBrandId !== null;
@@ -213,24 +234,39 @@
                 // Kiểm tra tên thương hiệu
                 if (!nameInput) {
                     showAlert('Không được để trống tên thương hiệu!', 'error');
+                    isSubmitting = false;
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Lưu';
                     return;
                 }
                 if (nameInput.length < 2) {
                     showAlert('Tên thương hiệu phải ít nhất 2 ký tự!', 'error');
+                    isSubmitting = false;
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Lưu';
                     return;
                 }
                 if (nameInput.length > 255) {
                     showAlert('Tên thương hiệu không được vượt quá 255 ký tự!', 'error');
+                    isSubmitting = false;
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Lưu';
                     return;
                 }
                 if (!/^[a-zA-Z0-9\s]+$/.test(nameInput)) {
                     showAlert('Tên thương hiệu không được chứa ký tự đặc biệt!', 'error');
+                    isSubmitting = false;
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Lưu';
                     return;
                 }
 
                 // Kiểm tra logo
                 if (!isEditMode && logoInput.files.length === 0) {
                     showAlert('Vui lòng chọn ảnh cho danh mục!', 'error');
+                    isSubmitting = false;
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Lưu';
                     return;
                 }
                 if (logoInput.files.length > 0) {
@@ -238,17 +274,19 @@
                     const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
                     if (!validTypes.includes(file.type)) {
                         showAlert('Hình ảnh phải có định dạng .jpg, .png, .jpeg!', 'error');
+                        isSubmitting = false;
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Lưu';
                         return;
                     }
                     if (file.size > 2 * 1024 * 1024) {
                         showAlert('Hình ảnh không được vượt quá 2MB!', 'error');
+                        isSubmitting = false;
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Lưu';
                         return;
                     }
                 }
-
-                const submitButton = brandForm.querySelector('button[type="submit"]');
-                submitButton.disabled = true;
-                submitButton.textContent = 'Đang lưu...';
 
                 const formData = new FormData(brandForm);
                 const url = currentBrandId ?
@@ -274,6 +312,10 @@
                             throw new Error('Bạn không có quyền thực hiện hành động này!');
                         } else if (response.status === 404) {
                             throw new Error('Không tìm thấy thương hiệu!');
+                        } else if (response.status === 409) {
+                            const result = await response.json();
+                            throw new Error(result.message ||
+                                'Thương hiệu đã được chỉnh sửa bởi người khác!');
                         } else if (response.status === 422) {
                             const result = await response.json();
                             const errorMessage = result.errors?.name?.[0] || Object.values(result
@@ -298,6 +340,7 @@
                     console.error('Submit error:', error);
                     showAlert(error.message || 'Đã xảy ra lỗi không xác định!', 'error');
                 } finally {
+                    isSubmitting = false; // Đặt lại cờ sau khi hoàn tất
                     submitButton.disabled = false;
                     submitButton.textContent = 'Lưu';
                 }
@@ -327,7 +370,7 @@
                                 throw new Error('Bạn không có quyền truy cập!');
                             } else {
                                 throw new Error('Lỗi server, mã trạng thái: ' + response
-                                    .status);
+                                .status);
                             }
                         }
 
@@ -338,6 +381,8 @@
                             form.querySelector('[name="slug"]').value = result.data.slug || '';
                             form.querySelector('[name="logo_url"]').value = result.data
                                 .logo_url || '';
+                            form.querySelector('[name="updated_at"]').value = result
+                                .updated_at || '';
                             document.getElementById('formMethod').value = 'PUT';
                             brandModal.classList.remove('hidden');
                         } else {
@@ -372,7 +417,7 @@
             confirmDelete.addEventListener('click', async () => {
                 const brandId = currentBrandId;
                 const deleteButton = confirmDeleteModal.querySelector('#confirmDelete');
-                deleteButton.disabled = true; // Vô hiệu hóa nút "Xóa" khi đang xử lý
+                deleteButton.disabled = true;
 
                 try {
                     const response = await fetch(
@@ -406,7 +451,7 @@
                     console.error('Delete error:', error);
                     showAlert(error.message || 'Đã xảy ra lỗi khi xóa thương hiệu!', 'error', true);
                 } finally {
-                    deleteButton.disabled = false; // Kích hoạt lại nút "Xóa"
+                    deleteButton.disabled = false;
                 }
             });
         });

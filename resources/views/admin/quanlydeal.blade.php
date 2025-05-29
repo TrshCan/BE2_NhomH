@@ -64,6 +64,7 @@
                 @csrf
                 <input type="hidden" name="_method" id="formMethod" value="PUT">
                 <input type="hidden" name="id" id="deal_id">
+                <input type="hidden" name="updated_at" id="updated_at">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Sản phẩm</label>
                     <select name="product_id"
@@ -123,6 +124,14 @@
             const notificationTitle = document.getElementById('notificationTitle');
             const notificationMessage = document.getElementById('notificationMessage');
             let shouldReload = false;
+
+            // Helper function to format date to YYYY-MM-DD
+            function formatDateToYMD(dateString) {
+                if (!dateString) return '';
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return ''; // Invalid date
+                return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+            }
 
             // Close all modals
             function closeAllModals() {
@@ -189,10 +198,12 @@
                             dealForm.querySelector('[name="id"]').value = deal.data.id || '';
                             dealForm.querySelector('[name="product_id"]').value = deal.data
                                 .product_id || '';
-                            dealForm.querySelector('[name="start_date"]').value = deal.data.start_date ?
-                                deal.data.start_date.split(' ')[0] : '';
-                            dealForm.querySelector('[name="end_date"]').value = deal.data.end_date ?
-                                deal.data.end_date.split(' ')[0] : '';
+                            dealForm.querySelector('[name="start_date"]').value = formatDateToYMD(deal
+                                .data.start_date);
+                            dealForm.querySelector('[name="end_date"]').value = formatDateToYMD(deal
+                                .data.end_date);
+                            dealForm.querySelector('[name="updated_at"]').value = deal.data
+                                .updated_at || '';
                             dealModal.classList.remove('hidden');
                         } else {
                             showAlert(deal.message || 'Không thể tải thông tin deal!', 'error');
@@ -272,13 +283,17 @@
 
                     if (response.ok && result.success) {
                         showAlert(result.message, 'success', true);
+                    } else if (response.status === 409) {
+                        showAlert(
+                            result.message ||
+                            'Deal đã được chỉnh sửa bởi người dùng khác. Vui lòng tải lại trang để cập nhật dữ liệu mới nhất!',
+                            'error', true
+                        );
+                    } else if (response.status === 422 && result.errors) {
+                        const errorMessages = Object.values(result.errors).flat().join('\n');
+                        showAlert(errorMessages, 'error');
                     } else {
-                        if (response.status === 422 && result.errors) {
-                            const errorMessages = Object.values(result.errors).flat().join('\n');
-                            showAlert(errorMessages, 'error');
-                        } else {
-                            showAlert(result.message || 'Có lỗi không xác định!', 'error');
-                        }
+                        showAlert(result.message || 'Có lỗi không xác định!', 'error');
                     }
                 } catch (error) {
                     console.error('Submit error:', error);

@@ -5,12 +5,23 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <div class="space-y-6">
+        <!-- Hiển thị thông báo lỗi hoặc thành công -->
+        @if (session('error'))
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+        @if (session('success'))
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg" role="alert">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <!-- Header -->
         <div class="flex justify-between items-center">
             <h2 class="text-2xl font-semibold text-gray-800">Quản lý danh mục</h2>
             <button id="openAddModal"
-                class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition duration-200 flex items-center"
-                aria-label="Thêm danh mục mới">
+                class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition duration-300 flex items-center">
                 <i class="fas fa-plus mr-2"></i> Thêm danh mục
             </button>
         </div>
@@ -21,16 +32,16 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên danh
-                            mục</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mô tả
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày tạo
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày cập
-                            nhật</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hành động
-                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-weight-bold text-gray-500 uppercase tracking-wider">Tên
+                            danh mục</th>
+                        <th class="px-6 py-3 text-left text-xs font-weight-bold text-gray-500 uppercase tracking-wider">Mô
+                            tả</th>
+                        <th class="px-6 py-3 text-left text-xs font-weight-bold text-gray-500 uppercase tracking-wider">Ngày
+                            tạo</th>
+                        <th class="px-6 py-3 text-left text-xs font-weight-bold text-gray-500 uppercase tracking-wider">Ngày
+                            cập nhật</th>
+                        <th class="px-6 py-3 text-left text-xs font-weight-bold text-gray-500 uppercase tracking-wider">Hành
+                            động</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -44,20 +55,20 @@
                             <td class="px-6 py-4 text-sm text-gray-800">{{ $item->created_at }}</td>
                             <td class="px-6 py-4 text-sm text-gray-800">{{ $item->updated_at }}</td>
                             <td class="px-6 py-4 text-sm">
-                                <button class="text-teal-500 hover:text-teal-600 mr-4 edit-category"
+                                <button class="text-teal-600 hover:text-teal-600 mr-4 edit-category"
                                     data-id="{{ $item->category_id }}" aria-label="Chỉnh sửa danh mục">
-                                    <i class="fas fa-edit"></i>
+                                    <i class="fa fa-edit"></i>
                                 </button>
                                 <button class="text-red-500 hover:text-red-600 delete-category"
                                     data-id="{{ $item->category_id }}" aria-label="Xóa danh mục">
-                                    <i class="fas fa-trash"></i>
+                                    <i class="fa fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">Không có danh mục nào.
-                            </td>
+                            <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">Không có danh mục nào tồn
+                                tại.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -71,10 +82,11 @@
     <!-- Modal for Add/Edit Category -->
     <div id="categoryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white rounded-xl p-6 w-full max-w-md">
-            <h3 id="modalTitle" class="text-lg font-semibold text-gray-800 mb-4">Thêm danh mục</h3>
+            <h3 id="modalTitle" class="text-lg font-semibold text-gray-600 mb-4">Thêm danh mục</h3>
             <form id="categoryForm" method="POST">
                 @csrf
                 <input type="hidden" name="_method" id="formMethod" value="POST">
+                <input type="hidden" name="updated_at" id="updated_at">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700" for="category_name">Tên danh mục</label>
                     <input type="text" name="category_name" id="category_name"
@@ -104,10 +116,13 @@
         <div class="bg-white rounded-xl p-6 w-full max-w-md">
             <h3 id="notificationTitle" class="text-lg font-semibold text-gray-800 mb-4">Thông báo</h3>
             <p id="notificationMessage" class="text-sm text-gray-600 mb-4"></p>
-            <div class="flex justify-end">
+            <div class="flex justify-end space-x-2">
                 <button id="closeNotificationModal"
                     class="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition duration-200"
                     aria-label="Đóng thông báo">Đóng</button>
+                <button id="refreshData"
+                    class="hidden px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
+                    aria-label="Làm mới dữ liệu">Làm mới</button>
             </div>
         </div>
     </div>
@@ -135,8 +150,10 @@
             const categoryForm = document.getElementById('categoryForm');
             const categoryNameInput = categoryForm.querySelector('[name="category_name"]');
             const descriptionInput = categoryForm.querySelector('[name="description"]');
+            const updatedAtInput = categoryForm.querySelector('[name="updated_at"]');
             const notificationModal = document.getElementById('notificationModal');
             const closeNotificationModal = document.getElementById('closeNotificationModal');
+            const refreshDataButton = document.getElementById('refreshData');
             const notificationTitle = document.getElementById('notificationTitle');
             const notificationMessage = document.getElementById('notificationMessage');
             const confirmDeleteModal = document.getElementById('confirmDeleteModal');
@@ -144,6 +161,15 @@
             const confirmDelete = document.getElementById('confirmDelete');
             let currentCategoryId = null;
             let shouldReload = false;
+            let isSubmitting = false; // Biến cờ để ngăn gửi nhiều yêu cầu
+
+            // Kiểm tra tham số page trong URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = urlParams.get('page');
+            if (page && (!/^\d+$/.test(page) || parseInt(page) < 1)) {
+                showAlert('Tham số trang không hợp lệ!', 'error');
+                window.history.replaceState(null, null, '?page=1');
+            }
 
             // Close all modals
             function closeAllModals() {
@@ -153,17 +179,19 @@
             }
 
             // Show notification with proper modal management
-            function showAlert(message, type = 'success', reloadOnClose = false) {
+            function showAlert(message, type = 'success', reloadOnClose = false, showRefresh = false) {
                 closeAllModals();
                 notificationTitle.textContent = type === 'success' ? 'Thành công' : 'Lỗi';
                 notificationMessage.textContent = message;
                 notificationMessage.className =
                     `text-sm mb-4 ${type === 'success' ? 'text-green-600' : 'text-red-600'}`;
                 shouldReload = reloadOnClose;
+                refreshDataButton.classList.toggle('hidden', !showRefresh);
                 console.log('showAlert called:', {
                     message,
                     type,
-                    shouldReload
+                    shouldReload,
+                    showRefresh
                 });
                 notificationModal.classList.remove('hidden');
             }
@@ -226,6 +254,7 @@
                 categoryForm.reset();
                 categoryNameInput.setCustomValidity('');
                 descriptionInput.setCustomValidity('');
+                updatedAtInput.value = '';
                 currentCategoryId = null;
                 shouldReload = false;
                 document.getElementById('formMethod').value = 'POST';
@@ -250,9 +279,64 @@
                 if (e.target === notificationModal) closeNotificationAndReload();
             });
 
+            // Refresh data button for conflict cases
+            refreshDataButton.addEventListener('click', async () => {
+                if (currentCategoryId) {
+                    const url = `{{ route('admin.categories.show', ['id' => ':id']) }}`.replace(':id',
+                        currentCategoryId);
+                    try {
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector(
+                                    'meta[name="csrf-token"]').content,
+                                'Accept': 'application/json'
+                            },
+                            signal: AbortSignal.timeout(10000)
+                        });
+
+                        const text = await response.text();
+                        let category;
+                        try {
+                            category = JSON.parse(text);
+                        } catch (parseError) {
+                            console.error('Failed to parse JSON:', text);
+                            showAlert('Phản hồi từ server không hợp lệ!', 'error');
+                            return;
+                        }
+
+                        if (response.ok && category.success) {
+                            if (!category.data || !category.data.category_name) {
+                                showAlert('Dữ liệu danh mục không đầy đủ, vui lòng kiểm tra database!',
+                                    'error');
+                                return;
+                            }
+                            categoryForm.querySelector('[name="category_name"]').value = category.data
+                                .category_name || '';
+                            categoryForm.querySelector('[name="description"]').value = category.data
+                                .description || '';
+                            categoryForm.querySelector('[name="updated_at"]').value = category.data
+                                .updated_at || '';
+                            document.getElementById('formMethod').value = 'PUT';
+                            closeAllModals();
+                            categoryModal.classList.remove('hidden');
+                        } else {
+                            showAlert(category.message || 'Không thể tải thông tin danh mục!', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Fetch error:', error);
+                        showAlert('Đã xảy ra lỗi: ' + error.message, 'error');
+                    }
+                }
+            });
+
             // Handle form submission (add/update)
             categoryForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
+
+                if (isSubmitting) {
+                    return; // Ngăn gửi yêu cầu nếu đang xử lý
+                }
 
                 if (!categoryForm.checkValidity()) {
                     showAlert('Vui lòng điền đầy đủ các trường hợp lệ!', 'error');
@@ -260,9 +344,11 @@
                     return;
                 }
 
+                isSubmitting = true; // Đặt cờ để ngăn yêu cầu tiếp theo
                 const submitButton = categoryForm.querySelector('button[type="submit"]');
                 submitButton.disabled = true;
                 submitButton.textContent = 'Đang lưu...';
+                categoryForm.classList.add('opacity-50', 'pointer-events-none'); // Vô hiệu hóa form
                 shouldReload = false;
 
                 const formData = new FormData(categoryForm);
@@ -281,6 +367,8 @@
                     showAlert('Lỗi cấu hình hệ thống, vui lòng liên hệ quản trị viên!', 'error');
                     submitButton.disabled = false;
                     submitButton.textContent = 'Lưu';
+                    categoryForm.classList.remove('opacity-50', 'pointer-events-none');
+                    isSubmitting = false;
                     return;
                 }
 
@@ -305,6 +393,8 @@
                             }
                             submitButton.disabled = false;
                             submitButton.textContent = 'Lưu';
+                            categoryForm.classList.remove('opacity-50', 'pointer-events-none');
+                            isSubmitting = false;
                             return;
                         }
 
@@ -317,6 +407,8 @@
                             showAlert('Phản hồi từ server không hợp lệ!', 'error');
                             submitButton.disabled = false;
                             submitButton.textContent = 'Lưu';
+                            categoryForm.classList.remove('opacity-50', 'pointer-events-none');
+                            isSubmitting = false;
                             return;
                         }
 
@@ -325,8 +417,12 @@
                         } else {
                             if (response.status === 422 && result.errors) {
                                 const errorMessages = Object.values(result.errors).flat().join(
-                                '\n');
+                                    '\n');
                                 showAlert(errorMessages, 'error');
+                            } else if (response.status === 409) {
+                                showAlert(result.message ||
+                                    'Danh mục đã bị thay đổi bởi người dùng khác!', 'error',
+                                    false, true);
                             } else {
                                 showAlert(result.message || 'Có lỗi không xác định!', 'error');
                             }
@@ -346,6 +442,8 @@
                     } finally {
                         submitButton.disabled = false;
                         submitButton.textContent = 'Lưu';
+                        categoryForm.classList.remove('opacity-50', 'pointer-events-none');
+                        isSubmitting = false; // Reset cờ sau khi xử lý xong
                     }
                 }
 
@@ -412,6 +510,8 @@
                                     category.data.category_name || '';
                                 categoryForm.querySelector('[name="description"]').value = category
                                     .data.description || '';
+                                categoryForm.querySelector('[name="updated_at"]').value = category
+                                    .data.updated_at || '';
                                 document.getElementById('formMethod').value = 'PUT';
                                 categoryModal.classList.remove('hidden');
                             } else {
