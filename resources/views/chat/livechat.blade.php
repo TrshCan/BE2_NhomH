@@ -1,15 +1,16 @@
 @php
-    $role = session('user_role');
-    $user_id = session('user_id');
+$role = session('user_role');
+$user_id = session('user_id');
 
-    if ($role === 'admin') {
-        $user_id = 0; // Admin user ID
-        session(['user_id' => $user_id]);
-    }
+if ($role === 'admin') {
+$user_id = 0; // Admin user ID
+session(['user_id' => $user_id]);
+}
 @endphp
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,27 +18,28 @@
     <title>Trò Chuyện Trực Tuyến</title>
     <link rel="stylesheet" href="{{ asset('assets/styles/livechat.css') }}">
     <style>
-       .windown {
-        position: relative;
-    }
+        .windown {
+            position: relative;
+        }
 
-    .chat-input {
-        position: absolute;
-        bottom: 0;
-        width: 76%;
-        background-color: #fff;
-        padding: 10px;
-        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    }
+        .chat-input {
+            position: absolute;
+            bottom: 0;
+            width: 76%;
+            background-color: #fff;
+            padding: 10px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
+
 <body>
     <div id="chat-container" class="chat-container">
         @if ($role === 'admin')
-            <div class="sidebar">
-                <div>Cuộc Trò Chuyện Của Tôi</div>
-                <div class="chat-list" id="chat-list"></div>
-            </div>
+        <div class="sidebar">
+            <div>Cuộc Trò Chuyện Của Tôi</div>
+            <div class="chat-list" id="chat-list"></div>
+        </div>
         @endif
         <div id="chat-window" class="chat-window window">
             <div class="chat-header">
@@ -47,13 +49,13 @@
             <div id="chat-body" class="chat-body"></div>
             <div class="chat-input">
                 <input id="messageInput" type="text" placeholder="Nhập tin nhắn..." autocomplete="off" maxlength="255">
-                <button onclick="sendMessage()">Gửi</button>
+                <button onclick="sendMessage()" id="send">Gửi</button>
             </div>
         </div>
     </div>
 
     <script>
- const userId = <?= json_encode($user_id) ?>;
+        const userId = <?= json_encode($user_id) ?>;
         let selectedUserId = null;
         let lastMessageId = 0;
 
@@ -121,15 +123,15 @@
             try {
                 const response = await fetch(`{{ route("chat.messages") }}?receiver_id=${selectedUserId}`);
                 if (!response.ok) throw new Error('Không thể tải tin nhắn');
-                
+
                 const data = await response.json();
                 const chatBody = document.getElementById('chat-body');
                 chatBody.innerHTML = '';
                 data.messages.forEach(msg => {
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = msg.sender_id == userId ? 'message agent' : 'message customer';
-                        messageDiv.innerHTML = `<div class="message-bubble">${msg.message}</div>`;
-                        chatBody.appendChild(messageDiv);
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = msg.sender_id == userId ? 'message agent' : 'message customer';
+                    messageDiv.innerHTML = `<div class="message-bubble">${msg.message}</div>`;
+                    chatBody.appendChild(messageDiv);
                 });
 
                 chatBody.scrollTop = chatBody.scrollHeight;
@@ -140,12 +142,22 @@
 
         const sendMessage = async () => {
             const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('send');
             const message = messageInput.value.trim();
-            console.log(message);
-            if (!message || !selectedUserId) {
-                showError('Vui lòng chọn người dùng và nhập tin nhắn');
+
+            if (!message) {
+                showError('Vui lòng nhập tin nhắn');
                 return;
             }
+
+            if (!selectedUserId) {
+                showError('Vui lòng chọn người dùng để trò chuyện');
+                return;
+            }
+
+            // Vô hiệu hóa nút "Gửi"
+            sendButton.disabled = true;
+            sendButton.textContent = 'Đang gửi...';
 
             try {
                 const response = await fetch('{{ route("chat.messages") }}', {
@@ -163,10 +175,15 @@
 
                 if (!response.ok) throw new Error('Không thể gửi tin nhắn');
 
+                // Xóa nội dung input sau khi gửi thành công
                 messageInput.value = '';
                 await loadMessages();
             } catch (error) {
                 showError('Lỗi khi gửi tin nhắn');
+            } finally {
+                // Kích hoạt lại nút "Gửi"
+                sendButton.disabled = false;
+                sendButton.textContent = 'Gửi';
             }
         };
 
@@ -179,8 +196,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadUserList();
             setInterval(loadUserList, 5000);
-            setInterval(loadMessages, 5000); 
+            setInterval(loadMessages, 5000);
         });
     </script>
 </body>
+
 </html>

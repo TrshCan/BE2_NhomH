@@ -118,7 +118,7 @@ $user_id = session('user_id');
         <div class="chat-header">
             <span class="chat-title" id="chat-title">Live Chat</span>
             <!-- <span class="close-chat" id="closeChat">✕</span> -->
-          
+
         </div>
         <div class="chat-body" id="chat-body">
 
@@ -128,7 +128,7 @@ $user_id = session('user_id');
         </div>
         <div class="chat-input">
             <input id="messageInput" type="text" placeholder="Nhập tin nhắn..." autocomplete="off" maxlength="255">
-            <button onclick="sendMessage()">Gửi</button>
+            <button onclick="sendMessage()" id="send">Gửi</button>
         </div>
     </div>
     </div>
@@ -179,7 +179,15 @@ $user_id = session('user_id');
         const sendMessage = async () => {
             const messageInput = document.getElementById('messageInput');
             const message = messageInput.value.trim();
+            const send = document.getElementById('send');
 
+            if (!message) {
+                return; // Không gửi nếu tin nhắn trống
+            }
+
+            // Vô hiệu hóa nút gửi
+            send.disabled = true;
+            send.textContent = 'Đang gửi...';
 
             try {
                 const response = await fetch('{{ route("chat.messages") }}', {
@@ -201,13 +209,19 @@ $user_id = session('user_id');
                 await loadMessages();
             } catch (error) {
                 showError('Lỗi khi gửi tin nhắn');
+            } finally {
+                // Kích hoạt lại nút gửi
+                send.disabled = false;
+                send.textContent = 'Gửi';
             }
         };
+
         document.getElementById('messageInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 sendMessage();
             }
         });
+
         loadMessages();
         document.addEventListener('DOMContentLoaded', () => {
             setInterval(loadMessages, 5000);

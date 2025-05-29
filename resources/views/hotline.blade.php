@@ -27,9 +27,9 @@ $user_id = session('user_id');
 
 <iframe id="chatWidget"
     src="{{ route('chat.widget') }}"
-    style="display: none; position: fixed; bottom: 5vh; right: 100px; width: 350px; height: 500px;  z-index: 9999; border-radius: 12px;">
+    style="display: none; position: fixed; bottom: 50px; right: 63px; width: 350px; height: 500px;  z-index: 9999; border-radius: 12px;">
 </iframe>
-<button class="close-chat" id="closeChat" style="display: none; position: fixed; bottom: 76vh; right: 150px;z-index: 112222;font-size: 30px;background: red;">✕</button>
+<button class="close-chat" id="closeChat" style="display: none; position: fixed; bottom: 445px; right: 111px;z-index: 112222;font-size: 30px;background: red;">✕</button>
 
 
 <script>
