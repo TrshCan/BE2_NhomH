@@ -4,7 +4,6 @@
 @section('content')
 <div class="container mt-5" style="margin-top: 100px;">
     <h2 class="mb-4">Cài đặt tài khoản</h2>
-
     <ul class="nav nav-tabs" id="settingsTab" role="tablist">
         <li class="nav-item">
             <a class="nav-link active" id="account-tab" data-bs-toggle="tab" href="#account" role="tab">Thông tin tài
@@ -20,7 +19,7 @@
     <div class="tab-content pt-3" id="settingsTabContent">
         {{-- Thông tin tài khoản --}}
         <div class="tab-pane fade show active" id="account" role="tabpanel">
-            <form method="POST" action="{{ route('user.profile.post.update', $user->id) }}" class="mb-3">
+            <form method="POST" action="{{ route('user.profile.post.update') }}" class="mb-3">
                 @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
                 @elseif(session('error'))
@@ -28,6 +27,7 @@
                 @endif
                 @csrf
                 <input type="hidden" name="id" value="{{ $user->id }}">
+                    <input type="hidden" name="updated_at" value="{{ $user->updated_at->toISOString() }}">
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Họ và tên</label>

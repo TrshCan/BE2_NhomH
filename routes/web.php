@@ -57,10 +57,10 @@ Route::post('/signOut', [CrudUserController::class, 'signOut'])->name('signOut')
 
 Route::post('logout', [AdminController::class, 'logout'])->name('logout');
 //Setting
-Route::get('/setting/users/{id}', [UserController::class, 'showUser'])->name('showUser');
+Route::get('/setting/users', [UserController::class, 'showUser'])->name('showUser');
 Route::middleware(['auth'])->group(function () {
-    Route::get('/setting/users/profile/update/{id}', [UserController::class, 'editProfile'])->name('user.profile.update');
-    Route::post('/setting/users/profile/update/{id}', [UserController::class, 'updateProfile'])->name('user.profile.post.update');
+    Route::get('/setting/users/profile/update', [UserController::class, 'editProfile'])->name('user.profile.update');
+    Route::post('/setting/users/profile/update', [UserController::class, 'updateProfile'])->name('user.profile.post.update');
 });
 
 Route::get('/register', [CrudUserController::class, 'createUser'])->name('register');
