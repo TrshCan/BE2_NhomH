@@ -11,11 +11,15 @@ use Illuminate\Support\Facades\Log;
 class UserController extends Controller
 {
     public function showUser($id)
-    {
-        $user = User::findOrFail($id);
-        $orders = Order::where('user_id', $id)->orderBy('order_date', 'desc')->get();
-        return view('clients.pages.setting', ['user' => $user, 'orders' => $orders]);
-    }
+{
+    $user = User::findOrFail($id);
+    $orders = Order::where('user_id', $id)
+        ->orderBy('order_date', 'desc')
+        ->paginate(5); // Paginate 5 orders per page
+
+    return view('clients.pages.setting', ['user' => $user, 'orders' => $orders]);
+}
+
 
     public function passwordUser()
     {

@@ -20,7 +20,7 @@ class OrderSeeder extends Seeder
         //
         $faker = Faker::create();
 
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             DB::table('orders')->insert([
                 'user_id' => $faker->numberBetween(1, 10),
                 'order_date' => $faker->dateTimeBetween('-1 year', 'now'),

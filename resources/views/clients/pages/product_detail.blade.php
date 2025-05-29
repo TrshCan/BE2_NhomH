@@ -80,9 +80,14 @@
                             <span id="quantity_value">1</span>
                             <span class="plus"><i class="fa fa-plus" aria-hidden="true"></i></span>
                         </div>
-                        <a href="{{ route('cart.add', ['id' => $product->product_id]) }}"
-                            class="btn btn-outline-danger">Add to
-                            Cart</a>
+                    <form method="POST"
+                        action="{{ route('cart.add', ['id' => $product->product_id]) }}"
+                        onsubmit="return addToCart(event, this)">
+                        @csrf
+                        <button type="submit" class="btn btn-primary">
+                            Add to Cart
+                        </button>
+                    </form>
                     </div>
                 </div>
             </div>

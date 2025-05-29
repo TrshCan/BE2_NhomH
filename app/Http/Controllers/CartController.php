@@ -35,17 +35,26 @@ class CartController extends Controller
         if (!Auth::check()) {
             return redirect()->route('products.home')->with('error_auth', 'Bạn cần đăng nhập để tiếp tục.');
         }
+        if (!$request->isMethod('post')) {
+            return redirect()->route('home')->with('error', 'Yêu cầu không hợp lệ.');
+        }
 
         $cart = Cart::getOrCreateForUser(Auth::user());
+        $product = Product::find($id);
+        if (!$product) {
+            return redirect()->route('products.home')->with('error', 'Sản phẩm không tồn tại.');
+        }
         $cart->addProduct($id);
 
         return redirect()->route('products.home')->with('success', 'Sản phẩm đã được thêm vào giỏ hàng.');
     }
 
-    public function clear()
+    public function clear(Request $request)
     {
         $cart = Auth::user()->cart;
-
+        if (!$request->isMethod('post')) {
+            return redirect()->route('home')->with('error', 'Yêu cầu không hợp lệ.');
+        }
         if ($cart) {
             $cart->items()->delete();
             return redirect()->route('cart.cart')->with('success', 'Giỏ hàng đã được xóa thành công.');
@@ -54,13 +63,16 @@ class CartController extends Controller
         return redirect()->route('cart.cart')->with('error', 'Không tìm thấy giỏ hàng.');
     }
 
-    public function remove($product_id)
+    public function remove(Request $request, $product_id)
     {
         $cart = Auth::user()->cart;
-
+        if (!$request->isMethod('post')) {
+            return redirect()->route('home')->with('error', 'Yêu cầu không hợp lệ.');
+        }
         if (!$cart) {
             return redirect()->route('cart.cart')->with('error', 'Giỏ hàng không tồn tại.');
         }
+
 
         $result = $cart->removeProduct($product_id);
 
