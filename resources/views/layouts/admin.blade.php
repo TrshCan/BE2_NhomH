@@ -177,11 +177,12 @@
         <!-- Main Content -->
         <div id="content" class="flex-1 ml-64 p-10 transition-all duration-300">
             <div class="bg-white rounded-xl shadow-md p-8 animate-slide-in">
+
                 @yield('content')
             </div>
         </div>
     </div>
-@yield('scripts')
+    @yield('scripts')
     <script>
         const toggleSidebar = document.getElementById('toggleSidebar');
         const sidebar = document.getElementById('sidebar');

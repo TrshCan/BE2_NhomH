@@ -13,10 +13,32 @@ class CategoryController extends Controller
     /**
      * Display a listing of the categories.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::paginate(10);
-        return view('admin.quanlydanhmuc', compact('categories'));
+        try {
+            // Lấy tham số page từ request, mặc định là 1
+            $page = $request->query('page', 1);
+
+            // Kiểm tra xem page có phải là số nguyên dương không
+            if (!is_numeric($page) || $page < 1) {
+                return redirect()->route('admin.categories')
+                    ->with('error', 'Trang không hợp lệ, đã chuyển về trang đầu tiên.');
+            }
+
+            $categories = Category::latestPaginated(2);
+
+            // Kiểm tra nếu page vượt quá tổng số trang
+            if ($page > $categories->lastPage()) {
+                return redirect()->route('admin.categories', ['page' => $categories->lastPage()])
+                    ->with('error', 'Trang yêu cầu không tồn tại, đã chuyển đến trang cuối cùng.');
+            }
+
+            return view('admin.quanlydanhmuc', compact('categories'));
+        } catch (\Exception $e) {
+            Log::error('Error in category index: ' . $e->getMessage());
+            return redirect()->route('admin.categories')
+                ->with('error', 'Lỗi hệ thống, vui lòng thử lại sau.');
+        }
     }
 
     /**
@@ -30,7 +52,8 @@ class CategoryController extends Controller
                 'success' => true,
                 'data' => [
                     'category_name' => $category->category_name ?? '',
-                    'description' => $category->description ?? ''
+                    'description' => $category->description ?? '',
+                    'updated_at' => $category->updated_at ? $category->updated_at->toDateTimeString() : ''
                 ]
             ]);
         } catch (ModelNotFoundException $e) {
@@ -86,6 +109,16 @@ class CategoryController extends Controller
             Log::info('Update category request data:', $request->all());
 
             $category = Category::findOrFail($id);
+
+            // Kiểm tra khóa lạc quan với updated_at
+            $clientUpdatedAt = $request->input('updated_at');
+            if ($clientUpdatedAt && $category->updated_at->toDateTimeString() !== $clientUpdatedAt) {
+                Log::warning('Optimistic locking conflict for category: ' . $id);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Danh mục đã được chỉnh sửa bởi người dùng khác. Vui lòng làm mới dữ liệu.'
+                ], 409); // HTTP 409 Conflict
+            }
 
             $data = [
                 'category_name' => $request->input('category_name', $category->category_name),
@@ -161,9 +194,13 @@ class CategoryController extends Controller
                 'string',
                 'min:2',
                 'max:255',
-                $isUpdate ? \Illuminate\Validation\Rule::unique('categories')->ignore($id) : 'unique:categories,category_name'
+                $isUpdate ? \Illuminate\Validation\Rule::unique('categories')->ignore($id, 'category_id') : 'unique:categories,category_name'
             ],
             'description' => 'nullable|string|min:10|max:255',
+            'updated_at' => [
+                $isUpdate ? 'required' : 'nullable',
+                'date'
+            ]
         ];
 
         return $rules;

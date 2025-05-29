@@ -9,16 +9,35 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\File;
+use Carbon\Carbon;
 
 class BlogController extends Controller
 {
     /**
      * Display a listing of blogs for the admin interface.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $blogs = Blog::latest()->paginate(10);
+            $perPage = 2;
+            $totalBlogs = Blog::count();
+            $maxPages = ceil($totalBlogs / $perPage);
+            $currentPage = $request->input('page', 1);
+
+            // Kiểm tra page không hợp lệ
+            if (!is_numeric($currentPage) || $currentPage < 1) {
+                Log::warning('Invalid page parameter', ['page' => $currentPage]);
+                return redirect()->route('admin.blogs.index', ['page' => 1])
+                    ->with('error', 'Tham số trang không hợp lệ. Đã chuyển về trang đầu tiên.');
+            }
+
+            // Kiểm tra page vượt quá tối đa
+            if ($currentPage > $maxPages && $totalBlogs > 0) {
+                return redirect()->route('admin.blogs.index', ['page' => $maxPages])
+                    ->with('error', 'Trang yêu cầu không tồn tại. Đã chuyển về trang cuối cùng.');
+            }
+
+            $blogs = Blog::latest()->paginate($perPage);
             return view('admin.quanlyblog', compact('blogs'));
         } catch (QueryException $e) {
             Log::error('Error fetching blogs: ' . $e->getMessage());
@@ -76,12 +95,12 @@ class BlogController extends Controller
                 'title' => 'required|string|max:255',
                 'slug' => 'required|string|max:255|unique:blogs,slug',
                 'content' => 'required|string',
-                'image' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Image is required
+                'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
                 'author' => 'required|string|max:255',
                 'published_at' => 'nullable|date',
                 'image_url' => 'nullable|string|url',
             ], [
-                'image.required' => 'Phải chọn ảnh', // Custom error message
+                'image.required' => 'Phải chọn ảnh',
             ]);
 
             $data = $validated;
@@ -89,7 +108,6 @@ class BlogController extends Controller
 
             // Handle image upload
             if ($request->hasFile('image')) {
-                // Check directory existence and permissions
                 if (!File::exists($destinationPath)) {
                     File::makeDirectory($destinationPath, 0755, true);
                 }
@@ -144,9 +162,12 @@ class BlogController extends Controller
     {
         try {
             $blog = Blog::findOrFail($id);
+            // Normalize updated_at format
+            $blogData = $blog->toArray();
+            $blogData['updated_at'] = $blog->updated_at->toDateTimeString(); // Y-m-d H:i:s
             return response()->json([
                 'success' => true,
-                'data' => $blog
+                'data' => $blogData
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             Log::error('Blog not found: ' . $e->getMessage(), ['id' => $id]);
@@ -177,11 +198,43 @@ class BlogController extends Controller
         try {
             $blog = Blog::findOrFail($id);
 
+            // Kiểm tra xung đột chỉnh sửa
+            $clientUpdatedAt = $request->input('updated_at');
+            if ($clientUpdatedAt) {
+                try {
+                    $clientUpdatedAtCarbon = Carbon::parse($clientUpdatedAt);
+                    $serverUpdatedAtCarbon = $blog->updated_at;
+                    if (!$clientUpdatedAtCarbon->equalTo($serverUpdatedAtCarbon)) {
+                        Log::warning('Edit conflict detected', [
+                            'id' => $id,
+                            'client_updated_at' => $clientUpdatedAt,
+                            'server_updated_at' => $serverUpdatedAtCarbon->toDateTimeString()
+                        ]);
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Bài viết đã được chỉnh sửa bởi người dùng khác. Vui lòng tải lại trang để cập nhật dữ liệu mới nhất.'
+                        ], 409); // HTTP 409 Conflict
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Invalid client updated_at format', [
+                        'id' => $id,
+                        'client_updated_at' => $clientUpdatedAt,
+                        'error' => $e->getMessage()
+                    ]);
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Định dạng thời gian không hợp lệ.'
+                    ], 422);
+                }
+            } else {
+                Log::warning('Missing client updated_at', ['id' => $id]);
+            }
+
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'slug' => 'required|string|max:255|unique:blogs,slug,' . $id,
                 'content' => 'required|string',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Image is optional
+                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
                 'author' => 'required|string|max:255',
                 'published_at' => 'nullable|date',
                 'image_url' => 'nullable|string',
@@ -192,7 +245,6 @@ class BlogController extends Controller
 
             // Handle image upload
             if ($request->hasFile('image')) {
-                // Check directory existence and permissions
                 if (!File::exists($destinationPath)) {
                     File::makeDirectory($destinationPath, 0755, true);
                 }
@@ -201,7 +253,6 @@ class BlogController extends Controller
                     throw new \Exception('Không thể ghi vào thư mục public/assets/images');
                 }
 
-                // Delete old image if exists
                 if ($blog->image_url && File::exists(public_path('assets/images/' . $blog->image_url)) && !Str::startsWith($blog->image_url, ['http://', 'https://'])) {
                     File::delete(public_path('assets/images/' . $blog->image_url));
                     Log::info('Old image deleted: public/assets/images/' . $blog->image_url);
@@ -213,14 +264,12 @@ class BlogController extends Controller
                 Log::info('Image saved: public/assets/images/' . $imageName);
                 $data['image_url'] = $imageName;
             } elseif ($request->has('image_url') && !empty($request->image_url)) {
-                // Use provided image_url if it is a valid URL
                 if (filter_var($request->image_url, FILTER_VALIDATE_URL)) {
                     $data['image_url'] = $request->image_url;
                 } else {
-                    $data['image_url'] = $blog->image_url; // Keep existing if not a valid URL
+                    $data['image_url'] = $blog->image_url;
                 }
             } else {
-                // Keep existing image_url if no new image or image_url is provided
                 $data['image_url'] = $blog->image_url;
             }
 
@@ -266,7 +315,6 @@ class BlogController extends Controller
         try {
             $blog = Blog::findOrFail($id);
 
-            // Delete image if exists and is not a URL
             if ($blog->image_url && File::exists(public_path('assets/images/' . $blog->image_url)) && !Str::startsWith($blog->image_url, ['http://', 'https://'])) {
                 File::delete(public_path('assets/images/' . $blog->image_url));
                 Log::info('Image deleted: public/assets/images/' . $blog->image_url);

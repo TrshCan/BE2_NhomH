@@ -14,9 +14,24 @@ class CategoriesSeeder extends Seeder
     public function run(): void
     {
         DB::table('categories')->insert([
-            ['category_name' => 'Điện thoại', 'description' => 'Các dòng điện thoại mới nhất'],
-            ['category_name' => 'Laptop', 'description' => 'Laptop phụ vụ công việc và học tập'],
-            ['category_name' => 'Phụ kiện', 'description' => 'Phụ kiện công nghệ'],
+            [
+                'category_name' => 'Điện thoại',
+                'description' => 'Các dòng điện thoại mới nhất',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'category_name' => 'Laptop',
+                'description' => 'Laptop phục vụ công việc và học tập',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'category_name' => 'Phụ kiện',
+                'description' => 'Phụ kiện công nghệ',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

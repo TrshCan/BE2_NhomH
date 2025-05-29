@@ -5,6 +5,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <div class="space-y-6">
+        <!-- Flash message for errors -->
+        @if (session('error'))
+            <div class="bg-red-100 text-red-600 p-3 rounded mb-4">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <!-- Header -->
         <div class="flex justify-between items-center">
             <h2 class="text-2xl font-semibold text-gray-800">Quản lý Blog</h2>
@@ -68,7 +75,12 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">Không có bài viết nào.
+                            <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">
+                                @if (request()->input('page') > 1)
+                                    Trang yêu cầu không tồn tại. Vui lòng thử một trang khác.
+                                @else
+                                    Không có bài viết nào.
+                                @endif
                             </td>
                         </tr>
                     @endforelse
@@ -88,6 +100,7 @@
                 @csrf
                 <input type="hidden" name="_method" id="formMethod" value="POST">
                 <input type="hidden" name="id" id="blog_id">
+                <input type="hidden" name="updated_at" id="updatedAtInput">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Tiêu đề</label>
                     <input type="text" name="title" id="titleInput"
@@ -259,6 +272,7 @@
                 blogForm.reset();
                 document.getElementById('formMethod').value = 'POST';
                 document.getElementById('image_url').value = '';
+                document.getElementById('updatedAtInput').value = '';
                 imagePreview.classList.add('hidden');
                 previewImage.src = '';
                 currentBlogId = null;
@@ -287,7 +301,7 @@
                 const formData = new FormData(blogForm);
                 const url = currentBlogId ?
                     `{{ route('admin.blogs.update', ['id' => ':id']) }}`.replace(':id',
-                    currentBlogId) :
+                        currentBlogId) :
                     `{{ route('admin.blogs.store') }}`;
 
                 try {
@@ -301,7 +315,14 @@
                         body: formData
                     });
 
-                    const result = await response.json();
+                    let result;
+                    try {
+                        result = await response.json();
+                    } catch (jsonError) {
+                        console.error('Error parsing JSON:', jsonError);
+                        showAlert('Phản hồi từ server không hợp lệ. Vui lòng thử lại.', 'error');
+                        return;
+                    }
 
                     if (response.ok && result.success) {
                         blogForm.reset();
@@ -311,13 +332,17 @@
                     } else {
                         if (response.status === 422 && result.errors) {
                             showValidationErrors(result.errors);
+                        } else if (response.status === 409) {
+                            showAlert(result.message ||
+                                'Bài viết đã được chỉnh sửa bởi người dùng khác. Vui lòng tải lại trang.',
+                                'error', true);
                         } else {
                             showAlert(result.message || 'Có lỗi không xác định!', 'error');
                         }
                     }
                 } catch (error) {
                     console.error('Submit error:', error);
-                    showAlert('Đã xảy ra lỗi: ' + error.message, 'error');
+                    showAlert('Đã xảy ra lỗi khi gửi yêu cầu: ' + error.message, 'error');
                 } finally {
                     submitButton.disabled = false;
                     submitButton.textContent = 'Lưu';
@@ -346,7 +371,14 @@
                             }
                         );
 
-                        const result = await response.json();
+                        let result;
+                        try {
+                            result = await response.json();
+                        } catch (jsonError) {
+                            console.error('Error parsing JSON:', jsonError);
+                            showAlert('Không thể tải dữ liệu bài viết. Vui lòng thử lại.', 'error');
+                            return;
+                        }
 
                         if (response.ok && result.success) {
                             const form = blogForm;
@@ -358,6 +390,8 @@
                             form.querySelector('[name="published_at"]').value = result.data
                                 .published_at ?
                                 new Date(result.data.published_at).toISOString().slice(0, 16) : '';
+                            form.querySelector('[name="updated_at"]').value = result.data.updated_at ||
+                                '';
                             const imageUrl = result.data.image_url || '';
                             form.querySelector('[name="image_url"]').value = imageUrl;
                             if (imageUrl) {
@@ -375,7 +409,7 @@
                         }
                     } catch (error) {
                         console.error('Fetch error:', error);
-                        showAlert('Đã xảy ra lỗi: ' + error.message, 'error');
+                        showAlert('Đã xảy ra lỗi khi tải dữ liệu: ' + error.message, 'error');
                     }
                 }
             });
@@ -393,7 +427,7 @@
             // Cancel delete
             cancelDelete.addEventListener('click', closeAllModals);
             confirmDeleteModal.addEventListener('click', (e) => {
-                if (e.target === confirmDeleteModal) closeAllModals();
+                if (e.target === e.confirmDeleteModal) closeAllModals();
             });
 
             // Confirm delete
@@ -412,16 +446,23 @@
                         }
                     });
 
-                    const result = await response.json();
+                    let result;
+                    try {
+                        result = await response.json();
+                    } catch (jsonError) {
+                        console.error('Error parsing JSON:', jsonError);
+                        showAlert('Phản hồi từ server không hợp lệ. Vui lòng thử lại.', 'error');
+                        return;
+                    }
 
                     if (response.ok && result.success) {
                         showAlert(result.message, 'success', true);
                     } else {
-                        showAlert(result.message || 'Có lỗi xảy ra!', 'error');
+                        showAlert(result.message || 'Có lỗi xảy ra khi xóa bài viết!', 'error');
                     }
                 } catch (error) {
                     console.error('Delete error:', error);
-                    showAlert('Đã xảy ra lỗi: ' + error.message, 'error');
+                    showAlert('Đã xảy ra lỗi khi xóa bài viết: ' + error.message, 'error');
                 }
             });
         });

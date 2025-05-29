@@ -11,7 +11,8 @@ class Image extends Model
 
     // Đảm bảo chỉ các trường này có thể gán giá trị
     protected $fillable = ['image_url', 'product_id'];
-
+    public $timestamps = true;
+    protected $dates = ['updated_at'];
     // Ẩn các trường nhạy cảm (tùy chỉnh theo nhu cầu)
     protected $hidden = ['created_at', 'updated_at'];
 
@@ -21,5 +22,9 @@ class Image extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id'); // 'product_id' là khóa ngoại trong bảng images
+    }
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d');
     }
 }
